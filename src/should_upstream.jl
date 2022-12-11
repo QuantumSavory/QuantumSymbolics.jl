@@ -1,5 +1,5 @@
-using QuantumCore: embed, basis, dm, AbstractSuperOperator
-import QuantumCore: apply!
+using QuantumInterface: embed, basis, dm, AbstractSuperOperator
+import QuantumInterface: apply!
 using QuantumOpticsBase: Ket, Operator
 
 function apply!(state::Ket, indices, operation::Operator)

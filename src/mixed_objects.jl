@@ -8,7 +8,7 @@ import QSymBase: express, express_nolookup, basis
 import QSymBase: istree, exprhead, operation, arguments, similarterm, metadata # actually from TermInterface
 using QSymCliff: graphstate, stabilizerview, Stabilizer, MixedDestabilizer
 using QuantumClifford: _T_str
-using QuantumCore: nqubits, apply!, SpinBasis, nqubits
+using QuantumInterface: nqubits, apply!, SpinBasis, nqubits
 using Graphs: edges
 using QSymOpt: _cphase, _z, _phase, _hadamard, _s₊
 

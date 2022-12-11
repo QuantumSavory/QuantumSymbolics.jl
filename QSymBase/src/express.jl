@@ -1,4 +1,4 @@
-export express
+export express, express_nolookup, consistent_representation
 
 import SymbolicUtils: Symbolic
 

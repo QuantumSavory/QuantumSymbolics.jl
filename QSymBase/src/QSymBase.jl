@@ -10,7 +10,7 @@ import TermInterface: istree, exprhead, operation, arguments, similarterm, metad
 using LinearAlgebra
 import LinearAlgebra: eigvecs
 
-import QuantumCore: tensor, ⊗, basis, Basis, SpinBasis, projector,
+import QuantumInterface: tensor, ⊗, basis, Basis, SpinBasis, projector,
     AbstractKet, AbstractOperator, AbstractSuperOperator
 
 #=
@@ -31,7 +31,9 @@ export SymQObj,QObj,
        H,CNOT,CPHASE,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,
        SProjector,MixedState,IdentityOp,
-       STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator
+       STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,
+       HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
+       XBasisState, YBasisState, ZBasisState
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()

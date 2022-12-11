@@ -1,4 +1,4 @@
-using QuantumCore: AbstractSuperOperator
+using QuantumInterface: AbstractSuperOperator
 
 abstract type AbstractLazySuperOperator{B1,B2} <: AbstractSuperOperator{B1,B2} end
 

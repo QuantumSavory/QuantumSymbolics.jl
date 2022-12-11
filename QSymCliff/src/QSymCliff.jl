@@ -1,7 +1,7 @@
 module QSymCliff
 
-using QuantumCore
-using QuantumCore: AbstractKet, AbstractOperator, CompositeBasis
+using QuantumInterface
+using QuantumInterface: AbstractKet, AbstractOperator, CompositeBasis
 using QSymBase
 using QSymBase: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp,

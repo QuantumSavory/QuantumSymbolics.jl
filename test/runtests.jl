@@ -24,11 +24,10 @@ end
 
 println("Starting tests with $(Threads.nthreads()) threads out of `Sys.CPU_THREADS = $(Sys.CPU_THREADS)`...")
 
-#@doset "qo"
-#@doset "qo_qc_interop"
 @doset "sym_expressions"
 @doset "express_opt"
 @doset "express_cliff"
+@doset "qo_qc_interop"
 
 VERSION == v"1.8" && @doset "doctests"
 
