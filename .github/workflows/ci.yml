@@ -13,7 +13,7 @@ jobs:
       matrix:
         version:
           - '1'
-          - latest
+          - '1.8'
         os:
           - ubuntu-latest
           - windows-latest
