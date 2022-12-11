@@ -1,4 +1,4 @@
-module QSymBase
+module QSymbolicsBase
 
 using Symbolics
 import Symbolics: simplify

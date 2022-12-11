@@ -2,15 +2,15 @@ module QSymbolics
 
 using Reexport
 
-@reexport using QSymBase
+@reexport using QSymbolicsBase
 
 # Defines all the `express` methods for QuantumOptics
 # in the `QuantumOpticsRepr` and `QuantumMCRepr`
-using QSymOpt
+using QSymbolicsOptics
 
 # Defines all the `express` methods for QuantumClifford
 # in the `CliffRepr`
-using QSymCliff
+using QSymbolicsClifford
 
 include("should_upstream.jl")
 include("mixed_objects.jl")

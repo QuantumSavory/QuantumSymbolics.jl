@@ -1,6 +1,6 @@
 using Test
 using QSymbolics
-using QSymOpt: _h, _l, _s₊, _s₋, _i₊, _i₋
+using QSymbolicsOptics: _h, _l, _s₊, _s₋, _i₊, _i₋
 using QSymbolics: stab_to_ket
 using QuantumClifford: @S_str, random_stabilizer
 using LinearAlgebra

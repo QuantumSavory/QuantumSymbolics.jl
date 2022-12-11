@@ -1,6 +1,6 @@
 using SafeTestsets
 using QSymbolics
-using QSymBase
+using QSymbolicsBase
 
 function doset(descr)
     if length(ARGS) == 0

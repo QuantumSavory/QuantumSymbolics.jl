@@ -1,16 +1,16 @@
 # This file contains types that depend on multiple backends
 # or types for whom even the symbolic representation depends on a backend.
 
-using QSymBase: @withmetadata, Metadata,
+using QSymbolicsBase: @withmetadata, Metadata,
     AbstractKet, num_to_sub,
     Symbolic
-import QSymBase: express, express_nolookup, basis
-import QSymBase: istree, exprhead, operation, arguments, similarterm, metadata # actually from TermInterface
-using QSymCliff: graphstate, stabilizerview, Stabilizer, MixedDestabilizer
+import QSymbolicsBase: express, express_nolookup, basis
+import QSymbolicsBase: istree, exprhead, operation, arguments, similarterm, metadata # actually from TermInterface
+using QSymbolicsClifford: graphstate, stabilizerview, Stabilizer, MixedDestabilizer
 using QuantumClifford: _T_str
 using QuantumInterface: nqubits, apply!, SpinBasis, nqubits
 using Graphs: edges
-using QSymOpt: _cphase, _z, _phase, _hadamard, _s₊
+using QSymbolicsOptics: _cphase, _z, _phase, _hadamard, _s₊
 
 export StabilizerState, stab_to_ket
 

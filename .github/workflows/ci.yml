@@ -42,7 +42,7 @@ jobs:
         shell: julia --project=monorepo {0}
         run: |
           using Pkg;
-          pkg"dev . ./QSymBase ./QSymCliff ./QSymOpt"
+          pkg"dev . ./QSymbolicsBase ./QSymbolicsClifford ./QSymbolicsOptics"
           Pkg.test("QSymbolics"; coverage=true)
         env:
           JULIA_NUM_THREADS: ${{ matrix.threads }}

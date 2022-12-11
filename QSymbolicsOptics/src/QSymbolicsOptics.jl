@@ -1,10 +1,10 @@
-module QSymOpt
+module QSymbolicsOptics
 
 using QuantumInterface, QuantumOptics
-using QSymBase
-using QSymBase: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
+using QSymbolicsBase
+using QSymbolicsBase: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp
-import QSymBase: express, express_nolookup
+import QSymbolicsBase: express, express_nolookup
 using TermInterface
 using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
 
