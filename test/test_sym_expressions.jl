@@ -1,5 +1,5 @@
 using Test
-using QSymbolics
+using QuantumSymbolics
 
 @test +(Z1) == Z1
 @test +(Z) == Z

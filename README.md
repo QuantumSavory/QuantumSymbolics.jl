@@ -1,4 +1,4 @@
-# QSymbolics
+# QuantumSymbolics
 
 Computer algebra tools for symbolic manipulations in quantum mechanics and quantum information.
 
@@ -6,20 +6,20 @@ Computer algebra tools for symbolic manipulations in quantum mechanics and quant
     <tr>
         <td>Documentation</td>
         <td>
-            <a href="https://krastanov.github.io/QSymbolics.jl/stable"><img src="https://img.shields.io/badge/docs-stable-blue.svg" alt="Documentation of latest stable version"></a>
-            <a href="https://krastanov.github.io/QSymbolics.jl/dev"><img src="https://img.shields.io/badge/docs-dev-blue.svg" alt="Documentation of dev version"></a>
+            <a href="https://krastanov.github.io/QuantumSymbolics.jl/stable"><img src="https://img.shields.io/badge/docs-stable-blue.svg" alt="Documentation of latest stable version"></a>
+            <a href="https://krastanov.github.io/QuantumSymbolics.jl/dev"><img src="https://img.shields.io/badge/docs-dev-blue.svg" alt="Documentation of dev version"></a>
         </td>
     </tr><tr></tr>
     <tr>
         <td>Continuous integration</td>
         <td>
-            <a href="https://github.com/Krastanov/QSymbolics.jl/actions?query=workflow%3ACI+branch%3Amain"><img src="https://img.shields.io/github/workflow/status/Krastanov/QSymbolics.jl/CI" alt="GitHub Workflow Status"></a>
+            <a href="https://github.com/Krastanov/QuantumSymbolics.jl/actions?query=workflow%3ACI+branch%3Amain"><img src="https://img.shields.io/github/workflow/status/Krastanov/QuantumSymbolics.jl/CI" alt="GitHub Workflow Status"></a>
         </td>
     </tr><tr></tr>
     <tr>
         <td>Code coverage</td>
         <td>
-            <a href="https://codecov.io/gh/Krastanov/QSymbolics.jl"><img src="https://img.shields.io/codecov/c/gh/Krastanov/QSymbolics.jl?label=codecov" alt="Test coverage from codecov"></a>
+            <a href="https://codecov.io/gh/Krastanov/QuantumSymbolics.jl"><img src="https://img.shields.io/codecov/c/gh/Krastanov/QuantumSymbolics.jl?label=codecov" alt="Test coverage from codecov"></a>
         </td>
     </tr><tr></tr>
     <tr>

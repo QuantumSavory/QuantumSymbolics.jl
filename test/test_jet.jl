@@ -1,4 +1,4 @@
-using QSymbolics, QSymbolicsBase, QSymbolicsOptics, JET
+using QuantumSymbolics, QSymbolicsBase, QSymbolicsOptics, JET
 
 using JET: ReportPass, BasicPass, InferenceErrorReport, UncaughtExceptionReport
 
@@ -34,7 +34,7 @@ rep_cliff = report_package("QSymbolicsClifford";
 @show rep_cliff
 @test_broken length(JET.get_reports(rep_cliff)) == 0
 
-rep = report_package("QSymbolics";
+rep = report_package("QuantumSymbolics";
     report_pass=MayThrowIsOk(), # TODO have something more fine grained than a generic "do not care about thrown errors"
 )
 @show rep

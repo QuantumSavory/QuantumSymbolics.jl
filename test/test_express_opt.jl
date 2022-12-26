@@ -1,5 +1,5 @@
 using Test
-using QSymbolics
+using QuantumSymbolics
 
 state = 1im*X2⊗Z1+2*Y1⊗(Z2+X2)+StabilizerState("XZ YY")
 express(state)

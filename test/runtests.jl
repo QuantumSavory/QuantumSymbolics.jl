@@ -1,5 +1,5 @@
 using SafeTestsets
-using QSymbolics
+using QuantumSymbolics
 using QSymbolicsBase
 
 function doset(descr)

@@ -1,4 +1,4 @@
-module QSymbolics
+module QuantumSymbolics
 
 using Reexport
 

@@ -1,7 +1,7 @@
 using Test
-using QSymbolics
+using QuantumSymbolics
 using QSymbolicsOptics: _h, _l, _s₊, _s₋, _i₊, _i₋
-using QSymbolics: stab_to_ket
+using QuantumSymbolics: stab_to_ket
 using QuantumClifford: @S_str, random_stabilizer
 using LinearAlgebra
 

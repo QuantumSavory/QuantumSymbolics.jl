@@ -1,6 +1,6 @@
 name = "QSymbolicsClifford"
 uuid = "3bf15ae1-300d-4269-a8e5-03a020b0328d"
-authors = ["QSymbolics.jl contributors"]
+authors = ["QuantumSymbolics.jl contributors"]
 version = "0.1.0"
 
 [deps]

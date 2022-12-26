@@ -43,7 +43,7 @@ jobs:
         run: |
           using Pkg;
           pkg"dev . ./QSymbolicsBase ./QSymbolicsClifford ./QSymbolicsOptics"
-          Pkg.test("QSymbolics"; coverage=true)
+          Pkg.test("QuantumSymbolics"; coverage=true)
         env:
           JULIA_NUM_THREADS: ${{ matrix.threads }}
       - uses: julia-actions/julia-processcoverage@v1

@@ -1,5 +1,5 @@
 using Test
-using QSymbolics
+using QuantumSymbolics
 using QuantumClifford
 
 state = StabilizerState(S"ZZ XX")
