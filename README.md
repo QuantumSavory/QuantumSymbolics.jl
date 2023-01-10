@@ -13,7 +13,7 @@ Computer algebra tools for symbolic manipulations in quantum mechanics and quant
     <tr>
         <td>Continuous integration</td>
         <td>
-            <a href="https://github.com/Krastanov/QuantumSymbolics.jl/actions?query=workflow%3ACI+branch%3Amain"><img src="https://img.shields.io/github/workflow/status/Krastanov/QuantumSymbolics.jl/CI" alt="GitHub Workflow Status"></a>
+            <a href="https://github.com/Krastanov/QuantumSymbolics.jl/actions?query=workflow%3ACI+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/Krastanov/QuantumSymbolics.jl/ci.yml?branch=main" alt="GitHub Workflow Status"></a>
         </td>
     </tr><tr></tr>
     <tr>
