@@ -56,24 +56,26 @@ Base.print(io::IO, x::PositionEigenState) = print(io, "|δₓ($(x.x))⟩")
 
 const qubit_basis = SpinBasis(1//2)
 """Basis state of σˣ"""
-const X1 = const X₁ = XBasisState(1, qubit_basis)
+const X1 = const X₁ = const Lp = const L₊ = XBasisState(1, qubit_basis)
 """Basis state of σˣ"""
-const X2 = const X₂ = XBasisState(2, qubit_basis)
+const X2 = const X₂ = const Lm = const L₋ = XBasisState(2, qubit_basis)
 """Basis state of σʸ"""
-const Y1 = const Y₁ = YBasisState(1, qubit_basis)
+const Y1 = const Y₁ = const Lpi = const L₊ᵢ = YBasisState(1, qubit_basis)
 """Basis state of σʸ"""
-const Y2 = const Y₂ = YBasisState(2, qubit_basis)
+const Y2 = const Y₂ = const Lmi = const L₋ᵢ = YBasisState(2, qubit_basis)
 """Basis state of σᶻ"""
-const Z1 = const Z₁ = ZBasisState(1, qubit_basis)
+const Z1 = const Z₁ = const L0 = const L₀ = ZBasisState(1, qubit_basis)
 """Basis state of σᶻ"""
-const Z2 = const Z₂ = ZBasisState(2, qubit_basis)
+const Z2 = const Z₂ = const L1 = const L₁ = ZBasisState(2, qubit_basis)
 
 ##
 # Gates and Operators
 ##
 
-abstract type AbstractSingleQubitGate <: Symbolic{AbstractOperator} end
-abstract type AbstractTwoQubitGate <: Symbolic{AbstractOperator} end
+abstract type AbstractSingleQubitOp <: Symbolic{AbstractOperator} end
+abstract type AbstractTwoQubitOp <: Symbolic{AbstractOperator} end
+abstract type AbstractSingleQubitGate <: AbstractSingleQubitOp end # TODO maybe an IsUnitaryTrait is a better choice
+abstract type AbstractTwoQubitGate <: AbstractTwoQubitOp end
 istree(::AbstractSingleQubitGate) = false
 istree(::AbstractTwoQubitGate) = false
 basis(::AbstractSingleQubitGate) = SpinBasis(1//2)
@@ -95,6 +97,10 @@ Base.print(io::IO, ::YGate) = print(io, "Ŷ")
 @withmetadata struct ZGate <: AbstractSingleQubitGate end
 eigvecs(g::ZGate) = [Z1,Z2]
 Base.print(io::IO, ::ZGate) = print(io, "Ẑ")
+@withmetadata struct PauliM <: AbstractSingleQubitGate end
+Base.print(io::IO, ::PauliM) = print(io, "σ̂₋")
+@withmetadata struct PauliP <: AbstractSingleQubitGate end
+Base.print(io::IO, ::PauliP) = print(io, "σ̂₊")
 @withmetadata struct HGate <: AbstractSingleQubitGate end
 Base.print(io::IO, ::HGate) = print(io, "Ĥ")
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
@@ -108,6 +114,10 @@ const X = const σˣ = XGate()
 const Y = const σʸ = YGate()
 """Pauli Z operator, also available as the constant `σᶻ`"""
 const Z = const σᶻ = ZGate()
+"""Pauli "minus" operator, also available as the constant `σ₋`"""
+const Pm = const σ₋ = PauliM()
+"""Pauli "plus" operator, also available as the constant `σ₊`"""
+const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
 """CNOT gate"""

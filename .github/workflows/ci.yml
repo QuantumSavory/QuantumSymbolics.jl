@@ -62,6 +62,10 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Pkg
+            Pkg.develop(PackageSpec(path=pwd()*"/QSymbolicsBase"))
+            Pkg.develop(PackageSpec(path=pwd()*"/QSymbolicsClifford"))
+            Pkg.develop(PackageSpec(path=pwd()*"/QSymbolicsOptics"))
+            Pkg.develop(PackageSpec(path=pwd()))
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()'
       - run: julia --project=docs docs/make.jl
