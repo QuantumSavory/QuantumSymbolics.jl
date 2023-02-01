@@ -1,7 +1,7 @@
 name = "QSymbolicsBase"
 uuid = "a8697a1a-c835-4068-9491-e8abc49d0056"
 authors = ["QuantumSymbolics.jl contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
