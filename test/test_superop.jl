@@ -1,5 +1,6 @@
 using Test
 using QuantumSymbolics
+using LinearAlgebra
 
 #
 # single qubit
