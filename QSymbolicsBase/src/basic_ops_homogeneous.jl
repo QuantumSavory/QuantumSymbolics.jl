@@ -7,9 +7,9 @@ metadata(::SymQ) = nothing
 basis(x::SymQ) = x.basis
 
 const SKet = SymQ{AbstractKet}
-Base.print(io::IO, x::SKet) = print(io, "|$(x.name)⟩")
+Base.show(io::IO, x::SKet) = print(io, "|$(x.name)⟩")
 const SOperator = SymQ{AbstractOperator}
-Base.print(io::IO, x::SOperator) = print(io, "$(x.name)")
+Base.show(io::IO, x::SOperator) = print(io, "$(x.name)")
 
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
@@ -25,7 +25,7 @@ Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
-function Base.print(io::IO, x::SScaledKet)
+function Base.show(io::IO, x::SScaledKet)
     if x.coeff isa Number
         print(io, "$(x.coeff)$(x.obj)")
     else
@@ -33,7 +33,7 @@ function Base.print(io::IO, x::SScaledKet)
     end
 end
 const SScaledOperator = SScaled{AbstractOperator}
-function Base.print(io::IO, x::SScaledOperator)
+function Base.show(io::IO, x::SScaledOperator)
     if x.coeff isa Number
         print(io, "$(x.coeff)$(x.obj)")
     else
@@ -53,9 +53,9 @@ Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type paramete
 basis(x::SAdd) = basis(first(x.dict).first)
 
 const SAddKet = SAdd{AbstractKet}
-Base.print(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+Base.show(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 const SAddOperator = SAdd{AbstractOperator}
-Base.print(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
     terms
@@ -71,6 +71,8 @@ operation(x::STensor) = ⊗
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
 const STensorKet = STensor{AbstractKet}
-Base.print(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
+Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}
-Base.print(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+const STensorSuperOperator = STensor{AbstractSuperOperator}
+Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))

@@ -17,4 +17,3 @@ end
 
 # TODO use Latexify for these
 Base.show(io::IO, ::MIME"text/latex", x::SymQObj) = print(io, x)
-Base.show(io::IO, x::SymQObj) = print(io,x)

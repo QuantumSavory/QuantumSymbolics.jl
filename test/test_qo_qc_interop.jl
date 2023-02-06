@@ -1,6 +1,6 @@
 using Test
 using QuantumSymbolics
-using QSymbolicsOptics: _h, _l, _s₊, _s₋, _i₊, _i₋
+using QSymbolicsOptics: _l0,_l1, _s₊, _s₋, _i₊, _i₋
 using QuantumSymbolics: stab_to_ket
 using QuantumClifford: @S_str, random_stabilizer
 using LinearAlgebra
@@ -8,7 +8,7 @@ using LinearAlgebra
 for n in 1:5
     stabs = [random_stabilizer(1) for _ in 1:n]
     stab = tensor(stabs...)
-    translate = Dict(S"X"=>_s₊,S"-X"=>_s₋,S"Z"=>_l,S"-Z"=>_h,S"Y"=>_i₊,S"-Y"=>_i₋)
+    translate = Dict(S"X"=>_s₊,S"-X"=>_s₋,S"Z"=>_l0,S"-Z"=>_l1,S"Y"=>_i₊,S"-Y"=>_i₋)
     kets = [translate[s] for s in stabs]
     ket = tensor(kets...)
     @test ket.data ≈ stab_to_ket(stab).data

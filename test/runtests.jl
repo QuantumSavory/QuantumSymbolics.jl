@@ -29,6 +29,8 @@ println("Starting tests with $(Threads.nthreads()) threads out of `Sys.CPU_THREA
 @doset "express_cliff"
 @doset "qo"
 @doset "qo_qc_interop"
+@doset "basis_consistency"
+@doset "superop"
 
 VERSION == v"1.8" && @doset "doctests"
 
