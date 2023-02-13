@@ -22,3 +22,13 @@ withcache = @timed express(state2)
 @test nocache.time > 50*withcache.time
 @test withcache.bytes == 0
 @test nocache.value ≈ withcache.value ≈ express(state2)
+
+state = 1im*F1⊗F0
+state1 = N⊗Create * state
+@test express(state1) ≈ 1im*express(F1)⊗express(F1)
+@test express(IdentityOp(F1)⊗Destroy)*express(state1) ≈ express((IdentityOp(F1)⊗Destroy)*state1) ≈ express(state)
+
+state = F0⊗X1 + F1⊗Z1
+op = N⊗X
+@test express(op*state) ≈ express(op)*express(state)
+@test express(op*state) ≈ express(F1⊗Z2)

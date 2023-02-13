@@ -28,7 +28,7 @@ Base.show(io::IO, x::ZBasisState) = print(io, "|Z$(num_to_sub(x.idx))⟩")
     idx::Int
     basis::Basis
 end
-Base.show(io::IO, x::FockBasisState) = print(io, "|$(num_to_sub(x.idx))⟩")
+Base.show(io::IO, x::FockBasisState) = print(io, "|$(x.idx)⟩")
 
 @withmetadata struct DiscreteCoherentState <: SpecialKet
     alpha::Number # TODO parameterize
@@ -68,8 +68,15 @@ const Z1 = const Z₁ = const L0 = const L₀ = ZBasisState(1, qubit_basis)
 """Basis state of σᶻ"""
 const Z2 = const Z₂ = const L1 = const L₁ = ZBasisState(2, qubit_basis)
 
+const inf_fock_basis = FockBasis(Inf,0.)
+"""Vacuum basis state of n"""
+const vac = const F₀ = const F0 = FockBasisState(0,inf_fock_basis)
+"""Single photon basis state of n"""
+const F₁ = const F1 = FockBasisState(1,inf_fock_basis)
+
+
 ##
-# Gates and Operators
+# Gates and Operators on qubits
 ##
 
 abstract type AbstractSingleQubitOp <: Symbolic{AbstractOperator} end
@@ -78,8 +85,8 @@ abstract type AbstractSingleQubitGate <: AbstractSingleQubitOp end # TODO maybe 
 abstract type AbstractTwoQubitGate <: AbstractTwoQubitOp end
 istree(::AbstractSingleQubitGate) = false
 istree(::AbstractTwoQubitGate) = false
-basis(::AbstractSingleQubitGate) = SpinBasis(1//2)
-basis(::AbstractTwoQubitGate) = SpinBasis(1//2)⊗SpinBasis(1//2)
+basis(::AbstractSingleQubitGate) = qubit_basis
+basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
 
 @withmetadata struct OperatorEmbedding <: Symbolic{AbstractOperator}
     gate::Symbolic{AbstractOperator} # TODO parameterize
@@ -124,6 +131,29 @@ const H = HGate()
 const CNOT = CNOTGate()
 """CPHASE gate"""
 const CPHASE = CPHASEGate()
+
+##
+# Gates and Operators on harmonic oscillators
+##
+
+abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
+abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
+istree(::AbstractSingleBosonGate) = false
+basis(::AbstractSingleBosonGate) = inf_fock_basis
+
+@withmetadata struct NumberOp <: AbstractSingleBosonOp end
+Base.show(io::IO, ::NumberOp) = print(io, "n̂")
+@withmetadata struct CreateOp <: AbstractSingleBosonOp end
+Base.show(io::IO, ::CreateOp) = print(io, "â†")
+@withmetadata struct DestroyOp <: AbstractSingleBosonOp end
+Base.show(io::IO, ::DestroyOp) = print(io, "â")
+
+"""Number operator, also available as the constant `n̂`"""
+const N = const n̂ = NumberOp()
+"""Creation operator, also available as the constant `âꜛ` - there is no unicode dagger superscript, so we use the uparrow"""
+const Create = const âꜛ = CreateOp()
+"""Annihilation operator, also available as the constant `â`"""
+const Destroy = const â = DestroyOp()
 
 ##
 # Other special or useful objects

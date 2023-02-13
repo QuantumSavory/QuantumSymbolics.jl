@@ -2,8 +2,13 @@ module QSymbolicsOptics
 
 using QuantumInterface, QuantumOptics
 using QSymbolicsBase
-using QSymbolicsBase: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
-    XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp
+using QSymbolicsBase:
+    HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
+    XBasisState, YBasisState, ZBasisState,
+    NumberOp, CreateOp, DestroyOp,
+    FockBasisState,
+    MixedState, IdentityOp,
+    qubit_basis, inf_fock_basis
 import QSymbolicsBase: express, express_nolookup
 using TermInterface
 using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
@@ -30,6 +35,13 @@ const _cphase = _l00⊗_Id + _l11⊗_z
 const _phase = _l00 + im*_l11
 const _iphase = _l00 - im*_l11
 
+const _bf2 = FockBasis(2)
+const _f0₂ = fockstate(_bf2, 0)
+const _f1₂ = fockstate(_bf2, 1)
+const _ad₂ = create(_bf2)
+const _a₂ = destroy(_bf2)
+const _n₂ = number(_bf2)
+
 express_nolookup(::HGate, ::QuantumOpticsRepr) = _hadamard
 express_nolookup(::XGate, ::QuantumOpticsRepr) = _x
 express_nolookup(::YGate, ::QuantumOpticsRepr) = _y
@@ -44,8 +56,34 @@ express_nolookup(s::XBasisState, ::QuantumOpticsRepr) = (_s₊,_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::QuantumOpticsRepr) = (_i₊,_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::QuantumOpticsRepr) = (_l0,_l1)[s.idx]
 
+function express_nolookup(o::FockBasisState, r::QuantumOpticsRepr)
+    @warn "Fock space cutoff is not specified so we default to 2"
+    @assert o.idx<2 "without a specified cutoff you can not create states higher than 1 photon"
+    return (_f0₂,_f1₂)[o.idx+1]
+end
+function express_nolookup(o::NumberOp, r::QuantumOpticsRepr)
+    @warn "Fock space cutoff is not specified so we default to 2"
+    return _n₂
+end
+function express_nolookup(o::CreateOp, r::QuantumOpticsRepr)
+    @warn "Fock space cutoff is not specified so we default to 2"
+    return _ad₂
+end
+function express_nolookup(o::DestroyOp, r::QuantumOpticsRepr)
+    @warn "Fock space cutoff is not specified so we default to 2"
+    return _a₂
+end
+
 express_nolookup(x::MixedState, ::QuantumOpticsRepr) = identityoperator(basis(x))/length(basis(x)) # TODO there is probably a more efficient way to represent it
-express_nolookup(x::IdentityOp, ::QuantumOpticsRepr) = identityoperator(basis(x)) # TODO there is probably a more efficient way to represent it
+function express_nolookup(x::IdentityOp, ::QuantumOpticsRepr)
+    b = basis(x)
+    if b!=inf_fock_basis
+        return identityoperator(basis(x)) # TODO there is probably a more efficient way to represent it
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return identityoperator(_bf2)
+    end
+end
 
 function express_nolookup(s::SymQObj, repr::QuantumOpticsRepr)
     if istree(s)
@@ -57,7 +95,6 @@ end
 
 express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasis(1//2), [1-p.px-p.py-p.pz,p.px,p.py,p.pz],
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])
-
 
 include("should_upstream.jl")
 
