@@ -10,6 +10,8 @@ const SKet = SymQ{AbstractKet}
 Base.show(io::IO, x::SKet) = print(io, "|$(x.name)⟩")
 const SOperator = SymQ{AbstractOperator}
 Base.show(io::IO, x::SOperator) = print(io, "$(x.name)")
+const SBra = SymQ{AbstractBra}
+Base.show(io::IO, x::SBra) = print(io, "⟨$(x.name)|")
 
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
@@ -40,6 +42,14 @@ function Base.show(io::IO, x::SScaledOperator)
         print(io, "($(x.coeff))$(x.obj)")
     end
 end
+const SScaledBra = SScaled{AbstractBra}
+function Base.show(io::IO, x::SScaledBra)
+    if x.coeff isa Number
+        print(io, "$(x.obj)$(x.coeff)")
+    else
+        print(io, "$(x.obj)($(x.coeff))")
+    end
+end
 
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
     dict
@@ -56,6 +66,8 @@ const SAddKet = SAdd{AbstractKet}
 Base.show(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 const SAddOperator = SAdd{AbstractOperator}
 Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+const SAddBra = SAdd{AbstractBra}
+Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
     terms
@@ -76,3 +88,5 @@ const STensorOperator = STensor{AbstractOperator}
 Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
 const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+const STensorBra = STensor{AbstractBra}
+Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))

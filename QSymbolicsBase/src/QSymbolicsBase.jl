@@ -14,7 +14,7 @@ import QuantumInterface:
     tensor, ⊗,
     basis, Basis, SpinBasis, FockBasis,
     projector,
-    AbstractKet, AbstractOperator, AbstractSuperOperator
+    AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 #=
 import QuantumOpticsBase
@@ -126,7 +126,7 @@ newwithmetadata(x) = x
 # Basic Types
 ##
 
-const QObj = Union{AbstractKet,AbstractOperator,AbstractSuperOperator}
+const QObj = Union{AbstractKet,AbstractOperator,AbstractSuperOperator,AbstractBra}
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
