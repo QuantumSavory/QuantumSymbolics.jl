@@ -1,7 +1,11 @@
+# This file defines the expression of quantum objects (kets, operators, and bras) in various representations.
+#
+# The main function is `express`, which takes a quantum object and a representation and returns an expression of the object in that representation.
 export express, express_nolookup, consistent_representation
 
 import SymbolicUtils: Symbolic
 
+# This is the main function for expressing a quantum object in a representation.
 function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse)
     md = metadata(state)
     isnothing(md) && return express_from_cache(express_nolookup(state, repr, use))
@@ -42,7 +46,7 @@ end
 # Commonly used representations -- interfaces for each one defined in separate packages
 ##
 
-"""Representation using kets, densinty matrices, and superoperators governed by `QuantumOptics.jl`."""
+"""Representation using kets, bras, density matrices, and superoperators governed by `QuantumOptics.jl`."""
 struct QuantumOpticsRepr <: AbstractRepresentation end
 """Similar to `QuantumOpticsRepr`, but using trajectories instead of superoperators."""
 struct QuantumMCRepr <: AbstractRepresentation end
