@@ -32,3 +32,5 @@ state = F0⊗X1 + F1⊗Z1
 op = N⊗X
 @test express(op*state) ≈ express(op)*express(state)
 @test express(op*state) ≈ express(F1⊗Z2)
+
+state = (3im*(2*dagger(Z1)+dagger(Y1))) * (3im*(2*X1+X2))

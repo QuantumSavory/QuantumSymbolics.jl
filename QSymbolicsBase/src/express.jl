@@ -1,11 +1,11 @@
-# This file defines the expression of quantum objects (kets, operators, and bras) in various representations.
-#
-# The main function is `express`, which takes a quantum object and a representation and returns an expression of the object in that representation.
+"""This file defines the expression of quantum objects (kets, operators, and bras) in various representations.
+
+The main function is `express`, which takes a quantum object and a representation and returns an expression of the object in that representation."""
+
 export express, express_nolookup, consistent_representation
 
 import SymbolicUtils: Symbolic
 
-# This is the main function for expressing a quantum object in a representation.
 function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse)
     md = metadata(state)
     isnothing(md) && return express_from_cache(express_nolookup(state, repr, use))
@@ -20,13 +20,10 @@ end
 
 express(s::Number, repr::AbstractRepresentation, use::AbstractUse) = s
 
-# Assume two-argument express statements are for "as state" representations.
 express(s, repr::AbstractRepresentation) = express(s, repr, UseAsState())
 
-# Default to the two-argument expression unless overwritten
 express_nolookup(x, repr::AbstractRepresentation, ::AbstractUse) = express_nolookup(x, repr)
 
-# The two-argument expression is the AsState one
 express_nolookup(x, repr::AbstractRepresentation, ::UseAsState) = express_nolookup(x, repr)
 
 # Most of the time the cache is exactly the expression we need,
@@ -56,3 +53,11 @@ struct CliffordRepr <: AbstractRepresentation end
 express(state::Symbolic) = express(state, QuantumOpticsRepr()) # The default representation
 express_nolookup(state, ::QuantumMCRepr) = express_nolookup(state, QuantumOpticsRepr())
 express(state) = state
+
+function express_nolookup(s, repr::AbstractRepresentation)
+    if istree(s)
+        operation(s)(express.(arguments(s), (repr,))...)
+    else
+        error("Encountered an object $(s) of type $(typeof(s)) that can not be converted to $(repr) representation") # TODO make a nice error type
+    end
+end

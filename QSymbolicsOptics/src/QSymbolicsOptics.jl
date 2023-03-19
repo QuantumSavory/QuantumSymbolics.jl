@@ -85,14 +85,6 @@ function express_nolookup(x::IdentityOp, ::QuantumOpticsRepr)
     end
 end
 
-function express_nolookup(s::SymQObj, repr::QuantumOpticsRepr)
-    if istree(s)
-        operation(s)(express.(arguments(s), (repr,))...)
-    else
-        error("Encountered an object $(s) of type $(typeof(s)) that can not be converted to $(repr) representation") # TODO make a nice error type
-    end
-end
-
 express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasis(1//2), [1-p.px-p.py-p.pz,p.px,p.py,p.pz],
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])
 

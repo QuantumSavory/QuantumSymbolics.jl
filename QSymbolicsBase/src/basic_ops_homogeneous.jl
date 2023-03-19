@@ -1,15 +1,13 @@
-# This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments.
+"""This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments."""
 
-#This code defines a Julia struct called SymQ which represents a symbolic quantum object with a name and basis, and implements the Symbolic{T} interface for use in symbolic computations.
 struct SymQ{T<:QObj} <: Symbolic{T}
     name::Symbol
-    basis::Basis # From QuantumOpticsBase # TODO make QuantumInterface
+    basis::Basis
 end
 istree(::SymQ) = false
 metadata(::SymQ) = nothing
 basis(x::SymQ) = x.basis
 
-# This code defines the visual output for Kets, Operators, and Bras.
 const SKet = SymQ{AbstractKet}
 Base.show(io::IO, x::SKet) = print(io, "|$(x.name)⟩")
 const SOperator = SymQ{AbstractOperator}
@@ -17,7 +15,7 @@ Base.show(io::IO, x::SOperator) = print(io, "$(x.name)")
 const SBra = SymQ{AbstractBra}
 Base.show(io::IO, x::SBra) = print(io, "⟨$(x.name)|")
 
-# This code allows for scaling of a quantum object (ket, operator, or bra) by a number.
+"""Scaling of a quantum object (ket, operator, or bra) by a number."""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
     obj
@@ -31,7 +29,6 @@ Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
 basis(x::SScaled) = basis(x.obj)
 
-# This code defines the visual output for scaled kets, operators, and bras.
 const SScaledKet = SScaled{AbstractKet}
 function Base.show(io::IO, x::SScaledKet)
     if x.coeff isa Number
@@ -57,7 +54,7 @@ function Base.show(io::IO, x::SScaledBra)
     end
 end
 
-# This code allows for addition of quantum objects (kets, operators, or bras).
+"""Addition of quantum objects (kets, operators, or bras)."""
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
     dict
     SAdd{S}(d) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d)
@@ -69,7 +66,6 @@ Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} = SAdd{T}(countmap_flatte
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
 
-# This code defines the visual output for added kets, operators, and bras.
 const SAddKet = SAdd{AbstractKet}
 Base.show(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 const SAddOperator = SAdd{AbstractOperator}
@@ -77,7 +73,7 @@ Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)
 const SAddBra = SAdd{AbstractBra}
 Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 
-# This code allows for tensor product of quantum objects (kets, operators, or bras).
+"""Tensor product of quantum objects (kets, operators, or bras)."""
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
     terms
     function STensor{S}(terms) where S
@@ -91,7 +87,6 @@ operation(x::STensor) = ⊗
 ⊗(xs::Symbolic{T}...) where {T<:QObj} = STensor{T}(collect(xs))
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
-# This code defines the visual output for tensor product of kets, operators, and bras.
 const STensorKet = STensor{AbstractKet}
 Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}

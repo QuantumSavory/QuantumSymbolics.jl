@@ -13,7 +13,7 @@ import LinearAlgebra: eigvecs
 import QuantumInterface:
     tensor, ⊗,
     basis, Basis, SpinBasis, FockBasis,
-    projector, dagger
+    projector, dagger,
     AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 #=
@@ -30,6 +30,7 @@ export SymQObj,QObj,
        UseAsState, UseAsObservable, UseAsOperation,
        express,
        tensor,⊗,
+       dagger,projector,
        X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
