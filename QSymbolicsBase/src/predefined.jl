@@ -185,6 +185,20 @@ function Base.show(io::IO, x::SProjector)
     print(io,"]")
 end
 
+"""Dagger a Ket into Bra."""
+@withmetadata struct SDagger <: Symbolic{AbstractBra}
+    ket::Symbolic{AbstractKet}
+end
+istree(::SDagger) = true
+arguments(x::SDagger) = [x.ket]
+operation(x::SDagger) = dagger
+dagger(x::Symbolic{AbstractKet}) = SDagger(x)
+basis(x::SDagger) = basis(x.ket)
+function Base.show(io::IO, x::SDagger)
+    print(io,x.ket)
+    print(io,"†")
+end
+
 """Completely depolarized state
 
 ```jldoctest

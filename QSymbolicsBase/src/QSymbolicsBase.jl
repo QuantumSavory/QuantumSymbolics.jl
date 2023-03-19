@@ -13,8 +13,8 @@ import LinearAlgebra: eigvecs
 import QuantumInterface:
     tensor, ⊗,
     basis, Basis, SpinBasis, FockBasis,
-    projector,
-    AbstractKet, AbstractOperator, AbstractSuperOperator
+    projector, dagger,
+    AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 #=
 import QuantumOpticsBase
@@ -30,13 +30,14 @@ export SymQObj,QObj,
        UseAsState, UseAsObservable, UseAsOperation,
        express,
        tensor,⊗,
+       dagger,projector,
        X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
        N,n̂,Create,âꜛ,Destroy,â,
        SProjector,MixedState,IdentityOp,
-       STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,
+       STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,SScaledBra,SAddBra,STensorBra,SDagger,
        HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
        XBasisState, YBasisState, ZBasisState,
        NumberOp, CreateOp, DestroyOp
@@ -126,7 +127,7 @@ newwithmetadata(x) = x
 # Basic Types
 ##
 
-const QObj = Union{AbstractKet,AbstractOperator,AbstractSuperOperator}
+const QObj = Union{AbstractKet,AbstractOperator,AbstractSuperOperator,AbstractBra}
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)

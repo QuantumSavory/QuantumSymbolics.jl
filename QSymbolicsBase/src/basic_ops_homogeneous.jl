@@ -1,6 +1,8 @@
+"""This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments."""
+
 struct SymQ{T<:QObj} <: Symbolic{T}
     name::Symbol
-    basis::Basis # From QuantumOpticsBase # TODO make QuantumInterface
+    basis::Basis
 end
 istree(::SymQ) = false
 metadata(::SymQ) = nothing
@@ -10,7 +12,10 @@ const SKet = SymQ{AbstractKet}
 Base.show(io::IO, x::SKet) = print(io, "|$(x.name)⟩")
 const SOperator = SymQ{AbstractOperator}
 Base.show(io::IO, x::SOperator) = print(io, "$(x.name)")
+const SBra = SymQ{AbstractBra}
+Base.show(io::IO, x::SBra) = print(io, "⟨$(x.name)|")
 
+"""Scaling of a quantum object (ket, operator, or bra) by a number."""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
     obj
@@ -40,7 +45,16 @@ function Base.show(io::IO, x::SScaledOperator)
         print(io, "($(x.coeff))$(x.obj)")
     end
 end
+const SScaledBra = SScaled{AbstractBra}
+function Base.show(io::IO, x::SScaledBra)
+    if x.coeff isa Number
+        print(io, "$(x.obj)$(x.coeff)")
+    else
+        print(io, "$(x.obj)($(x.coeff))")
+    end
+end
 
+"""Addition of quantum objects (kets, operators, or bras)."""
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
     dict
     SAdd{S}(d) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d)
@@ -56,7 +70,10 @@ const SAddKet = SAdd{AbstractKet}
 Base.show(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 const SAddOperator = SAdd{AbstractOperator}
 Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+const SAddBra = SAdd{AbstractBra}
+Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 
+"""Tensor product of quantum objects (kets, operators, or bras)."""
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
     terms
     function STensor{S}(terms) where S
@@ -76,3 +93,5 @@ const STensorOperator = STensor{AbstractOperator}
 Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
 const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+const STensorBra = STensor{AbstractBra}
+Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
