@@ -39,6 +39,14 @@ end
     return _toexpr(x)
 end
 
+@latexrecipe function f(x::MixedState)
+    return LaTeXString("\\mathbb{M}")
+end
+
+@latexrecipe function f(x::IdentityOp)
+    return LaTeXString("\\mathbb{I}")
+end
+
 function _toexpr(x)
     if istree(x)
         return Expr(:call, exprhead(x), arguments(x)...)

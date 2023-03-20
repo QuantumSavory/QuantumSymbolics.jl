@@ -1,6 +1,6 @@
 # News
 
-## v0.1.1 - dev
+## v0.1.1
 
 - Bosonic states basis and common states and operators.
 - Documentation and internal cleanup of the qubit bases.
