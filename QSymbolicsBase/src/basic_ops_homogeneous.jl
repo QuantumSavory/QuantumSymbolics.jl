@@ -1,19 +1,21 @@
 """This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments."""
 
-struct SymQ{T<:QObj} <: Symbolic{T}
+struct SKet <: Symbolic{AbstractKet}
     name::Symbol
     basis::Basis
 end
+struct SOperator <: Symbolic{AbstractKet}
+    name::Symbol
+    basis::Basis
+end
+const SymQ = Union{SKet, SOperator}
 istree(::SymQ) = false
 metadata(::SymQ) = nothing
 basis(x::SymQ) = x.basis
 
-const SKet = SymQ{AbstractKet}
-Base.show(io::IO, x::SKet) = print(io, "|$(x.name)⟩")
-const SOperator = SymQ{AbstractOperator}
-Base.show(io::IO, x::SOperator) = print(io, "$(x.name)")
-const SBra = SymQ{AbstractBra}
-Base.show(io::IO, x::SBra) = print(io, "⟨$(x.name)|")
+symbollabel(x::SymQ) = x.name
+Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
+Base.show(io::IO, x::SOperator) = print(io, "$(symbollabel(x))")
 
 """Scaling of a quantum object (ket, operator, or bra) by a number."""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
@@ -24,6 +26,7 @@ end
 istree(::SScaled) = true
 arguments(x::SScaled) = [x.coeff, x.obj]
 operation(x::SScaled) = *
+exprhead(x::SScaled) = :*
 Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
@@ -62,6 +65,7 @@ end
 istree(::SAdd) = true
 arguments(x::SAdd) = [SScaledKet(v,k) for (k,v) in pairs(x.dict)]
 operation(x::SAdd) = +
+exprhead(x::SAdd) = :+
 Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} = SAdd{T}(countmap_flatten(xs, SScaled{T}))
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
@@ -84,6 +88,7 @@ end
 istree(::STensor) = true
 arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
+exprhead(x::STensor) = :⊗
 ⊗(xs::Symbolic{T}...) where {T<:QObj} = STensor{T}(collect(xs))
 basis(x::STensor) = tensor(basis.(x.terms)...)
 

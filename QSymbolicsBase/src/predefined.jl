@@ -5,54 +5,55 @@
 abstract type SpecialKet <: Symbolic{AbstractKet} end
 istree(::SpecialKet) = false
 basis(x::SpecialKet) = x.basis
+Base.show(io::IO, x::SpecialKet) = print(io, "|$(symbollabel(x))⟩")
 
 @withmetadata struct XBasisState <: SpecialKet
     idx::Int
     basis::Basis
 end
-Base.show(io::IO, x::XBasisState) = print(io, "|X$(num_to_sub(x.idx))⟩")
+symbollabel(x::XBasisState) = "X$(num_to_sub(x.idx))"
 
 @withmetadata struct YBasisState <: SpecialKet
     idx::Int
     basis::Basis
 end
-Base.show(io::IO, x::YBasisState) = print(io, "|Y$(num_to_sub(x.idx))⟩")
+symbollabel(x::YBasisState) = "Y$(num_to_sub(x.idx))"
 
 @withmetadata struct ZBasisState <: SpecialKet
     idx::Int
     basis::Basis
 end
-Base.show(io::IO, x::ZBasisState) = print(io, "|Z$(num_to_sub(x.idx))⟩")
+symbollabel(x::ZBasisState) = "Z$(num_to_sub(x.idx))"
 
 @withmetadata struct FockBasisState <: SpecialKet
     idx::Int
     basis::Basis
 end
-Base.show(io::IO, x::FockBasisState) = print(io, "|$(x.idx)⟩")
+symbollabel(x::FockBasisState) = "$(x.idx)"
 
 @withmetadata struct DiscreteCoherentState <: SpecialKet
     alpha::Number # TODO parameterize
     basis::Basis
 end
-Base.show(io::IO, x::DiscreteCoherentState) = print(io, "|$(x.alpha)⟩")
+symbollabel(x::DiscreteCoherentState) = "$(x.alpha)"
 
 @withmetadata struct ContinuousCoherentState <: SpecialKet
     alpha::Number # TODO parameterize
     basis::Basis
 end
-Base.show(io::IO, x::ContinuousCoherentState) = print(io, "|$(x.alpha)⟩")
+symbollabel(x::ContinuousCoherentState) = "$(x.alpha)"
 
 @withmetadata struct MomentumEigenState <: SpecialKet
     p::Number # TODO parameterize
     basis::Basis
 end
-Base.show(io::IO, x::MomentumEigenState) = print(io, "|δₚ($(x.p))⟩")
+symbollabel(x::MomentumEigenState) = "δₚ($(x.p))"
 
 @withmetadata struct PositionEigenState <: SpecialKet
     x::Float64 # TODO parameterize
     basis::Basis
 end
-Base.show(io::IO, x::PositionEigenState) = print(io, "|δₓ($(x.x))⟩")
+symbollabel(x::PositionEigenState) = "δₓ($(x.x))"
 
 const qubit_basis = SpinBasis(1//2)
 """Basis state of σˣ"""
@@ -87,6 +88,9 @@ istree(::AbstractSingleQubitGate) = false
 istree(::AbstractTwoQubitGate) = false
 basis(::AbstractSingleQubitGate) = qubit_basis
 basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
+Base.show(io::IO, x::AbstractSingleQubitOp) = print(io, "$(symbollabel(x))")
+Base.show(io::IO, x::AbstractTwoQubitOp) = print(io, "$(symbollabel(x))")
+
 
 @withmetadata struct OperatorEmbedding <: Symbolic{AbstractOperator}
     gate::Symbolic{AbstractOperator} # TODO parameterize
@@ -97,23 +101,23 @@ istree(::OperatorEmbedding) = true
 
 @withmetadata struct XGate <: AbstractSingleQubitGate end
 eigvecs(g::XGate) = [X1,X2]
-Base.show(io::IO, ::XGate) = print(io, "X̂")
+symbollabel(::XGate) = "X"
 @withmetadata struct YGate <: AbstractSingleQubitGate end
 eigvecs(g::YGate) = [Y1,Y2]
-Base.show(io::IO, ::YGate) = print(io, "Ŷ")
+symbollabel(::YGate) = "Y"
 @withmetadata struct ZGate <: AbstractSingleQubitGate end
 eigvecs(g::ZGate) = [Z1,Z2]
-Base.show(io::IO, ::ZGate) = print(io, "Ẑ")
+symbollabel(::ZGate) = "Z"
 @withmetadata struct PauliM <: AbstractSingleQubitGate end
-Base.show(io::IO, ::PauliM) = print(io, "σ̂₋")
+symbollabel(::PauliM) = "σ₋"
 @withmetadata struct PauliP <: AbstractSingleQubitGate end
-Base.show(io::IO, ::PauliP) = print(io, "σ̂₊")
+symbollabel(::PauliP) = "σ₊"
 @withmetadata struct HGate <: AbstractSingleQubitGate end
-Base.show(io::IO, ::HGate) = print(io, "Ĥ")
+symbollabel(::HGate) = "H"
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
-Base.show(io::IO, ::CNOTGate) = print(io, "ĈNOT")
+symbollabel(::CNOTGate) = "CNOT"
 @withmetadata struct CPHASEGate <: AbstractTwoQubitGate end
-Base.show(io::IO, ::CPHASEGate) = print(io, "ĈPHASE")
+symbollabel(::CPHASEGate) = "CPHASE"
 
 """Pauli X operator, also available as the constant `σˣ`"""
 const X = const σˣ = XGate()
@@ -142,11 +146,11 @@ istree(::AbstractSingleBosonGate) = false
 basis(::AbstractSingleBosonGate) = inf_fock_basis
 
 @withmetadata struct NumberOp <: AbstractSingleBosonOp end
-Base.show(io::IO, ::NumberOp) = print(io, "n̂")
+symbollabel(::NumberOp) = "n"
 @withmetadata struct CreateOp <: AbstractSingleBosonOp end
-Base.show(io::IO, ::CreateOp) = print(io, "â†")
+symbollabel(::CreateOp) = "a†"
 @withmetadata struct DestroyOp <: AbstractSingleBosonOp end
-Base.show(io::IO, ::DestroyOp) = print(io, "â")
+symbollabel(::DestroyOp) = "a"
 
 """Number operator, also available as the constant `n̂`"""
 const N = const n̂ = NumberOp()
@@ -177,6 +181,7 @@ end
 istree(::SProjector) = true
 arguments(x::SProjector) = [x.ket]
 operation(x::SProjector) = projector
+exprhead(x::SProjector) = :projector
 projector(x::Symbolic{AbstractKet}) = SProjector(x)
 basis(x::SProjector) = basis(x.ket)
 function Base.show(io::IO, x::SProjector)
@@ -192,12 +197,16 @@ end
 istree(::SDagger) = true
 arguments(x::SDagger) = [x.ket]
 operation(x::SDagger) = dagger
+exprhead(x::SDagger) = :dagger
 dagger(x::Symbolic{AbstractKet}) = SDagger(x)
+dagger(x::SScaledKet) = SScaledBra(x.coeff, dagger(x.obj))
+dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
 basis(x::SDagger) = basis(x.ket)
 function Base.show(io::IO, x::SDagger)
     print(io,x.ket)
     print(io,"†")
 end
+symbollabel(x::SDagger) = symbollabel(x.ket)
 
 """Completely depolarized state
 
@@ -228,7 +237,7 @@ MixedState(x::Symbolic{AbstractKet}) = MixedState(basis(x))
 MixedState(x::Symbolic{AbstractOperator}) = MixedState(basis(x))
 istree(::MixedState) = false
 basis(x::MixedState) = x.basis
-Base.show(io::IO, x::MixedState) = print(io, "𝕄")
+symbollabel(x::MixedState) = "𝕄"
 
 """The identity operator for a given basis
 
@@ -247,4 +256,4 @@ IdentityOp(x::Symbolic{AbstractKet}) = IdentityOp(basis(x))
 IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))
 istree(::IdentityOp) = false
 basis(x::IdentityOp) = x.basis
-Base.show(io::IO, x::IdentityOp) = print(io, "𝕀")
+symbollabel(x::IdentityOp) = "𝕀"

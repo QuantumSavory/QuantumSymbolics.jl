@@ -19,21 +19,21 @@ Operator(dim=2x2)
     pz
 end
 basis(x::PauliNoiseCPTP) = SpinBasis(1//2)
-Base.show(io::IO, x::PauliNoiseCPTP) = print(io, "𝒫")
+symbollabel(x::PauliNoiseCPTP) = "𝒫"
 
 """Single-qubit dephasing CPTP map"""
 @withmetadata struct DephasingCPTP <: NoiseCPTP
     p
 end
 basis(x::DephasingCPTP) = SpinBasis(1//2)
-Base.show(io::IO, x::DephasingCPTP) = print(io, "𝒟𝓅𝒽")
+symbollabel(x::DephasingCPTP) = "𝒟𝓅𝒽"
 
 """Single-qubit depolarization CPTP map"""
 @withmetadata struct DepolarizationCPTP <: NoiseCPTP
     p
     basis::Basis
 end
-Base.show(io::IO, x::DepolarizationCPTP) = print(io, "𝒟ℯ𝓅ℴ𝓁")
+symbollabel(x::DepolarizationCPTP) = "𝒟ℯ𝓅ℴ𝓁"
 
 """A unitary gate followed by a CPTP map"""
 @withmetadata struct GateCPTP <: NoiseCPTP
