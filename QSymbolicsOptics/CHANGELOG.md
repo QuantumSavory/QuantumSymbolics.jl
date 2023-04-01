@@ -1,5 +1,9 @@
 # News
 
+## v0.1.2
+
+- Minor internal code reorganization (moving some `express` functionality to `QSymbolicsBase`)
+
 ## v0.1.1
 
 - Bosonic states basis and common states and operators.

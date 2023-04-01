@@ -1,7 +1,7 @@
 name = "QSymbolicsOptics"
 uuid = "3c38c10f-068b-409d-8b1c-aa4375858705"
 authors = ["QuantumSymbolics.jl contributors"]
-version = "0.1.1"
+version = "0.1.2"
 
 [deps]
 QSymbolicsBase = "a8697a1a-c835-4068-9491-e8abc49d0056"
@@ -13,7 +13,7 @@ SnoopPrecompile = "66db9d55-30c0-4569-8b51-7e840670fc0c"
 TermInterface = "8ea1fca8-c5ef-4a55-8b96-4e9afe9c9a3c"
 
 [compat]
-QSymbolicsBase = "0.1.1"
+QSymbolicsBase = "0.1.2"
 QuantumInterface = "0.1.0"
 QuantumOptics = "1.0.5"
 QuantumOpticsBase = "0.3.8"
