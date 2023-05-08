@@ -1,12 +1,12 @@
-module QSymbolicsClifford
+module QuantumCliffordExt
 
 using QuantumInterface
 using QuantumInterface: AbstractKet, AbstractOperator, CompositeBasis
-using QSymbolicsBase
-using QSymbolicsBase: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
+using QuantumSymbolics
+using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp,
     Symbolic
-import QSymbolicsBase: express, express_nolookup, express_from_cache
+import QuantumSymbolics: express, express_nolookup, express_from_cache
 using TermInterface
 using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
 

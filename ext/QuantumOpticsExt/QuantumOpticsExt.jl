@@ -1,15 +1,15 @@
-module QSymbolicsOptics
+module QuantumOpticsExt
 
-using QuantumInterface, QuantumOptics
-using QSymbolicsBase
-using QSymbolicsBase:
+using QuantumInterface, QuantumOpticsBase
+using QuantumSymbolics
+using QuantumSymbolics:
     HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
     XBasisState, YBasisState, ZBasisState,
     NumberOp, CreateOp, DestroyOp,
     FockBasisState,
     MixedState, IdentityOp,
     qubit_basis, inf_fock_basis
-import QSymbolicsBase: express, express_nolookup
+import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
 

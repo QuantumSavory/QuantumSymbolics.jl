@@ -1,9 +1,16 @@
 using Test
 using QuantumSymbolics
-using QSymbolicsOptics: _l0,_l1, _s₊, _s₋, _i₊, _i₋
 using QuantumSymbolics: stab_to_ket
 using QuantumClifford: @S_str, random_stabilizer
 using LinearAlgebra
+#using QuantumOpticsExt: _l0, _l1, _s₊, _s₋, _i₊, _i₋
+const qo = Base.get_extension(QuantumSymbolics, :QuantumOpticsExt)
+const _l0 = qo._l0
+const _l1 = qo._l1
+const _s₊ = qo._s₊
+const _s₋ = qo._s₋
+const _i₊ = qo._i₊
+const _i₋ = qo._i₋
 
 for n in 1:5
     stabs = [random_stabilizer(1) for _ in 1:n]
