@@ -69,4 +69,4 @@ Base.:(*)(k::SScaledKet, b::Symbolic{AbstractBra}) = k.coeff*SOuterKetBra(k.obj,
 Base.:(*)(k::Symbolic{AbstractKet}, b::SScaledBra) = b.coeff*SOuterKetBra(k,b.obj)
 Base.:(*)(k::SScaledKet, b::SScaledBra) = k.coeff*b.coeff*SOuterKetBra(k.obj,b.obj)
 Base.show(io::IO, x::SOuterKetBra) = begin print(io, x.ket); print(io, x.bra) end
-basis(x::SOuterKetBra) = basis(x.op)
+basis(x::SOuterKetBra) = basis(x.ket)

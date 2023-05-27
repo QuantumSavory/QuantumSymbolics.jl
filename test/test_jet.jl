@@ -1,4 +1,5 @@
-using QuantumSymbolics, QSymbolicsBase, QSymbolicsOptics, JET
+using QuantumSymbolics, JET
+using QuantumOptics, QuantumClifford # to load the extensions
 
 using JET: ReportPass, BasicPass, InferenceErrorReport, UncaughtExceptionReport
 
@@ -16,26 +17,15 @@ function (::MayThrowIsOk)(report_type::Type{<:InferenceErrorReport}, @nospeciali
     BasicPass()(report_type, args...)
 end
 
-rep_base = report_package("QSymbolicsBase";
-    report_pass=MayThrowIsOk(), # TODO have something more fine grained than a generic "do not care about thrown errors"
-)
-@show rep_base
-@test_broken length(JET.get_reports(rep_base)) == 0
-
-rep_opt = report_package("QSymbolicsOptics";
-    report_pass=MayThrowIsOk(), # TODO have something more fine grained than a generic "do not care about thrown errors"
-)
-@show rep_opt
-@test_broken length(JET.get_reports(rep_opt)) == 0
-
-rep_cliff = report_package("QSymbolicsClifford";
-    report_pass=MayThrowIsOk(), # TODO have something more fine grained than a generic "do not care about thrown errors"
-)
-@show rep_cliff
-@test_broken length(JET.get_reports(rep_cliff)) == 0
+using InteractiveUtils, Latexify, SymbolicUtils
 
 rep = report_package("QuantumSymbolics";
     report_pass=MayThrowIsOk(), # TODO have something more fine grained than a generic "do not care about thrown errors"
+    ignored_modules=(
+        AnyFrameModule(InteractiveUtils),
+        AnyFrameModule(Latexify),
+        AnyFrameModule(SymbolicUtils)
+    )
 )
 @show rep
 @test length(JET.get_reports(rep)) == 0
