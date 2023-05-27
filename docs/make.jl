@@ -19,7 +19,7 @@ function main()
     format = Documenter.HTML(
         assets=["assets/init.js"]
     ),
-    modules = [QuantumSymbolics, QSymbolicsBase, QSymbolicsClifford, QSymbolicsOptics],
+    modules = [QuantumSymbolics],
     authors = "Stefan Krastanov",
     pages = [
         "QuantumSymbolics.jl" => "index.md",
