@@ -16,6 +16,7 @@ basis(x::SymQ) = x.basis
 symbollabel(x::SymQ) = x.name
 Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
 Base.show(io::IO, x::SOperator) = print(io, "$(symbollabel(x))")
+Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
 """Scaling of a quantum object (ket, operator, or bra) by a number."""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}

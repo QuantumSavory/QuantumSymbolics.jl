@@ -7,6 +7,8 @@ export StabilizerState, stab_to_ket
 For full functionality you also need to import the `QuantumClifford` library.
 
 ```jldoctest
+julia> using QuantumClifford, QuantumOptics # needed for the internal representation of the stabilizer tableaux and the conversion to a ket
+
 julia> StabilizerState(S"XX ZZ")
 𝒮₂
 
@@ -21,7 +23,7 @@ Ket(dim=2)
 end
 istree(::StabilizerState) = false
 basis(x::StabilizerState) = SpinBasis(1//2)^nqubits(x.stabilizer)
-Base.print(io::IO, x::StabilizerState) = print(io, "𝒮$(num_to_sub(nqubits(x.stabilizer)))")
+Base.show(io::IO, x::StabilizerState) = print(io, "𝒮$(num_to_sub(nqubits(x.stabilizer)))")
 
 StabilizerState(s::T) where {T} = StabilizerState{T}(s) # TODO this is necessary because the @withmetadata macro is not very smart
 

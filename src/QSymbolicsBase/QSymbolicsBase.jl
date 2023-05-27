@@ -9,6 +9,7 @@ using LinearAlgebra
 import LinearAlgebra: eigvecs
 
 import QuantumInterface:
+    apply!,
     tensor, ⊗,
     basis, Basis, SpinBasis, FockBasis,
     nqubits,
