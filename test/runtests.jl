@@ -1,6 +1,5 @@
 using SafeTestsets
 using QuantumSymbolics
-using QSymbolicsBase
 
 function doset(descr)
     if length(ARGS) == 0
@@ -31,8 +30,6 @@ println("Starting tests with $(Threads.nthreads()) threads out of `Sys.CPU_THREA
 @doset "qo_qc_interop"
 @doset "basis_consistency"
 @doset "superop"
-
-VERSION == v"1.8" && @doset "doctests"
-
-get(ENV,"QSYMBOLICS_JET_TEST","")=="true" && @doset "jet"
-@doset "aqua"
+VERSION >= v"1.9" && @doset "doctests"
+get(ENV,"JET_TEST","")=="true" && @doset "jet"
+VERSION >= v"1.9" && @doset "aqua"

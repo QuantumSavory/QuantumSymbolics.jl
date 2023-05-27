@@ -218,17 +218,17 @@ julia> express(MixedState(X1⊗X2))
 Operator(dim=4x4)
   basis: [Spin(1/2) ⊗ Spin(1/2)]sparse([1, 2, 3, 4], [1, 2, 3, 4], ComplexF64[0.25 + 0.0im, 0.25 + 0.0im, 0.25 + 0.0im, 0.25 + 0.0im], 4, 4)
 
-  express(MixedState(X1⊗X2), CliffordRepr())
-  Rank 0 stabilizer
+julia> express(MixedState(X1⊗X2), CliffordRepr())
+𝒟ℯ𝓈𝓉𝒶𝒷
 
-  ━━━━
-  + X_
-  + _X
-  ━━━━
+𝒳ₗ━━
++ X_
++ _X
+𝒮𝓉𝒶𝒷
 
-  ━━━━
-  + Z_
-  + _Z
+𝒵ₗ━━
++ Z_
++ _Z
 ```"""
 @withmetadata struct MixedState <: Symbolic{AbstractOperator}
     basis::Basis # From QuantumOpticsBase # TODO make QuantumInterface

@@ -1,5 +1,3 @@
-module QSymbolicsBase
-
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
@@ -11,23 +9,18 @@ using LinearAlgebra
 import LinearAlgebra: eigvecs
 
 import QuantumInterface:
+    apply!,
     tensor, ⊗,
     basis, Basis, SpinBasis, FockBasis,
+    nqubits,
     projector, dagger,
     AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
-
-#=
-import QuantumOpticsBase
-import QuantumOpticsBase: tensor, ⊗, basis, Ket, Bra, Operator, SuperOperator, Basis, SpinBasis, projector # TODO make QuantumInterface
-import QuantumOptics
-import QuantumClifford
-import QuantumClifford: MixedDestabilizer, Stabilizer, @S_str
-=#
 
 export SymQObj,QObj,
        AbstractRepresentation, AbstractUse,
        QuantumOpticsRepr, QuantumMCRepr, CliffordRepr,
        UseAsState, UseAsObservable, UseAsOperation,
+       apply!,
        express,
        tensor,⊗,
        dagger,projector,
@@ -83,8 +76,7 @@ Metadata() = Metadata(CacheType())
 macro withmetadata(strct)
     withmetadata(strct)
 end
-function withmetadata(strct)
-    @assert strct.head == :struct
+function withmetadata(strct) # TODO this should really use MacroTools instead of this mess
     struct_name = strct.args[2]
     constructor = :($struct_name() = new())
     if struct_name isa Expr # if Struct{T<:QObj} <: Symbolic{T}
@@ -98,10 +90,16 @@ function withmetadata(strct)
     struct_args = strct.args[end].args
     if all(x->x isa Symbol || x isa LineNumberNode || x.head==:(::), struct_args)
         # add constructor
-        args = [x for x in struct_args if x isa Symbol || x isa Expr]
-        append!(constructor.args[1].args, args)
-        append!(constructor.args[end].args[end].args, args)
-        push!(constructor.args[end].args[end].args, :(Metadata()))
+        args = [x for x in struct_args if x isa Symbol || x isa Expr] # the arguments required for the constructor
+        args = [a isa Symbol ? a : (a.head==:(::) ? a.args[1] : a) for a in args] # drop typeasserts
+        declaring_line = constructor.args[1] # :(Constructor{}()) or :(Constructor{}() where {})
+        if declaring_line.head == :where
+            declaring_line = declaring_line.args[1]
+        end
+        append!(declaring_line.args, args) # Adding them to the line declaring the constructor, i.e. adding them at the location of ? in `Constrcutor(?) = new(...)`
+        new_call_args = constructor.args[end].args[end].args # The ? in `new(?)`
+        append!(new_call_args, args) # Adding them to the `new` call
+        push!(new_call_args, :(Metadata()))
         push!(struct_args, constructor)
     else
         # modify constructor
@@ -179,5 +177,3 @@ include("express.jl")
 ##
 
 include("latexify.jl")
-
-end

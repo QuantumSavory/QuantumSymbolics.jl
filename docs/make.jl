@@ -4,11 +4,10 @@ push!(LOAD_PATH,"../src/")
 using Documenter
 using DocumenterCitations
 using QuantumSymbolics
-using QSymbolicsBase
-using QSymbolicsClifford
-using QSymbolicsOptics
+using QuantumOptics
+using QuantumClifford
 
-DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QSymbolicsBase, QSymbolicsClifford, QSymbolicsOptics); recursive=true)
+DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
 
 function main()
     bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"))
@@ -20,7 +19,7 @@ function main()
     format = Documenter.HTML(
         assets=["assets/init.js"]
     ),
-    modules = [QuantumSymbolics, QSymbolicsBase, QSymbolicsClifford, QSymbolicsOptics],
+    modules = [QuantumSymbolics],
     authors = "Stefan Krastanov",
     pages = [
         "QuantumSymbolics.jl" => "index.md",

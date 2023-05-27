@@ -56,67 +56,59 @@ The basis states can be easily expressed both as kets and as tableaux (In the ta
 
 ```jldoctest
 julia> express(L0, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + X
-═══
+𝒮𝓉𝒶𝒷
 + Z
-═══
 
 
 julia> express(L1, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + X
-═══
+𝒮𝓉𝒶𝒷
 - Z
-═══
 
 
 julia> express(L₀, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + X
-═══
+𝒮𝓉𝒶𝒷
 + Z
-═══
 
 
 julia> express(L₁, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + X
-═══
+𝒮𝓉𝒶𝒷
 - Z
-═══
 
 
 julia> express(L₊, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + Z
-═══
+𝒮𝓉𝒶𝒷
 + X
-═══
 
 
 julia> express(L₋, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + Z
-═══
+𝒮𝓉𝒶𝒷
 - X
-═══
 
 
 julia> express(L₊ᵢ, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + Z
-═══
+𝒮𝓉𝒶𝒷
 + Y
-═══
 
 
 julia> express(L₋ᵢ, CliffordRepr())
-Rank 1 stabilizer
+𝒟ℯ𝓈𝓉𝒶𝒷
 + Z
-═══
+𝒮𝓉𝒶𝒷
 - Y
-═══
 ```
 
 ```jldoctest
