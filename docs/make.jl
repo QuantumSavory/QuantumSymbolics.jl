@@ -29,7 +29,7 @@ function main()
     )
 
     deploydocs(
-        repo = "github.com/Krastanov/QuantumSymbolics.jl.git"
+        repo = "github.com/QuantumSavory/QuantumSymbolics.jl.git"
     )
 end
 

@@ -1,6 +1,10 @@
 # News
 
-## v0.2.0
+## v0.2.1 - 2023-06-11 
+
+- Bump `QuantumInterface` compat.
+
+## v0.2.0 - 2023-05-27
 
 - **(breaking)** Merge with `QSymbolicsBase` and turn `QSymbolicsOptics` and `QSymbolicsClifford` into extensions.
 - **(breaking)** Require julia 1.9.
