@@ -1,5 +1,9 @@
 # News
 
+## v0.2.2 - 2023-06-23 
+
+- Bump `QuantumInterface` compat.
+
 ## v0.2.1 - 2023-06-11 
 
 - Bump `QuantumInterface` compat.
