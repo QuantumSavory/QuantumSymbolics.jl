@@ -14,4 +14,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COMPATHELPER_PRIV: ${{ secrets.DOCUMENTER_KEY }}
           # COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
-        run: julia -e 'using CompatHelper; CompatHelper.main(; subdirs=["", "QSymbolicsBase", "QSymbolicsClifford", "QSymbolicsOptics"])'
+        run: julia -e 'using CompatHelper; CompatHelper.main()'
