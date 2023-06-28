@@ -1,8 +1,9 @@
 # News
 
-## v0.2.2 - 2023-06-23 
+## v0.2.2 - 2023-06-28 
 
 - Bump `QuantumInterface` compat.
+- Upstream some `apply!` definitions to QuantumOpticsBase.
 
 ## v0.2.1 - 2023-06-11 
 
