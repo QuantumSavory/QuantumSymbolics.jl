@@ -119,6 +119,17 @@ symbollabel(::CNOTGate) = "CNOT"
 @withmetadata struct CPHASEGate <: AbstractTwoQubitGate end
 symbollabel(::CPHASEGate) = "CPHASE"
 
+@withmetadata struct xcyGate <: AbstractTwoQubitGate end
+symbollabel(::xcyGate) = "xcy"
+
+for control in (:X, :Y, :Z)
+    for target in (:X, :Y, :Z)
+        eval(Meta.parse("@withmetadata struct $(control)C$(target)Gate <: AbstractTwoQubitGate end"))
+        eval(Meta.parse("symbollabel(::$(control)C$(target)Gate) = \"$(control)C$(target)\""))
+        
+    end
+end
+
 """Pauli X operator, also available as the constant `σˣ`"""
 const X = const σˣ = XGate()
 """Pauli Y operator, also available as the constant `σʸ`"""
@@ -135,6 +146,8 @@ const H = HGate()
 const CNOT = CNOTGate()
 """CPHASE gate"""
 const CPHASE = CPHASEGate()
+
+const xcy = xcyGate()
 
 ##
 # Gates and Operators on harmonic oscillators

@@ -8,7 +8,7 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockBasisState,
     MixedState, IdentityOp,
-    qubit_basis, inf_fock_basis
+    qubit_basis, inf_fock_basis, XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
@@ -42,12 +42,20 @@ const _ad₂ = create(_bf2)
 const _a₂ = destroy(_bf2)
 const _n₂ = number(_bf2)
 
+# New gates
+# I don't know if this is right -- Alexadnru Ariton
+const _xcy = _l00⊗_x + _l11⊗_y
+
+
 express_nolookup(::HGate, ::QuantumOpticsRepr) = _hadamard
 express_nolookup(::XGate, ::QuantumOpticsRepr) = _x
 express_nolookup(::YGate, ::QuantumOpticsRepr) = _y
 express_nolookup(::ZGate, ::QuantumOpticsRepr) = _z
 express_nolookup(::CPHASEGate, ::QuantumOpticsRepr) = _cphase
 express_nolookup(::CNOTGate, ::QuantumOpticsRepr) = _cnot
+express_nolookup(::xcyGate, ::QuantumOpticsRepr) = _xcy
+
+
 
 express_nolookup(::PauliM, ::QuantumOpticsRepr) = _σ₋
 express_nolookup(::PauliP, ::QuantumOpticsRepr) = _σ₊

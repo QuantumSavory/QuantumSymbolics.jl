@@ -46,6 +46,11 @@ const _cphase = _l00⊗_Id + _l11⊗_z
 const _phase = _l00 + im*_l11
 const _iphase = _l00 - im*_l11
 
+# new gates
+# I don't know if this is right -- Alexadnru Ariton
+# We'll soon implement them 
+const _xcy = _l00⊗_x + _l11⊗_y
+
 
 function StabilizerState(x::Stabilizer)
     r,c = size(x)
@@ -63,6 +68,7 @@ function stab_to_ket(s::Stabilizer)
     ket = tensor(fill(copy(_s₊),c)...) # TODO fix this is UGLY
     for (;src,dst) in edges(graph)
         apply!(ket, [src,dst], _cphase)
+
     end
     for i in flips_idx
         apply!(ket, [i], _z)

@@ -3,9 +3,9 @@ module QuantumCliffordExt
 using QuantumInterface
 using QuantumInterface: AbstractKet, AbstractOperator, CompositeBasis
 using QuantumSymbolics
-using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
+using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, xcyGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp,
-    Symbolic
+    Symbolic, XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate
 import QuantumSymbolics: express, express_nolookup, express_from_cache
 using TermInterface
 using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
@@ -37,6 +37,8 @@ express_nolookup(::XGate,            ::CliffordRepr, ::UseAsOperation) = Quantum
 express_nolookup(::ZGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sZ
 express_nolookup(x::STensorOperator,r::CliffordRepr,u::UseAsOperation) = QCGateSequence([express(t,r,u) for t in x.terms])
 
+express_nolookup(::xcyGate,         :: CliffordRepr, ::UseAsOperation) = QuantumClifford.sxcy
+
 express_nolookup(op::QuantumClifford.PauliOperator, ::CliffordRepr, ::UseAsObservable) = op
 express_nolookup(op::STensorOperator, r::CliffordRepr, u::UseAsObservable) = QuantumClifford.tensor(express.(arguments(op),(r,),(u,))...)
 express_nolookup(::XGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P"X"
@@ -44,6 +46,13 @@ express_nolookup(::YGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P
 express_nolookup(::ZGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P"Z"
 express_nolookup(op::SScaledOperator, r::CliffordRepr, u::UseAsObservable) = arguments(op)[1] * express(arguments(op)[2],r,u)
 express_nolookup(op, ::CliffordRepr, ::UseAsObservable) = error("Can not convert $(op) into a `PauliOperator`, which is the only observable that can be computed for QuantumClifford objects. Consider defining `express_nolookup(op, ::CliffordRepr, ::UseAsObservable)::PauliOperator` for this object.")
+
+for control in (:X, :Y, :Z)
+    for target in (:X, :Y, :Z)
+        eval(Meta.parse("express_nolookup(::$(control)C$(target)Gate, ::CliffordRepr, ::UseAsOperation) = QuantumClifford.s$(control)C$(target)"))
+    end
+end
+
 
 struct QCRandomSampler # TODO specify types
     operators # union of QCRandomSampler and MixedDestabilizer

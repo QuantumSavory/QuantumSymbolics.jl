@@ -33,7 +33,8 @@ export SymQObj,QObj,
        STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,SScaledBra,SAddBra,STensorBra,SDagger,
        HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
        XBasisState, YBasisState, ZBasisState,
-       NumberOp, CreateOp, DestroyOp
+       NumberOp, CreateOp, DestroyOp,
+       xcyGate, XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()
