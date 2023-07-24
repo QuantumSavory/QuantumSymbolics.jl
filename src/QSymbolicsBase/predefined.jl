@@ -119,14 +119,18 @@ symbollabel(::CNOTGate) = "CNOT"
 @withmetadata struct CPHASEGate <: AbstractTwoQubitGate end
 symbollabel(::CPHASEGate) = "CPHASE"
 
-@withmetadata struct xcyGate <: AbstractTwoQubitGate end
-symbollabel(::xcyGate) = "xcy"
-
+const xyzsuplabeldict = Dict(:X=>"ˣ",:Y=>"ʸ",:Z=>"ᶻ")
 for control in (:X, :Y, :Z)
     for target in (:X, :Y, :Z)
-        eval(Meta.parse("@withmetadata struct $(control)C$(target)Gate <: AbstractTwoQubitGate end"))
-        eval(Meta.parse("symbollabel(::$(control)C$(target)Gate) = \"$(control)C$(target)\""))
-        
+        structname = Symbol(control,"C",target,"Gate")
+        label = xyzsuplabeldict[control]*"C"*xyzsuplabeldict[target]
+        declare = :(@withmetadata struct $structname <: AbstractTwoQubitGate end)
+        defsymlabel = :(symbollabel(::$structname) = $label)
+        instancename = Symbol(control,"C",target)
+        definstance = :(const $instancename = $structname())
+        eval(declare)
+        eval(defsymlabel)
+        eval(definstance)
     end
 end
 
@@ -146,8 +150,6 @@ const H = HGate()
 const CNOT = CNOTGate()
 """CPHASE gate"""
 const CPHASE = CPHASEGate()
-
-const xcy = xcyGate()
 
 ##
 # Gates and Operators on harmonic oscillators
