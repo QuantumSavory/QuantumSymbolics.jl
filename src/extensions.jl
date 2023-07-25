@@ -1,6 +1,6 @@
 # Most of the useful functionality declared here is implemented in MixedCliffordOpticsExt
 
-export StabilizerState, stab_to_ket
+export StabilizerState
 
 """State defined by a stabilizer tableau
 
@@ -26,5 +26,3 @@ basis(x::StabilizerState) = SpinBasis(1//2)^nqubits(x.stabilizer)
 Base.show(io::IO, x::StabilizerState) = print(io, "𝒮$(num_to_sub(nqubits(x.stabilizer)))")
 
 StabilizerState(s::T) where {T} = StabilizerState{T}(s) # TODO this is necessary because the @withmetadata macro is not very smart
-
-function stab_to_ket end
