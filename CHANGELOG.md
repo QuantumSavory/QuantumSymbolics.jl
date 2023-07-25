@@ -1,5 +1,10 @@
 # News
 
+## v0.2.3 - 2023-07-24
+
+- Add all conditional Paulis.
+- Remove `stab_to_ket` in favor of directly using the `Ket` constructor.
+
 ## v0.2.2 - 2023-06-28 
 
 - Bump `QuantumInterface` compat.
