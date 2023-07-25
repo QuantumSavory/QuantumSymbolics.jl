@@ -5,6 +5,7 @@ using QuantumInterface: AbstractKet, AbstractOperator, CompositeBasis
 using QuantumSymbolics
 using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp,
+    XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
     Symbolic
 import QuantumSymbolics: express, express_nolookup, express_from_cache
 using TermInterface
@@ -33,6 +34,16 @@ end
 
 express_nolookup(::CPHASEGate,       ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sCPHASE
 express_nolookup(::CNOTGate,         ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sCNOT
+
+for control in (:X, :Y, :Z)
+    for target in (:X, :Y, :Z)
+        structname = Symbol(control,"C",target,"Gate")
+        qcname = Symbol("s",control,"C",target)
+        defexpress = :(express_nolookup(::$(structname), ::CliffordRepr, ::UseAsOperation) = $(qcname))
+        eval(defexpress)
+    end
+end
+
 express_nolookup(::XGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sX
 express_nolookup(::ZGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sZ
 express_nolookup(x::STensorOperator,r::CliffordRepr,u::UseAsOperation) = QCGateSequence([express(t,r,u) for t in x.terms])

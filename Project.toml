@@ -1,7 +1,7 @@
 name = "QuantumSymbolics"
 uuid = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 authors = ["QuantumSymbolics.jl contributors"]
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
@@ -26,7 +26,7 @@ QuantumOpticsExt = "QuantumOpticsBase"
 Graphs = "1.7.3"
 Latexify = "0.15, 0.16"
 PrecompileTools = "1"
-QuantumClifford = "0.8"
+QuantumClifford = "0.8.14"
 QuantumInterface = "0.3.0"
 QuantumOpticsBase = "0.4.0"
 SymbolicUtils = "1"

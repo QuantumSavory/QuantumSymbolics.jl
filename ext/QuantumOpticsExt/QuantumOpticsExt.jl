@@ -4,6 +4,7 @@ using QuantumInterface, QuantumOpticsBase
 using QuantumSymbolics
 using QuantumSymbolics:
     HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
+    XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
     XBasisState, YBasisState, ZBasisState,
     NumberOp, CreateOp, DestroyOp,
     FockBasisState,
@@ -28,10 +29,9 @@ const _id = identityoperator(_b2)
 const _z = sigmaz(_b2)
 const _x = sigmax(_b2)
 const _y = sigmay(_b2)
-const _Id = identityoperator(_b2)
 const _hadamard = (sigmaz(_b2)+sigmax(_b2))/√2
-const _cnot = _l00⊗_Id + _l11⊗_x
-const _cphase = _l00⊗_Id + _l11⊗_z
+const _cnot = _l00⊗_id + _l11⊗_x
+const _cphase = _l00⊗_id + _l11⊗_z
 const _phase = _l00 + im*_l11
 const _iphase = _l00 - im*_l11
 
@@ -48,6 +48,20 @@ express_nolookup(::YGate, ::QuantumOpticsRepr) = _y
 express_nolookup(::ZGate, ::QuantumOpticsRepr) = _z
 express_nolookup(::CPHASEGate, ::QuantumOpticsRepr) = _cphase
 express_nolookup(::CNOTGate, ::QuantumOpticsRepr) = _cnot
+
+const xyzopdict = Dict(:X=>_x, :Y=>_y, :Z=>_z)
+const xyzstatedict = Dict(:X=>(_s₊,_s₋),:Y=>(_i₊,_i₋),:Z=>(_l0,_l1))
+for control in (:X, :Y, :Z)
+    for target in (:X, :Y, :Z)
+        k1, k2 = xyzstatedict[control]
+        o = xyzopdict[target]
+        gate = projector(k1)⊗_id + projector(k2)⊗o
+        structname = Symbol(control,"C",target,"Gate")
+        let gate=copy(gate)
+            @eval express_nolookup(::$(structname), ::QuantumOpticsRepr) = $gate
+        end
+    end
+end
 
 express_nolookup(::PauliM, ::QuantumOpticsRepr) = _σ₋
 express_nolookup(::PauliP, ::QuantumOpticsRepr) = _σ₊

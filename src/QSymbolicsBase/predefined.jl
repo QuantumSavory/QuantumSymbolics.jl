@@ -119,6 +119,21 @@ symbollabel(::CNOTGate) = "CNOT"
 @withmetadata struct CPHASEGate <: AbstractTwoQubitGate end
 symbollabel(::CPHASEGate) = "CPHASE"
 
+const xyzsuplabeldict = Dict(:X=>"ˣ",:Y=>"ʸ",:Z=>"ᶻ")
+for control in (:X, :Y, :Z)
+    for target in (:X, :Y, :Z)
+        structname = Symbol(control,"C",target,"Gate")
+        label = xyzsuplabeldict[control]*"C"*xyzsuplabeldict[target]
+        declare = :(@withmetadata struct $structname <: AbstractTwoQubitGate end)
+        defsymlabel = :(symbollabel(::$structname) = $label)
+        instancename = Symbol(control,"C",target)
+        definstance = :(const $instancename = $structname())
+        eval(declare)
+        eval(defsymlabel)
+        eval(definstance)
+    end
+end
+
 """Pauli X operator, also available as the constant `σˣ`"""
 const X = const σˣ = XGate()
 """Pauli Y operator, also available as the constant `σʸ`"""

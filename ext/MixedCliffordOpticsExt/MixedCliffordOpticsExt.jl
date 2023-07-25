@@ -13,7 +13,7 @@ using QuantumClifford: _T_str
 
 using Graphs: edges
 
-import QuantumSymbolics: StabilizerState, stab_to_ket, express_nolookup
+import QuantumSymbolics: StabilizerState, express_nolookup
 
 # using QuantumOpticsExt: _cphase, _z, _phase, _hadamard, _s₊
 # or
@@ -56,26 +56,6 @@ StabilizerState(x::String) = StabilizerState(Stabilizer(_T_str(x)))
 
 express_nolookup(x::StabilizerState, ::CliffordRepr) = copy(x.stabilizer)
 
-function stab_to_ket(s::Stabilizer)
-    r,c = size(s)
-    @assert r==c "The Stabilizer tableau has to be square"
-    graph, hadamard_idx, iphase_idx, flips_idx = graphstate(s)
-    ket = tensor(fill(copy(_s₊),c)...) # TODO fix this is UGLY
-    for (;src,dst) in edges(graph)
-        apply!(ket, [src,dst], _cphase)
-    end
-    for i in flips_idx
-        apply!(ket, [i], _z)
-    end
-    for i in iphase_idx
-        apply!(ket, [i], _phase)
-    end
-    for i in hadamard_idx
-        apply!(ket, [i], _hadamard)
-    end
-    ket
-end
-
-express_nolookup(x::StabilizerState, ::QuantumOpticsRepr) = stab_to_ket(stabilizerview(x.stabilizer))
+express_nolookup(x::StabilizerState, ::QuantumOpticsRepr) = Ket(stabilizerview(x.stabilizer))
 
 end
