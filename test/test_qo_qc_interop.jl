@@ -14,11 +14,6 @@ const _i₋ = qo._i₋
 
 for n in 1:5
     stabs = [random_stabilizer(1) for _ in 1:n]
-
-
-
-
-
     stab = tensor(stabs...)
     translate = Dict(S"X"=>_s₊,S"-X"=>_s₋,S"Z"=>_l0,S"-Z"=>_l1,S"Y"=>_i₊,S"-Y"=>_i₋)
     kets = [translate[s] for s in stabs]

@@ -55,7 +55,7 @@ for control in (:X, :Y, :Z)
     for target in (:X, :Y, :Z)
         k1, k2 = xyzstatedict[control]
         o = xyzopdict[target]
-        gate = projector(k1)⊗_id + (target==:Y ? -im : 1) * projector(k2)⊗o
+        gate = projector(k1)⊗_id + projector(k2)⊗o
         structname = Symbol(control,"C",target,"Gate")
         let gate=copy(gate)
             @eval express_nolookup(::$(structname), ::QuantumOpticsRepr) = $gate
