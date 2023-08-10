@@ -1,5 +1,9 @@
 # News
 
+## v0.2.4 - 2023-08-10
+
+- Minor internal improvements to doc builder and interactions with QuantumSavory.jl
+
 ## v0.2.3 - 2023-07-24
 
 - Add all conditional Paulis.

@@ -31,12 +31,13 @@ express_nolookup(x, repr::AbstractRepresentation, ::UseAsState) = express_nolook
 # where the cache is a distribution over possible samples.
 express_from_cache(cache) = cache
 
-function consistent_representation(regs,idx,state)
-    reprs = Set([r.reprs[i] for (r,i) in zip(regs,idx)])
+"""Pick a representation that is consistent with given representations and appropriate for the given state."""
+function consistent_representation(reprs,state)
+    reprs = Set(reprs)
     if length(reprs)>1
-        error("no way to choose yet")
+        error("There is no support for mixed representations in QuantumSymbolics.jl yet.")
     end
-    pop!(reprs)
+    first(reprs)
 end
 
 ##

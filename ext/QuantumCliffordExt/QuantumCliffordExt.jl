@@ -45,6 +45,7 @@ for control in (:X, :Y, :Z)
 end
 
 express_nolookup(::XGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sX
+express_nolookup(::YGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sY
 express_nolookup(::ZGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sZ
 express_nolookup(x::STensorOperator,r::CliffordRepr,u::UseAsOperation) = QCGateSequence([express(t,r,u) for t in x.terms])
 

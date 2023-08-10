@@ -10,10 +10,11 @@ using QuantumClifford
 DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
 
 function main()
-    bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"))
+    bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"), style=:authoryear)
     makedocs(
     bib,
     doctest = false,
+    strict = Documenter.except(:missing_docs),
     clean = true,
     sitename = "QuantumSymbolics.jl",
     format = Documenter.HTML(
