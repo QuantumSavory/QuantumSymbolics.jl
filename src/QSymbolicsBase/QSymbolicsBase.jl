@@ -61,6 +61,7 @@ end
 # Metadata cache helpers
 ##
 
+"""An abstract type for the supported representation of quantum objects."""
 abstract type AbstractRepresentation end
 abstract type AbstractUse end
 struct UseAsState <: AbstractUse end

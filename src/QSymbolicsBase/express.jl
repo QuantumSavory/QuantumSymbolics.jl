@@ -6,6 +6,28 @@ export express, express_nolookup, consistent_representation
 
 import SymbolicUtils: Symbolic
 
+"""
+The main interface for expressing quantum objects in various representations.
+
+```jldoctest
+julia> express(X1)
+Ket(dim=2)
+  basis: Spin(1/2)
+ 0.7071067811865475 + 0.0im
+ 0.7071067811865475 + 0.0im
+
+julia> express(X1, CliffordRepr())
+𝒟ℯ𝓈𝓉𝒶𝒷
++ Z
+𝒮𝓉𝒶𝒷
++ X
+
+julia> express(X, CliffordRepr(), UseAsOperation())
+QuantumClifford.sX
+```
+"""
+function express end
+
 function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse)
     md = metadata(state)
     isnothing(md) && return express_from_cache(express_nolookup(state, repr, use))
