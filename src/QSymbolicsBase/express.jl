@@ -22,8 +22,8 @@ julia> express(X1, CliffordRepr())
 𝒮𝓉𝒶𝒷
 + X
 
-julia> express(X, CliffordRepr(), UseAsOperation())
-QuantumClifford.sX
+julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsOperation())
+sX
 ```
 """
 function express end
