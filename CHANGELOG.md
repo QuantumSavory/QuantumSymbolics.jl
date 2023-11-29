@@ -1,5 +1,9 @@
 # News
 
+## v0.2.5 - 2023-11-28
+
+- Improvements to testing and documentation support.
+
 ## v0.2.4 - 2023-08-10
 
 - Minor internal improvements to doc builder and interactions with QuantumSavory.jl
