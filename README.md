@@ -14,6 +14,7 @@ Computer algebra tools for symbolic manipulations in quantum mechanics and quant
         <td>Continuous integration</td>
         <td>
             <a href="https://github.com/QuantumSavory/QuantumSymbolics.jl/actions?query=workflow%3ACI+branch%3Amain"><img src="https://img.shields.io/github/actions/workflow/status/QuantumSavory/QuantumSymbolics.jl/ci.yml?branch=main" alt="GitHub Workflow Status"></a>
+            <a href="https://buildkite.com/quantumsavory/ci-buildkite-1"><img src="https://badge.buildkite.com/f5d8fe7ebb50cf445cec53e9fc47052e4613af3682c2668371.svg" alt="Buildkite Workflow Status"></a>
         </td>
     </tr><tr></tr>
     <tr>
