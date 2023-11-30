@@ -11,16 +11,17 @@ DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, Q
 
 function main()
     bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"), style=:authoryear)
+    
     makedocs(
-    bib,
+    plugins=[bib],
     doctest = false,
-    strict = Documenter.except(:missing_docs),
     clean = true,
     sitename = "QuantumSymbolics.jl",
     format = Documenter.HTML(
         assets=["assets/init.js"]
     ),
     modules = [QuantumSymbolics],
+    warnonly = [:missing_docs],
     authors = "Stefan Krastanov",
     pages = [
         "QuantumSymbolics.jl" => "index.md",

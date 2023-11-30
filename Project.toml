@@ -1,7 +1,7 @@
 name = "QuantumSymbolics"
 uuid = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 authors = ["QuantumSymbolics.jl contributors"]
-version = "0.2.4"
+version = "0.2.5"
 
 [deps]
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"

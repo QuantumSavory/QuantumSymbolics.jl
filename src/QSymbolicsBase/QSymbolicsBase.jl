@@ -90,7 +90,7 @@ function withmetadata(strct) # TODO this should really use MacroTools instead of
         end
     end
     struct_args = strct.args[end].args
-    if all(x->x isa Symbol || x isa LineNumberNode || x.head==:(::), struct_args)
+    if all(x->x isa Symbol || x isa LineNumberNode || x isa String || x.head==:(::), struct_args)
         # add constructor
         args = [x for x in struct_args if x isa Symbol || x isa Expr] # the arguments required for the constructor
         args = [a isa Symbol ? a : (a.head==:(::) ? a.args[1] : a) for a in args] # drop typeasserts
