@@ -10,3 +10,9 @@ steps:
       - JuliaCI/julia-test#v1: ~
       - JuliaCI/julia-coverage#v1:
           codecov: true
+  - label: "Breakage-QuantumSavory"
+      command: |
+      julia --project -e '
+        using Pkg
+        Pkg.add("QuantumSavory")
+        Pkg.test("QuantumSavory")'
