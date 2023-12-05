@@ -14,4 +14,5 @@ steps:
       julia --project -e '
         using Pkg
         Pkg.add("QuantumSavory")
+        Pkg.build("QuantumSavory")
         Pkg.test("QuantumSavory")'
