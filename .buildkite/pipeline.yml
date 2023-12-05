@@ -11,7 +11,7 @@ steps:
       - JuliaCI/julia-coverage#v1:
           codecov: true
     command: |
-      julia --project -e '
+      julia -e '
         using Pkg
         Pkg.add("QuantumSavory")
         Pkg.build("QuantumSavory")
