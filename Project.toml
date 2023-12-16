@@ -23,7 +23,7 @@ QuantumCliffordExt = "QuantumClifford"
 QuantumOpticsExt = "QuantumOpticsBase"
 
 [compat]
-Graphs = "1.7.3"
+Graphs = "1.9"
 Latexify = "0.15, 0.16"
 LinearAlgebra = "1.9"
 PrecompileTools = "1.2"
