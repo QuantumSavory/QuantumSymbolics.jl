@@ -1,5 +1,9 @@
 # News
 
+## v0.2.6 - 2023-12-16
+
+- Bumping compat bounds of multiple dependencies and checking minimal compats in CI
+
 ## v0.2.5 - 2023-11-28
 
 - Improvements to testing and documentation support.
