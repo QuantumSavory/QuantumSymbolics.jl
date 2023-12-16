@@ -98,7 +98,7 @@ function withmetadata(strct) # TODO this should really use MacroTools instead of
         if declaring_line.head == :where
             declaring_line = declaring_line.args[1]
         end
-        append!(declaring_line.args, args) # Adding them to the line declaring the constructor, i.e. adding them at the location of ? in `Constrcutor(?) = new(...)`
+        append!(declaring_line.args, args) # Adding them to the line declaring the constructor, i.e. adding them at the location of ? in `Constructor(?) = new(...)`
         new_call_args = constructor.args[end].args[end].args # The ? in `new(?)`
         append!(new_call_args, args) # Adding them to the `new` call
         push!(new_call_args, :(Metadata()))
