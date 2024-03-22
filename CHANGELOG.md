@@ -1,8 +1,12 @@
 # News
 
+## v0.2.7 - 2024-03-22
+
+- Bump QuantumClifford compat.
+
 ## v0.2.6 - 2023-12-16
 
-- Bumping compat bounds of multiple dependencies and checking minimal compats in CI
+- Bumping compat bounds of multiple dependencies and checking minimal compats in CI.
 
 ## v0.2.5 - 2023-11-28
 
@@ -10,7 +14,7 @@
 
 ## v0.2.4 - 2023-08-10
 
-- Minor internal improvements to doc builder and interactions with QuantumSavory.jl
+- Minor internal improvements to doc builder and interactions with QuantumSavory.jl.
 
 ## v0.2.3 - 2023-07-24
 
