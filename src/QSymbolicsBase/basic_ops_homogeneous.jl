@@ -4,17 +4,22 @@ struct SKet <: Symbolic{AbstractKet}
     name::Symbol
     basis::Basis
 end
-struct SOperator <: Symbolic{AbstractKet}
+struct SBra <: Symbolic{AbstractBra}
     name::Symbol
     basis::Basis
 end
-const SymQ = Union{SKet, SOperator}
+struct SOperator <: Symbolic{AbstractOperator}
+    name::Symbol
+    basis::Basis
+end
+const SymQ = Union{SKet, SBra, SOperator}
 istree(::SymQ) = false
 metadata(::SymQ) = nothing
 basis(x::SymQ) = x.basis
 
 symbollabel(x::SymQ) = x.name
 Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
+Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
 Base.show(io::IO, x::SOperator) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
@@ -52,9 +57,9 @@ end
 const SScaledBra = SScaled{AbstractBra}
 function Base.show(io::IO, x::SScaledBra)
     if x.coeff isa Number
-        print(io, "$(x.obj)$(x.coeff)")
+        print(io, "$(x.coeff)$(x.obj)")
     else
-        print(io, "$(x.obj)($(x.coeff))")
+        print(io, "($(x.coeff))$(x.obj)")
     end
 end
 
@@ -77,6 +82,22 @@ const SAddOperator = SAdd{AbstractOperator}
 Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 const SAddBra = SAdd{AbstractBra}
 Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+
+@withmetadata struct SApplyOp <: Symbolic{AbstractOperator}
+    op1
+    op2
+    function SApplyOp(o1, o2)
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff*new(cleanterms...)
+    end
+end
+istree(::SApplyOp) = true
+arguments(x::SApplyOp) = [x.op1,x.op2]
+operation(x::SApplyOp) = *
+exprhead(x::SApplyOp) = :*
+Base.:(*)(op1::Symbolic{AbstractOperator}, op2::Symbolic{AbstractOperator}) = SApplyOp(op1,op2)
+Base.show(io::IO, x::SApplyOp) = begin print(io, x.op1); print(io, x.op2) end
+basis(x::SApplyOp) = basis(x.op1)
 
 """Tensor product of quantum objects (kets, operators, or bras)."""
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
@@ -101,3 +122,38 @@ const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
 const STensorBra = STensor{AbstractBra}
 Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
+
+"""Symbolic commutator of two operators"""
+@withmetadata struct SCommutator <: Symbolic{AbstractOperator}
+    op1
+    op2
+    function SCommutator(o1, o2) 
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        cleanterms[1] === cleanterms[2] ? 0 : coeff*new(cleanterms...)
+    end
+end
+istree(::SCommutator) = true
+arguments(x::SCommutator) = [x.op1, x.op2]
+commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
+Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
+basis(x::SCommutator) = basis(x.op1)
+expand(x::SCommutator) = x == 0 ? x : (x.op1)*(x.op2) - (x.op2)*(x.op1)  # expands commutator into [A,B] = AB - BA
+
+"""Symbolic anticommutator of two operators"""
+@withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
+    op1
+    op2
+    function SAnticommutator(o1, o2) 
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        cleanterms[1] === cleanterms[2] && coeff === -1 ? 0 : coeff*new(cleanterms...)
+    end
+end
+istree(::SAnticommutator) = true
+arguments(x::SAnticommutator) = [x.op1, x.op2]
+anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
+Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
+basis(x::SAnticommutator) = basis(x.op1)
+expand(x::SAnticommutator) = x == 0 ? x : (x.op1)*(x.op2) + (x.op2)*(x.op1)  # expands anticommutator into {A,B} = AB + BA
+
+"""Expanding commutator and anticommutator expression"""
+

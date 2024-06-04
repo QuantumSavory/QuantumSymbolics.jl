@@ -1,3 +1,6 @@
+""" Predictate functions """
+_daggerbraket(x) = isa(x.obj, SBraKet) && isa(x, SDagger)
+
 function hasscalings(xs)
     any(xs) do x
         operation(x) == *
@@ -43,4 +46,9 @@ FLATTEN_RULES = [
     @rule ⊗(~~xs::hasscalings) => prefactorscalings_rule(xs)
 ]
 
+DAGGER_RULES = [
+    @rule(~x::_daggerbraket => SBraKet(dagger((~x).obj.ket), dagger((~x).obj.bra)))
+]
+
 tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
+dagger_simplify = Chain(DAGGER_RULES)

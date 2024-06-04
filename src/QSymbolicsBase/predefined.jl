@@ -205,23 +205,28 @@ function Base.show(io::IO, x::SProjector)
     print(io,"]")
 end
 
-"""Dagger a Ket into Bra."""
-@withmetadata struct SDagger <: Symbolic{AbstractBra}
-    ket::Symbolic{AbstractKet}
+"""Dagger, i.e., adjoint of quantum objects (kets, bras, operators, and inner products)"""
+@withmetadata struct SDagger{T<:Union{Complex, QObj}} <: Symbolic{Union{Complex, T}}
+    obj
 end
 istree(::SDagger) = true
 arguments(x::SDagger) = [x.ket]
 operation(x::SDagger) = dagger
 exprhead(x::SDagger) = :dagger
-dagger(x::Symbolic{AbstractKet}) = SDagger(x)
+dagger(x::Symbolic{AbstractKet}) = SBra(x.name, x.basis)
 dagger(x::SScaledKet) = SScaledBra(x.coeff, dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
-basis(x::SDagger) = basis(x.ket)
-function Base.show(io::IO, x::SDagger)
-    print(io,x.ket)
+dagger(x::Symbolic{AbstractBra}) = SKet(x.name, x.basis)
+dagger(x::SScaledBra) = SScaledKet(x.coeff, dagger(x.obj))
+dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (k,v) in pairs(x.dict)))
+dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
+dagger(x::SBraKet) = dagger_simplify(SDagger{Complex}(x))
+basis(x::SDagger) = basis(x.obj)
+function Base.show(io::IO, x::SDagger{AbstractOperator})
+    print(io,x.obj)
     print(io,"†")
 end
-symbollabel(x::SDagger) = symbollabel(x.ket)
+symbollabel(x::SDagger) = symbollabel(x.obj)
 
 """Completely depolarized state
 
