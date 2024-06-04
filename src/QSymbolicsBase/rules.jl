@@ -47,7 +47,7 @@ FLATTEN_RULES = [
 ]
 
 DAGGER_RULES = [
-    @rule(~x::_daggerbraket => SBraKet(dagger((~x).obj.ket), dagger((~x).obj.bra)))
+    @rule(~x::_daggerbraket => SBraKet(dagger((~x).obj.ket), dagger((~x).obj.bra)))  # make this rule less ugly
 ]
 
 tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
