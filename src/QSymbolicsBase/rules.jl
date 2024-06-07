@@ -51,4 +51,4 @@ DAGGER_RULES = [
 ]
 
 tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
-dagger_simplify = Chain(DAGGER_RULES)
+dagger_simplify = Fixpoint(Chain(DAGGER_RULES))

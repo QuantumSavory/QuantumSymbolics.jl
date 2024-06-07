@@ -128,7 +128,7 @@ newwithmetadata(x) = x
 # Basic Types
 ##
 
-const QObj = Union{AbstractKet,AbstractOperator,AbstractSuperOperator,AbstractBra}
+const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator}
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)

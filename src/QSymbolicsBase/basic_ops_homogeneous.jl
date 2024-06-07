@@ -22,6 +22,9 @@ Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
 Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
 Base.show(io::IO, x::SOperator) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
+Base.:(==)(x1::SKet, x2::SKet) = x1.basis == x2.basis && x1.name == x2.name
+Base.:(==)(x1::SBra, x2::SBra) = x1.basis == x2.basis && x1.name == x2.name
+Base.:(==)(x1::SOperator, x2::SOperator) = x1.basis == x2.basis && x1.name == x2.name
 
 """Scaling of a quantum object (ket, operator, or bra) by a number."""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
@@ -36,6 +39,7 @@ exprhead(x::SScaled) = :*
 Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
+Base.:(==)(x1::SScaled{T}, x2::SScaled{T}) where {T<:QObj} = x1.coeff == x2.coeff && x1.obj == x2.obj
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
@@ -74,6 +78,7 @@ operation(x::SAdd) = +
 exprhead(x::SAdd) = :+
 Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} = SAdd{T}(countmap_flatten(xs, SScaled{T}))
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
+Base.:(==)(x1::SAdd{T}, x2::SAdd{T}) where {T<:QObj} = x1.dict == x2.dict
 basis(x::SAdd) = basis(first(x.dict).first)
 
 const SAddKet = SAdd{AbstractKet}
@@ -96,6 +101,7 @@ arguments(x::SApplyOp) = [x.op1,x.op2]
 operation(x::SApplyOp) = *
 exprhead(x::SApplyOp) = :*
 Base.:(*)(op1::Symbolic{AbstractOperator}, op2::Symbolic{AbstractOperator}) = SApplyOp(op1,op2)
+Base.:(==)(x1::SApplyOp, x2::SApplyOp) = x1.op1 == x2.op1 && x1.op2 == x2.op2
 Base.show(io::IO, x::SApplyOp) = begin print(io, x.op1); print(io, x.op2) end
 basis(x::SApplyOp) = basis(x.op1)
 
@@ -112,6 +118,7 @@ arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
 exprhead(x::STensor) = :⊗
 ⊗(xs::Symbolic{T}...) where {T<:QObj} = STensor{T}(collect(xs))
+Base.:(==)(x1::STensor{T}, x2::STensor{T}) where {T<:QObj} = x1.terms == x2.terms
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
 const STensorKet = STensor{AbstractKet}
@@ -134,8 +141,11 @@ Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 end
 istree(::SCommutator) = true
 arguments(x::SCommutator) = [x.op1, x.op2]
+operation(x::SCommutator) = commutator
+exprhead(x::SCommutator) = :commutator
 commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
+Base.:(==)(x1::SCommutator, x2::SCommutator) = x1.op1 == x2.op1 && x1.op2 == x2.op2
 basis(x::SCommutator) = basis(x.op1)
 expand(x::SCommutator) = x == 0 ? x : (x.op1)*(x.op2) - (x.op2)*(x.op1)  # expands commutator into [A,B] = AB - BA
 
@@ -150,10 +160,10 @@ expand(x::SCommutator) = x == 0 ? x : (x.op1)*(x.op2) - (x.op2)*(x.op1)  # expan
 end
 istree(::SAnticommutator) = true
 arguments(x::SAnticommutator) = [x.op1, x.op2]
+operation(x::SAnticommutator) = anticommutator
+exprhead(x::SAnticommutator) = :anticommutator
 anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
+Base.:(==)(x1::SAnticommutator, x2::SAnticommutator) = x1.op1 == x2.op1 && x1.op2 == x2.op2
 basis(x::SAnticommutator) = basis(x.op1)
 expand(x::SAnticommutator) = x == 0 ? x : (x.op1)*(x.op2) + (x.op2)*(x.op1)  # expands anticommutator into {A,B} = AB + BA
-
-"""Expanding commutator and anticommutator expression"""
-
