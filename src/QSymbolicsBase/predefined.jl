@@ -206,7 +206,7 @@ function Base.show(io::IO, x::SProjector)
 end
 
 """Dagger, i.e., adjoint of quantum objects (kets, bras, operators)"""
-@withmetadata struct SDagger{T<:QObj} <: Symbolic{Union{Complex, T}}
+@withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
     obj
 end
 istree(::SDagger) = true
