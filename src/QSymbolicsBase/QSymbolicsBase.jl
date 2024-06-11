@@ -17,7 +17,7 @@ import QuantumInterface:
     AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 export SymQObj,QObj,
-       AbstractRepresentation, AbstractUse,
+       AbstractRepresentation, AbstractUse, 
        QuantumOpticsRepr, QuantumMCRepr, CliffordRepr,
        UseAsState, UseAsObservable, UseAsOperation,
        apply!,
@@ -31,11 +31,11 @@ export SymQObj,QObj,
        N,n̂,Create,âꜛ,Destroy,â, SpinBasis, FockBasis,
        SProjector,MixedState,IdentityOp, SKet, SBra, SOperator,
        STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,SScaledBra,
-       SAddBra,STensorBra,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
+       SAddBra,SApplyKet,SApplyBra,SApplyOp,STensorBra,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
        XBasisState, YBasisState, ZBasisState,
        NumberOp, CreateOp, DestroyOp,
-       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate
+       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate, circuit_simplify, commutator_simplify, anticommutator_simplify
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()

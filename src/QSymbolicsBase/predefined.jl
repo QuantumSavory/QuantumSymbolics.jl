@@ -90,6 +90,9 @@ basis(::AbstractSingleQubitGate) = qubit_basis
 basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
 Base.show(io::IO, x::AbstractSingleQubitOp) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::AbstractTwoQubitOp) = print(io, "$(symbollabel(x))")
+Base.:(*)(xs::AbstractSingleQubitGate...) = circuit_simplify(SApplyOp(collect(xs)))
+commutator(o1::AbstractSingleQubitGate, o2::AbstractSingleQubitGate) = commutator_simplify(SCommutator(o1, o2))
+anticommutator(o1::AbstractSingleQubitGate, o2::AbstractSingleQubitGate) = anticommutator_simplify(SAnticommutator(o1, o2))
 
 
 @withmetadata struct OperatorEmbedding <: Symbolic{AbstractOperator}
@@ -214,14 +217,19 @@ arguments(x::SDagger) = [x.ket]
 operation(x::SDagger) = dagger
 exprhead(x::SDagger) = :dagger
 dagger(x::SKet) = SBra(x.name, x.basis)
-dagger(x::SScaledKet) = SScaledBra(x.coeff, dagger(x.obj))
+dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
 dagger(x::SBra) = SKet(x.name, x.basis)
-dagger(x::SScaledBra) = SScaledKet(x.coeff, dagger(x.obj))
+dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (k,v) in pairs(x.dict)))
 dagger(x::SOperator) = SDagger{AbstractOperator}(x)
+dagger(x::SScaledOperator) = SScaledOperator(conj(x.coeff), dagger(x.obj))
+dagger(x::SApplyKet) = dagger(x.ket)*dagger(x.op)
+dagger(x::SApplyBra) = dagger(x.op)*dagger(x.bra)
+dagger(x::SApplyOp) = SApplyOp([dagger(i) for i in reverse(x.terms)])
 dagger(x::SBraKet) = SBraKet(dagger(x.ket), dagger(x.bra))
 dagger(x::SOuterKetBra) = SOuterKetBra(dagger(x.bra), dagger(x.ket))
+dagger(x::SDagger) = x.obj
 basis(x::SDagger) = basis(x.obj)
 function Base.show(io::IO, x::SDagger{AbstractOperator})
     print(io,x.obj)
@@ -277,4 +285,4 @@ IdentityOp(x::Symbolic{AbstractKet}) = IdentityOp(basis(x))
 IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))
 istree(::IdentityOp) = false
 basis(x::IdentityOp) = x.basis
-symbollabel(x::IdentityOp) = "𝕀"
+

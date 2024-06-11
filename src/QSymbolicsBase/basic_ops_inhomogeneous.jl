@@ -14,7 +14,6 @@ arguments(x::SApplyKet) = [x.op,x.ket]
 operation(x::SApplyKet) = *
 exprhead(x::SApplyKet) = :*
 Base.:(*)(o::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet}) = SApplyKet(o,k)
-Base.:(==)(x1::SApplyKet, x2::SApplyKet) = x1.op == x2.op && x1.ket == x2.ket
 Base.show(io::IO, x::SApplyKet) = begin print(io, x.op); print(io, x.ket) end
 basis(x::SApplyKet) = basis(x.ket)
 
@@ -31,8 +30,7 @@ istree(::SApplyBra) = true
 arguments(x::SApplyBra) = [x.bra,x.op]
 operation(x::SApplyBra) = *
 exprhead(x::SApplyBra) = :*
-Base.:(*)(b::Symbolic{AbstractBra}, o::Symbolic{AbstractOperator}) = SApplyKet(b,o)
-Base.:(==)(x1::SApplyBra, x2::SApplyKet) = x1.bra == x2.bra && x1.op == x2.op
+Base.:(*)(b::Symbolic{AbstractBra}, o::Symbolic{AbstractOperator}) = SApplyBra(b,o)
 Base.show(io::IO, x::SApplyBra) = begin print(io, x.bra); print(io, x.op) end
 basis(x::SApplyBra) = basis(x.bra)
 
@@ -50,7 +48,6 @@ arguments(x::SBraKet) = [x.bra,x.ket]
 operation(x::SBraKet) = *
 exprhead(x::SBraKet) = :*
 Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) = SBraKet(b,k)
-Base.:(==)(x1::SBraKet, x2::SBraKet) = x1.bra == x2.bra && x1.ket == x2.ket
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 
 """Symbolic application of a superoperator on an operator"""
@@ -64,7 +61,6 @@ operation(x::SApplyOpSuper) = *
 exprhead(x::SApplyOpSuper) = :*
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplyOpSuper(sop,op)
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplyOpSuper(sop,SProjector(k))
-Base.:(==)(x1::SApplyOpSuper, x2::SApplyOpSuper) = x1.sop == x2.sop && x1.op && x2.op
 Base.show(io::IO, x::SApplyOpSuper) = begin print(io, x.sop); print(io, x.op) end
 basis(x::SApplyOpSuper) = basis(x.op)
 
@@ -82,6 +78,5 @@ arguments(x::SOuterKetBra) = [x.ket,x.bra]
 operation(x::SOuterKetBra) = *
 exprhead(x::SOuterKetBra) = :*
 Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra}) = SOuterKetBra(k,b)
-Base.:(==)(x1::SOuterKetBra, x2::SOuterKetBra) = x1.ket == x2.ket && x1.bra && x2.bra
 Base.show(io::IO, x::SOuterKetBra) = begin print(io, x.ket); print(io, x.bra) end
 basis(x::SOuterKetBra) = basis(x.ket)
