@@ -3,7 +3,7 @@ import Symbolics: simplify
 using SymbolicUtils
 import SymbolicUtils: Symbolic, _isone, flatten_term, isnotflat, Chain, Fixpoint
 using TermInterface
-import TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
+import TermInterface: isexpr, head, iscall, children, operation, arguments, metadata
 
 using LinearAlgebra
 import LinearAlgebra: eigvecs
@@ -47,7 +47,7 @@ end
 function countmap_flatten(samples, flattenhead)
     counts = Dict{Any,Any}()
     for s in samples
-        if istree(s) && s isa flattenhead # TODO Could you use the TermInterface `operation` here instead of `flattenhead`?
+        if isexpr(s) && s isa flattenhead # TODO Could you use the TermInterface `operation` here instead of `flattenhead`?
             coef, term = arguments(s)
             counts[term] = get(counts, term, 0)+coef
         else
@@ -134,7 +134,7 @@ Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y
-        if istree(x)
+        if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
                 (length(ax) == length(ay)) && all(zip(ax,ay)) do xy isequal(xy...) end

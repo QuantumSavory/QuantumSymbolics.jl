@@ -1,7 +1,7 @@
 export PauliNoiseCPTP, DephasingCPTP, DephasingCPTP, GateCPTP
 
 abstract type NoiseCPTP <: Symbolic{AbstractSuperOperator} end
-istree(::NoiseCPTP) = false
+isexpr(::NoiseCPTP) = false
 basis(x::NoiseCPTP) = x.basis
 
 """Single-qubit Pauli noise CPTP map

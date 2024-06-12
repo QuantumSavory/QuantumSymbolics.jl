@@ -28,7 +28,7 @@ end
     return LaTeXString("\\hat $(symbollabel(x))")
 end
 @latexrecipe function f(x::SDagger)
-    if istree(x.ket)
+    if isexpr(x.ket)
         return Expr(:latexifymerge, "\\left( ", x.ket, "\\right)^\\dagger")
     else
         return Expr(:latexifymerge, "\\left\\langle ", symbollabel(x), "\\right|")
@@ -48,14 +48,14 @@ end
 end
 
 function _toexpr(x)
-    if istree(x)
-        return Expr(:call, exprhead(x), arguments(x)...)
+    if isexpr(x)
+        return Expr(:call, head(x), arguments(x)...)
     else
         x
     end
 end
 function _addparen(x)
-    if istree(x)
+    if isexpr(x)
         return Expr(:latexifymerge, "\\left(", x, "\\right)")
     else
         return x
