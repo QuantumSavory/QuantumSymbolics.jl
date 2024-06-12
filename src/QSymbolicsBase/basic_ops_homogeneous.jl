@@ -1,28 +1,5 @@
 """This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments."""
 
-struct SKet <: Symbolic{AbstractKet}
-    name::Symbol
-    basis::Basis
-end
-struct SBra <: Symbolic{AbstractBra}
-    name::Symbol
-    basis::Basis
-end
-struct SOperator <: Symbolic{AbstractOperator}
-    name::Symbol
-    basis::Basis
-end
-const SymQ = Union{SKet, SBra, SOperator}
-istree(::SymQ) = false
-metadata(::SymQ) = nothing
-basis(x::SymQ) = x.basis
-
-symbollabel(x::SymQ) = x.name
-Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
-Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
-Base.show(io::IO, x::SOperator) = print(io, "$(symbollabel(x))")
-Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
-
 """Scaling of a quantum object (ket, operator, or bra) by a number."""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
@@ -83,6 +60,7 @@ Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)
 const SAddBra = SAdd{AbstractBra}
 Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 
+"""Symbolic application of operator on operator"""
 @withmetadata struct SApplyOp <: Symbolic{AbstractOperator}
     terms
     function SApplyOp(terms)
@@ -136,6 +114,9 @@ arguments(x::SCommutator) = [x.op1, x.op2]
 operation(x::SCommutator) = commutator
 exprhead(x::SCommutator) = :commutator
 commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
+commutator(o1::SCommutativeOperator, o2::Symbolic{AbstractOperator}) = 0
+commutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 0
+commutator(o1::SCommutativeOperator, o2::SCommutativeOperator) = 0
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
 expand(x::SCommutator) = x == 0 ? x : (x.op1)*(x.op2) - (x.op2)*(x.op1)  # expands commutator into [A,B] = AB - BA
@@ -146,7 +127,7 @@ expand(x::SCommutator) = x == 0 ? x : (x.op1)*(x.op2) - (x.op2)*(x.op1)  # expan
     op2
     function SAnticommutator(o1, o2) 
         coeff, cleanterms = prefactorscalings([o1 o2])
-        cleanterms[1] === cleanterms[2] && coeff === -1 ? 0 : coeff*new(cleanterms...)
+        coeff*new(cleanterms...)
     end
 end
 istree(::SAnticommutator) = true
@@ -154,6 +135,9 @@ arguments(x::SAnticommutator) = [x.op1, x.op2]
 operation(x::SAnticommutator) = anticommutator
 exprhead(x::SAnticommutator) = :anticommutator
 anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
+anticommutator(o1::SCommutativeOperator, o2::Symbolic{AbstractOperator}) = 2*o1*o2
+anticommutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 2*o1*o2
+anticommutator(o1::SCommutativeOperator, o2::SCommutativeOperator) = 2*o1*o2
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
 expand(x::SAnticommutator) = x == 0 ? x : (x.op1)*(x.op2) + (x.op2)*(x.op1)  # expands anticommutator into {A,B} = AB + BA

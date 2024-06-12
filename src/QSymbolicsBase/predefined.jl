@@ -223,6 +223,8 @@ dagger(x::SBra) = SKet(x.name, x.basis)
 dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (k,v) in pairs(x.dict)))
 dagger(x::SOperator) = SDagger{AbstractOperator}(x)
+dagger(x::SHermitianOperator) = x
+dagger(x::SUnitaryOperator) = inverse(x.op)
 dagger(x::SScaledOperator) = SScaledOperator(conj(x.coeff), dagger(x.obj))
 dagger(x::SApplyKet) = dagger(x.ket)*dagger(x.op)
 dagger(x::SApplyBra) = dagger(x.op)*dagger(x.bra)

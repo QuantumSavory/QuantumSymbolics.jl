@@ -6,7 +6,7 @@ using TermInterface
 import TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs
+import LinearAlgebra: eigvecs, ishermitian
 
 import QuantumInterface:
     apply!,
@@ -29,13 +29,16 @@ export SymQObj,QObj,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
        N,n̂,Create,âꜛ,Destroy,â, SpinBasis, FockBasis,
-       SProjector,MixedState,IdentityOp, SKet, SBra, SOperator,
+       SProjector,MixedState,IdentityOp,SKet,SBra,SOperator,SInverseOperator,SHermitianOperator,SUnitaryOperator,SCommutativeOperator,
        STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,SScaledBra,
        SAddBra,SApplyKet,SApplyBra,SApplyOp,STensorBra,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
        XBasisState, YBasisState, ZBasisState,
        NumberOp, CreateOp, DestroyOp,
-       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate, circuit_simplify, commutator_simplify, anticommutator_simplify
+       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate, 
+       circuit_simplify, commutator_simplify, anticommutator_simplify, 
+       ishermitian, isunitary, iscommutative,
+       hermitian, unitary, commutative, inverse
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()
@@ -158,6 +161,7 @@ propsequal(x,y) = all(n->getproperty(x,n)==getproperty(y,n), propertynames(x))
 # Most symbolic objects defined here
 ##
 
+include("objects.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
 include("predefined.jl")

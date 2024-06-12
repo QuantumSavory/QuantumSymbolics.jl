@@ -1,6 +1,6 @@
 """This file defines automatic simplification rules for specific operations of quantum objects"""
 
-""" Predicate functions """
+"""Predicate functions"""
 function hasscalings(xs)
     any(xs) do x
         operation(x) == *
@@ -11,7 +11,7 @@ _isX(x) = x isa XGate
 _isY(x) = x isa YGate
 _isZ(x) = x isa ZGate
 
-""" Flattening terms """
+"""Flattening terms"""
 function prefactorscalings(xs)
     terms = []
     coeff = 1::Any
@@ -52,7 +52,7 @@ FLATTEN_RULES = [
 
 tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
 
-""" Quantum circuit identities """
+"""Quantum circuit identities"""
 _isHXH(x) = x isa SApplyOp && x.terms == [H, X, H]
 _isHYH(x) = x isa SApplyOp && x.terms == [H, Y, H]
 _isHZH(x) = x isa SApplyOp && x.terms == [H, Z, H]
@@ -65,7 +65,7 @@ CIRCUIT_RULES = [
 
 circuit_simplify = Fixpoint(Chain(CIRCUIT_RULES))
 
-""" Commutator identities """
+"""Commutator identities"""
 _isXYcommutator(x) = x isa SCommutator && _isX(x.op1) && _isY(x.op2)
 _isYZcommutator(x) = x isa SCommutator && _isY(x.op1) && _isZ(x.op2)
 _isZXcommutator(x) = x isa SCommutator && _isZ(x.op1) && _isX(x.op2)
@@ -78,7 +78,7 @@ COMMUTATOR_RULES = [
 
 commutator_simplify = Fixpoint(Chain(COMMUTATOR_RULES))
 
-""" anticommutator identities """
+"""Anticommutator identities"""
 _isXYanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isY(x.op2)
 _isYZanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isZ(x.op2)
 _isZXanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isX(x.op2)
