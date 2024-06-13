@@ -225,10 +225,14 @@ dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
 dagger(x::SBra) = SKet(x.name, x.basis)
 dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
-dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (k,v) in pairs(x.dict)))
+dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (b,v) in pairs(x.dict)))
 dagger(x::SOperator) = SDagger{AbstractOperator}(x)
+dagger(x::SAddOperator) = SAddOperator(Dict(dagger(o)=>v for (o,v) in pairs(x.dict)))
 dagger(x::SHermitianOperator) = x
 dagger(x::SUnitaryOperator) = inverse(x.op)
+dagger(x::STensorBra) = STensorBra([dagger(i) for i in x.terms])
+dagger(x::STensorKet) = STensorKet([dagger(i) for i in x.terms])
+dagger(x::STensorOperator) = STensorOperator([dagger(i) for i in x.terms])
 dagger(x::SScaledOperator) = SScaledOperator(conj(x.coeff), dagger(x.obj))
 dagger(x::SApplyKet) = dagger(x.ket)*dagger(x.op)
 dagger(x::SApplyBra) = dagger(x.op)*dagger(x.bra)
@@ -291,4 +295,7 @@ IdentityOp(x::Symbolic{AbstractKet}) = IdentityOp(basis(x))
 IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))
 isexpr(::IdentityOp) = false
 basis(x::IdentityOp) = x.basis
+symbollabel(x::IdentityOp) = "𝕀"
 
+"""Identity operator in qubit basis"""
+const I = IdentityOp(qubit_basis)

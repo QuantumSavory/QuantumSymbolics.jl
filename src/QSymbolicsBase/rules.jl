@@ -68,6 +68,9 @@ _isHZH(x) = x isa SApplyOp && x.terms == [H,Z,H]
 
 
 CIRCUIT_RULES = [
+    @rule(~x::_isXX => I),
+    @rule(~x::_isYY => I),
+    @rule(~x::_isZZ => I),
     @rule(~x::_isXY => im*Z),
     @rule(~x::_isYZ => im*X),
     @rule(~x::_isZX => im*Y),
@@ -85,24 +88,42 @@ circuit_simplify = Fixpoint(Chain(CIRCUIT_RULES))
 _isXYcommutator(x) = x isa SCommutator && _isX(x.op1) && _isY(x.op2)
 _isYZcommutator(x) = x isa SCommutator && _isY(x.op1) && _isZ(x.op2)
 _isZXcommutator(x) = x isa SCommutator && _isZ(x.op1) && _isX(x.op2)
+_isYXcommutator(x) = x isa SCommutator && _isY(x.op1) && _isX(x.op2)
+_isZYcommutator(x) = x isa SCommutator && _isZ(x.op1) && _isY(x.op2)
+_isXZcommutator(x) = x isa SCommutator && _isX(x.op1) && _isZ(x.op2)
 
 COMMUTATOR_RULES = [
     @rule(~x::_isXYcommutator => 2*im*Z),
     @rule(~x::_isYZcommutator => 2*im*X),
-    @rule(~x::_isZXcommutator => 2*im*Y)
+    @rule(~x::_isZXcommutator => 2*im*Y),
+    @rule(~x::_isYXcommutator => -2*im*Z),
+    @rule(~x::_isZYcommutator => -2*im*X),
+    @rule(~x::_isXZcommutator => -2*im*Y)
 ]
 
 commutator_simplify = Fixpoint(Chain(COMMUTATOR_RULES))
 
 """Anticommutator identities"""
+_isXXanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isX(x.op2)
+_isYYanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isY(x.op2)
+_isZZanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isZ(x.op2)
 _isXYanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isY(x.op2)
 _isYZanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isZ(x.op2)
 _isZXanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isX(x.op2)
+_isYXanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isX(x.op2)
+_isZYanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isY(x.op2)
+_isXZanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isZ(x.op2)
 
 ANTICOMMUTATOR_RULES = [
+    @rule(~x::_isXXanticommutator => 2*I),
+    @rule(~x::_isYYanticommutator => 2*I),
+    @rule(~x::_isZZanticommutator => 2*I),
     @rule(~x::_isXYanticommutator => 0),
     @rule(~x::_isYZanticommutator => 0),
-    @rule(~x::_isZXanticommutator => 0)
+    @rule(~x::_isZXanticommutator => 0),
+    @rule(~x::_isYXanticommutator => 0),
+    @rule(~x::_isZYanticommutator => 0),
+    @rule(~x::_isXZanticommutator => 0)
 ]
 
 anticommutator_simplify = Fixpoint(Chain(ANTICOMMUTATOR_RULES))
