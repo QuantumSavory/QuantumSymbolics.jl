@@ -1,6 +1,14 @@
 """This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are inhomogeneous in their arguments."""
 
-"""Symbolic application of an operator on a ket (from the left)"""
+"""Symbolic application of an operator on a ket (from the left)
+
+```jldoctest
+julia> k = SKet(:k, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+
+julia> A*k
+A|k⟩
+```
+"""
 @withmetadata struct SApplyKet <: Symbolic{AbstractKet}
     op
     ket
@@ -19,7 +27,14 @@ Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet}) = SApplyKet(
 Base.show(io::IO, x::SApplyKet) = begin print(io, x.op); print(io, x.ket) end
 basis(x::SApplyKet) = basis(x.ket)
 
-"""Symbolic application of an operator on a bra (from the right)"""
+"""Symbolic application of an operator on a bra (from the right)
+
+```jldoctest
+julia> b = SBra(:b, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+
+julia> b*A
+⟨b|A
+"""
 @withmetadata struct SApplyBra <: Symbolic{AbstractBra}
     bra
     op
@@ -38,7 +53,15 @@ Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) = SApplyBra(
 Base.show(io::IO, x::SApplyBra) = begin print(io, x.bra); print(io, x.op) end
 basis(x::SApplyBra) = basis(x.bra)
 
-"""Symbolic inner product of a bra and a ket."""
+"""Symbolic inner product of a bra and a ket
+
+```jldoctest
+julia> b = SBra(:b, SpinBasis(1//2)); k = SKet(:k, SpinBasis(1//2));
+
+julia> b*k
+⟨b||k⟩
+```
+"""
 @withmetadata struct SBraKet <: Symbolic{Complex}
     bra
     ket
@@ -72,7 +95,13 @@ Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApp
 Base.show(io::IO, x::SApplyOpSuper) = begin print(io, x.sop); print(io, x.op) end
 basis(x::SApplyOpSuper) = basis(x.op)
 
-"""Symbolic outer product of a ket and a bra"""
+"""Symbolic outer product of a ket and a bra
+```jldoctest 
+julia> b = SBra(:b, SpinBasis(1//2)); k = SKet(:k, SpinBasis(1//2));
+
+julia> k*b 
+|k⟩⟨b|
+"""
 @withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
     ket
     bra

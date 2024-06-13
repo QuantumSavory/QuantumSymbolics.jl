@@ -105,22 +105,53 @@ isexpr(::OperatorEmbedding) = true
 @withmetadata struct XGate <: AbstractSingleQubitGate end
 eigvecs(g::XGate) = [X1,X2]
 symbollabel(::XGate) = "X"
+ishermitian(::XGate) = true
+isunitary(::XGate) = true
+iscommutative(::XGate) = false
+
 @withmetadata struct YGate <: AbstractSingleQubitGate end
 eigvecs(g::YGate) = [Y1,Y2]
 symbollabel(::YGate) = "Y"
+ishermitian(::YGate) = true
+isunitary(::YGate) = true
+iscommutative(::YGate) = false
+
 @withmetadata struct ZGate <: AbstractSingleQubitGate end
 eigvecs(g::ZGate) = [Z1,Z2]
 symbollabel(::ZGate) = "Z"
+ishermitian(::ZGate) = true
+isunitary(::ZGate) = true
+iscommutative(::ZGate) = false
+
 @withmetadata struct PauliM <: AbstractSingleQubitGate end
 symbollabel(::PauliM) = "σ₋"
+ishermitian(::PauliM) = true
+isunitary(::PauliM) = true
+iscommutative(::PauliM) = false
+
 @withmetadata struct PauliP <: AbstractSingleQubitGate end
 symbollabel(::PauliP) = "σ₊"
+ishermitian(::PauliP) = true
+isunitary(::PauliP) = true
+iscommutative(::PauliP) = false
+
 @withmetadata struct HGate <: AbstractSingleQubitGate end
 symbollabel(::HGate) = "H"
+ishermitian(::HGate) = true
+isunitary(::HGate) = true
+iscommutative(::HGate) = false
+
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
+ishermitian(::CNOTGate) = true
+isunitary(::CNOTGate) = true
+iscommutative(::CNOTGate) = false
+
 @withmetadata struct CPHASEGate <: AbstractTwoQubitGate end
 symbollabel(::CPHASEGate) = "CPHASE"
+ishermitian(::CPHASEGate) = true
+isunitary(::CPHASEGate) = true
+iscommutative(::CPHASEGate) = false
 
 const xyzsuplabeldict = Dict(:X=>"ˣ",:Y=>"ʸ",:Z=>"ᶻ")
 for control in (:X, :Y, :Z)
@@ -210,7 +241,26 @@ function Base.show(io::IO, x::SProjector)
     print(io,"]")
 end
 
-"""Dagger, i.e., adjoint of quantum objects (kets, bras, operators)"""
+"""Dagger, i.e., adjoint of quantum objects (kets, bras, operators)
+
+```jldoctest 
+julia> a = SKet(:a, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+
+julia> dagger(2*im*A*a)
+0 - 2im⟨a|A†
+
+julia> B = SOperator(:B, SpinBasis(1//2));
+
+julia> dagger(A*B)
+B†A†
+
+julia> dagger(hermitian(A))
+A 
+
+julia> dagger(unitary(A)) 
+A⁻¹
+```
+"""
 @withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
     obj
 end
@@ -296,6 +346,9 @@ IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))
 isexpr(::IdentityOp) = false
 basis(x::IdentityOp) = x.basis
 symbollabel(x::IdentityOp) = "𝕀"
+ishermitian(::IdentityOp) = true
+isunitary(::IdentityOp) = true
+iscommutative(::IdentityOp) = true
 
 """Identity operator in qubit basis"""
 const I = IdentityOp(qubit_basis)

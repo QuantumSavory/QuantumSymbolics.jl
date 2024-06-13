@@ -48,7 +48,7 @@ isexpr(::SHermitianOperator) = false
 basis(x::SHermitianOperator) = basis(x.op)
 Base.show(io::IO, x::SHermitianOperator) = print(io, "$(x.op)")
 hermitian(x::Symbolic{AbstractOperator}) = SHermitianOperator(x)
-ishermitian(x::SHermitianOperator) = true
+ishermitian(::SHermitianOperator) = true
 
 """Unitary Operator"""
 @withmetadata struct SUnitaryOperator <: Symbolic{AbstractOperator}
@@ -58,7 +58,7 @@ isexpr(::SUnitaryOperator) = false
 basis(x::SUnitaryOperator) = basis(x.op)
 Base.show(io::IO, x::SUnitaryOperator) = print(io, "$(x.op)")
 unitary(x::Symbolic{AbstractOperator}) = SUnitaryOperator(x)
-isunitary(x::SUnitaryOperator) = true
+isunitary(::SUnitaryOperator) = true
 
 """Commutative Operator"""
 @withmetadata struct SCommutativeOperator <: Symbolic{AbstractOperator}
@@ -68,4 +68,4 @@ isexpr(::SCommutativeOperator) = false
 basis(x::SCommutativeOperator) = basis(x.op)
 Base.show(io::IO, x::SCommutativeOperator) = print(io, "$(x.op)")
 commutative(x::Symbolic{AbstractOperator}) = SCommutativeOperator(x)
-iscommutative(x::SCommutativeOperator) = true
+iscommutative(::SCommutativeOperator) = true
