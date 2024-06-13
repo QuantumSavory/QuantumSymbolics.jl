@@ -9,7 +9,7 @@ using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     Symbolic
 import QuantumSymbolics: express, express_nolookup, express_from_cache
 using TermInterface
-using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
+using TermInterface: isexpr, head, operation, arguments, metadata
 
 using QuantumClifford
 
@@ -24,7 +24,7 @@ express_nolookup(s::XBasisState, ::CliffordRepr) = (_qc_s₊,_qc_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::CliffordRepr) = (_qc_i₊,_qc_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::CliffordRepr) = (_qc_l,_qc_h)[s.idx]
 function express_nolookup(s::Symbolic{T}, repr::CliffordRepr) where {T<:Union{AbstractKet,AbstractOperator}}
-    if istree(s) && operation(s)==⊗
+    if isexpr(s) && operation(s)==⊗
         #operation(s)(express.(arguments(s), (repr,))...) # TODO this does not work because QuantumClifford.⊗ is different from ⊗
         QuantumClifford.tensor(express.(arguments(s), (repr,))...)
     else

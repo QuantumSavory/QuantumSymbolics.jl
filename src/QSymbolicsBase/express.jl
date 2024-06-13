@@ -78,7 +78,7 @@ express_nolookup(state, ::QuantumMCRepr) = express_nolookup(state, QuantumOptics
 express(state) = state
 
 function express_nolookup(s, repr::AbstractRepresentation)
-    if istree(s)
+    if isexpr(s)
         operation(s)(express.(arguments(s), (repr,))...)
     else
         error("Encountered an object $(s) of type $(typeof(s)) that can not be converted to $(repr) representation") # TODO make a nice error type

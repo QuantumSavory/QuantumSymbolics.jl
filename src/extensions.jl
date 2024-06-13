@@ -21,7 +21,7 @@ Ket(dim=2)
 @withmetadata struct StabilizerState{T} <: Symbolic{AbstractKet} where {T}
     stabilizer::T
 end
-istree(::StabilizerState) = false
+isexpr(::StabilizerState) = false
 basis(x::StabilizerState) = SpinBasis(1//2)^nqubits(x.stabilizer)
 Base.show(io::IO, x::StabilizerState) = print(io, "𝒮$(num_to_sub(nqubits(x.stabilizer)))")
 

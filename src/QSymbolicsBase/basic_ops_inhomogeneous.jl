@@ -5,10 +5,12 @@
     op
     ket
 end
-istree(::SApplyKet) = true
+isexpr(::SApplyKet) = true
+iscall(::SApplyKet) = true
 arguments(x::SApplyKet) = [x.op,x.ket]
 operation(x::SApplyKet) = *
-exprhead(x::SApplyKet) = :*
+head(x::SApplyKet) = :*
+children(x::SApplyKet) = [:*,x.op,x.ket]
 Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet}) = SApplyKet(op,k)
 Base.show(io::IO, x::SApplyKet) = begin print(io, x.op); print(io, x.ket) end
 basis(x::SApplyKet) = basis(x.ket)
@@ -18,10 +20,12 @@ basis(x::SApplyKet) = basis(x.ket)
     bra
     op
 end
-istree(::SApplyBra) = true
+isexpr(::SApplyBra) = true
+iscall(::SApplyBra) = true
 arguments(x::SApplyBra) = [x.bra,x.op]
 operation(x::SApplyBra) = *
-exprhead(x::SApplyBra) = :*
+head(x::SApplyBra) = :*
+children(x::SApplyBra) = [:*,x.bra,x.op]
 Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) = SApplyBra(b,op)
 Base.show(io::IO, x::SApplyBra) = begin print(io, x.bra); print(io, x.op) end
 basis(x::SApplyBra) = basis(x.bra)
@@ -31,10 +35,12 @@ basis(x::SApplyBra) = basis(x.bra)
     bra
     ket
 end
-istree(::SBraKet) = true
+isexpr(::SBraKet) = true
+iscall(::SBraKet) = true
 arguments(x::SBraKet) = [x.bra,x.ket]
 operation(x::SBraKet) = *
-exprhead(x::SBraKet) = :*
+head(x::SBraKet) = :*
+children(x::SBraKet) = [:*,x.bra,x.ket]
 Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) = SBraKet(b,k)
 function Base.show(io::IO, x::SBraKet)
     print(io,x.bra)
@@ -46,10 +52,12 @@ end
     sop
     op
 end
-istree(::SApplyOp) = true
+isexpr(::SApplyOp) = true
+iscall(::SApplyOp) = true
 arguments(x::SApplyOp) = [x.sop,x.op]
 operation(x::SApplyOp) = *
-exprhead(x::SApplyOp) = :*
+head(x::SApplyOp) = :*
+children(x::SApplyOp) = [:*,x.sop,x.op]
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplyOp(sop,op)
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplyOp(sop,SProjector(k))
 Base.show(io::IO, x::SApplyOp) = begin print(io, x.sop); print(io, x.op) end
@@ -60,10 +68,12 @@ basis(x::SApplyOp) = basis(x.op)
     ket
     bra
 end
-istree(::SOuterKetBra) = true
+isexpr(::SOuterKetBra) = true
+iscall(::SOuterKetBra) = true
 arguments(x::SOuterKetBra) = [x.ket,x.bra]
 operation(x::SOuterKetBra) = *
-exprhead(x::SOuterKetBra) = :*
+head(x::SOuterKetBra) = :*
+children(x::SOuterKetBra) = [:*,x.ket,x.bra]
 Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra}) = SOuterKetBra(k,b)
 Base.:(*)(k::SScaledKet, b::Symbolic{AbstractBra}) = k.coeff*SOuterKetBra(k.obj,b)
 Base.:(*)(k::Symbolic{AbstractKet}, b::SScaledBra) = b.coeff*SOuterKetBra(k,b.obj)
