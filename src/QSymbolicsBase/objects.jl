@@ -12,7 +12,7 @@ struct SOperator <: Symbolic{AbstractOperator}
     basis::Basis
 end
 const SymQ = Union{SKet, SBra, SOperator}
-istree(::SymQ) = false
+isexpr(::SymQ) = false
 metadata(::SymQ) = nothing
 basis(x::SymQ) = x.basis
 
@@ -30,24 +30,23 @@ iscommutative(x::SOperator) = false
 @withmetadata struct SInverseOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
-istree(::SInverseOperator) = true
+isexpr(::SInverseOperator) = true
+iscall(::SInverseOperator) = true
 arguments(x::SInverseOperator) = [x.op]
+operation(x::SInverseOperator) = inverse
+head(x::SInverseOperator) = :inverse 
+children(x::SInverseOperator) = [:inverse, x.op]
 basis(x::SInverseOperator) = basis(x.op)
 Base.show(io::IO, x::SInverseOperator) = print(io, "$(x.op)⁻¹")
-operation(x::SInverseOperator) = inverse
-exprhead(x::SInverseOperator) = :inverse 
 inverse(x::Symbolic{AbstractOperator}) = SInverseOperator(x)
 
 """Hermitian Operator"""
 @withmetadata struct SHermitianOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
-istree(::SHermitianOperator) = false
-arguments(x::SHermitianOperator) = [x.op]
+isexpr(::SHermitianOperator) = false
 basis(x::SHermitianOperator) = basis(x.op)
 Base.show(io::IO, x::SHermitianOperator) = print(io, "$(x.op)")
-operation(x::SHermitianOperator) = hermitian
-exprhead(x::SHermitianOperator) = :hermitian
 hermitian(x::Symbolic{AbstractOperator}) = SHermitianOperator(x)
 ishermitian(x::SHermitianOperator) = true
 
@@ -55,12 +54,9 @@ ishermitian(x::SHermitianOperator) = true
 @withmetadata struct SUnitaryOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
-istree(::SUnitaryOperator) = false
-arguments(x::SUnitaryOperator) = [x.op]
+isexpr(::SUnitaryOperator) = false
 basis(x::SUnitaryOperator) = basis(x.op)
 Base.show(io::IO, x::SUnitaryOperator) = print(io, "$(x.op)")
-operation(x::SUnitaryOperator) = unitary
-exprhead(x::SUnitaryOperator) = :unitary
 unitary(x::Symbolic{AbstractOperator}) = SUnitaryOperator(x)
 isunitary(x::SUnitaryOperator) = true
 
@@ -68,11 +64,8 @@ isunitary(x::SUnitaryOperator) = true
 @withmetadata struct SCommutativeOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
-istree(::SCommutativeOperator) = false
-arguments(x::SCommutativeOperator) = [x.op]
+isexpr(::SCommutativeOperator) = false
 basis(x::SCommutativeOperator) = basis(x.op)
 Base.show(io::IO, x::SCommutativeOperator) = print(io, "$(x.op)")
-operation(x::SCommutativeOperator) = commutative
-exprhead(x::SCommutativeOperator) = :commutative
 commutative(x::Symbolic{AbstractOperator}) = SCommutativeOperator(x)
 iscommutative(x::SCommutativeOperator) = true
