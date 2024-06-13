@@ -1,5 +1,10 @@
 # News
 
+## v0.3.0 - 2024-06-12
+
+- Bump compat for symbolics-related foundational packages.
+- Bump lowest julia requirement to 1.10.
+
 ## v0.2.7 - 2024-03-22
 
 - Bump QuantumClifford compat.
