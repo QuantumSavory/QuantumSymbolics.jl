@@ -3,7 +3,7 @@
 ##
 
 abstract type SpecialKet <: Symbolic{AbstractKet} end
-istree(::SpecialKet) = false
+isexpr(::SpecialKet) = false
 basis(x::SpecialKet) = x.basis
 Base.show(io::IO, x::SpecialKet) = print(io, "|$(symbollabel(x))⟩")
 
@@ -84,8 +84,8 @@ abstract type AbstractSingleQubitOp <: Symbolic{AbstractOperator} end
 abstract type AbstractTwoQubitOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleQubitGate <: AbstractSingleQubitOp end # TODO maybe an IsUnitaryTrait is a better choice
 abstract type AbstractTwoQubitGate <: AbstractTwoQubitOp end
-istree(::AbstractSingleQubitGate) = false
-istree(::AbstractTwoQubitGate) = false
+isexpr(::AbstractSingleQubitGate) = false
+isexpr(::AbstractTwoQubitGate) = false
 basis(::AbstractSingleQubitGate) = qubit_basis
 basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
 Base.show(io::IO, x::AbstractSingleQubitOp) = print(io, "$(symbollabel(x))")
@@ -100,7 +100,7 @@ anticommutator(o1::AbstractSingleQubitGate, o2::AbstractSingleQubitGate) = antic
     indices::Vector{Int}
     basis::Basis
 end
-istree(::OperatorEmbedding) = true
+isexpr(::OperatorEmbedding) = true
 
 @withmetadata struct XGate <: AbstractSingleQubitGate end
 eigvecs(g::XGate) = [X1,X2]
@@ -160,7 +160,7 @@ const CPHASE = CPHASEGate()
 
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
-istree(::AbstractSingleBosonGate) = false
+isexpr(::AbstractSingleBosonGate) = false
 basis(::AbstractSingleBosonGate) = inf_fock_basis
 
 @withmetadata struct NumberOp <: AbstractSingleBosonOp end
@@ -196,10 +196,12 @@ Operator(dim=2x2)
 @withmetadata struct SProjector <: Symbolic{AbstractOperator}
     ket::Symbolic{AbstractKet} # TODO parameterize
 end
-istree(::SProjector) = true
+isexpr(::SProjector) = true
+iscall(::SProjector) = true
 arguments(x::SProjector) = [x.ket]
 operation(x::SProjector) = projector
-exprhead(x::SProjector) = :projector
+head(x::SProjector) = :projector
+children(x::SProjector) = [:projector,x.ket]
 projector(x::Symbolic{AbstractKet}) = SProjector(x)
 basis(x::SProjector) = basis(x.ket)
 function Base.show(io::IO, x::SProjector)
@@ -212,10 +214,12 @@ end
 @withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
     obj
 end
-istree(::SDagger) = true
+isexpr(::SDagger) = true
+iscall(::SDagger) = true
 arguments(x::SDagger) = [x.ket]
 operation(x::SDagger) = dagger
-exprhead(x::SDagger) = :dagger
+head(x::SDagger) = :dagger
+children(x::SDagger) = [:dagger, x.ket]
 dagger(x::SKet) = SBra(x.name, x.basis)
 dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
@@ -266,7 +270,7 @@ julia> express(MixedState(X1⊗X2), CliffordRepr())
 end
 MixedState(x::Symbolic{AbstractKet}) = MixedState(basis(x))
 MixedState(x::Symbolic{AbstractOperator}) = MixedState(basis(x))
-istree(::MixedState) = false
+isexpr(::MixedState) = false
 basis(x::MixedState) = x.basis
 symbollabel(x::MixedState) = "𝕄"
 
@@ -285,6 +289,6 @@ Operator(dim=2x2)
 end
 IdentityOp(x::Symbolic{AbstractKet}) = IdentityOp(basis(x))
 IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))
-istree(::IdentityOp) = false
+isexpr(::IdentityOp) = false
 basis(x::IdentityOp) = x.basis
 

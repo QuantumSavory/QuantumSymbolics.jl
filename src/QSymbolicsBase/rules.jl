@@ -16,7 +16,7 @@ function prefactorscalings(xs)
     terms = []
     coeff = 1::Any
     for x in xs
-        if istree(x) && operation(x) == *
+        if isexpr(x) && operation(x) == *
             c,t = arguments(x)
             coeff *= c
             push!(terms,t)
@@ -37,7 +37,7 @@ function isnotflat_precheck(*)
         operation(x) === (*) || return false
         args = arguments(x)
         for t in args
-            if istree(t) && operation(t) === (*)
+            if isexpr(t) && operation(t) === (*)
                 return true
             end
         end

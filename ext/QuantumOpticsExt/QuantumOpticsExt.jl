@@ -12,7 +12,7 @@ using QuantumSymbolics:
     qubit_basis, inf_fock_basis
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
-using TermInterface: istree, exprhead, operation, arguments, similarterm, metadata
+using TermInterface: isexpr, head, operation, arguments, metadata
 
 const _b2 = SpinBasis(1//2)
 const _l0 = spinup(_b2)

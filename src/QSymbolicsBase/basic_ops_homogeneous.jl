@@ -6,10 +6,12 @@
     obj
     SScaled{S}(c,k) where S = _isone(c) ? k : new{S}(c,k)
 end
-istree(::SScaled) = true
-arguments(x::SScaled) = [x.coeff, x.obj]
+isexpr(::SScaled) = true
+iscall(::SScaled) = true
+arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
-exprhead(x::SScaled) = :*
+head(x::SScaled) = :*
+children(x::SScaled) = [:*,x.coeff,x.obj]
 Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
@@ -45,10 +47,12 @@ end
     dict
     SAdd{S}(d) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d)
 end
-istree(::SAdd) = true
+isexpr(::SAdd) = true
+iscall(::SAdd) = true
 arguments(x::SAdd) = [SScaledKet(v,k) for (k,v) in pairs(x.dict)]
 operation(x::SAdd) = +
-exprhead(x::SAdd) = :+
+head(x::SAdd) = :+
+children(x::SAdd) = [:+,SScaledKet(v,k) for (k,v) in pairs(x.dict)]
 Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} = SAdd{T}(countmap_flatten(xs, SScaled{T}))
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
@@ -84,10 +88,12 @@ basis(x::SApplyOp) = basis(x.terms)
         coeff * new{S}(cleanterms)
     end
 end
-istree(::STensor) = true
+isexpr(::STensor) = true
+iscall(::STensor) = true
 arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
-exprhead(x::STensor) = :⊗
+head(x::STensor) = :⊗
+children(x::STensor) = pushfirst!(x.terms,:⊗)
 ⊗(xs::Symbolic{T}...) where {T<:QObj} = STensor{T}(collect(xs))
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
