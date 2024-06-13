@@ -53,11 +53,27 @@ FLATTEN_RULES = [
 tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
 
 """Quantum circuit identities"""
-_isHXH(x) = x isa SApplyOp && x.terms == [H, X, H]
-_isHYH(x) = x isa SApplyOp && x.terms == [H, Y, H]
-_isHZH(x) = x isa SApplyOp && x.terms == [H, Z, H]
+_isXX(x) = x isa SApplyOp && x.terms == [X,X] # work on this with identity op
+_isYY(x) = x isa SApplyOp && x.terms == [Y,Y]
+_isZZ(x) = x isa SApplyOp && x.terms == [Z,Z]
+_isXY(x) = x isa SApplyOp && x.terms == [X,Y]
+_isYZ(x) = x isa SApplyOp && x.terms == [Y,Z]
+_isZX(x) = x isa SApplyOp && x.terms == [Z,X]
+_isYX(x) = x isa SApplyOp && x.terms == [Y,X]
+_isZY(x) = x isa SApplyOp && x.terms == [Z,Y]
+_isXZ(x) = x isa SApplyOp && x.terms == [X,Z]
+_isHXH(x) = x isa SApplyOp && x.terms == [H,X,H]
+_isHYH(x) = x isa SApplyOp && x.terms == [H,Y,H]
+_isHZH(x) = x isa SApplyOp && x.terms == [H,Z,H]
+
 
 CIRCUIT_RULES = [
+    @rule(~x::_isXY => im*Z),
+    @rule(~x::_isYZ => im*X),
+    @rule(~x::_isZX => im*Y),
+    @rule(~x::_isYX => -im*Z),
+    @rule(~x::_isZY => -im*X),
+    @rule(~x::_isXZ => -im*Y),
     @rule(~x::_isHXH => Z),
     @rule(~x::_isHYH => -Y),
     @rule(~x::_isHZH => X)
