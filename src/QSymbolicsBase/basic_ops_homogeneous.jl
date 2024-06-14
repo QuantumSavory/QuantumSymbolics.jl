@@ -87,6 +87,33 @@ Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)
 const SAddBra = SAdd{AbstractBra}
 Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 
+# defines commutativity for addition of quantum objects
+const CommQObj = Union{SAddBra, SAddKet, SAddOperator} 
+function _in(x::SymQObj, sadd::CommQObj)
+    for i in arguments(sadd)
+        if isequal(x, i)
+            return true
+        end
+    end
+    false
+end
+function Base.isequal(x::CommQObj, y::CommQObj)
+    if typeof(x)==typeof(y)
+        if isexpr(x)
+            if operation(x)==operation(y)
+                ax,ay = arguments(x),arguments(y)
+                (length(ax) == length(ay)) && all(x -> _in(x, y), ax)
+            else
+                false
+            end
+        else
+            propsequal(x,y) # this is unholy
+        end
+    else
+        false
+    end
+end
+
 """Symbolic application of operator on operator
 
 ```jldoctest
@@ -190,7 +217,7 @@ commutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 0
 commutator(o1::SCommutativeOperator, o2::SCommutativeOperator) = 0
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
-expand(x::SCommutator) = x == 0 ? x : (x.op1)*(x.op2) - (x.op2)*(x.op1)  # expands commutator into [A,B] = AB - BA
+expand(x::SCommutator) = x == 0 ? x : SApplyOp([x.op1, x.op2]) - SApplyOp([x.op2, x.op1])
 
 """Symbolic anticommutator of two operators
 
@@ -227,4 +254,4 @@ anticommutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 2*o1*
 anticommutator(o1::SCommutativeOperator, o2::SCommutativeOperator) = 2*o1*o2
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
-expand(x::SAnticommutator) = x == 0 ? x : (x.op1)*(x.op2) + (x.op2)*(x.op1)  # expands anticommutator into {A,B} = AB + BA
+expand(x::SAnticommutator) = x == 0 ? x : SApplyOp([x.op1, x.op2]) + SApplyOp([x.op2, x.op1])
