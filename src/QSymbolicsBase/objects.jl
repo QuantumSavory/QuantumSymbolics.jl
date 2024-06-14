@@ -41,7 +41,7 @@ Base.show(io::IO, x::SInverseOperator) = print(io, "$(x.op)⁻¹")
 inverse(x::Symbolic{AbstractOperator}) = SInverseOperator(x)
 
 """Hermitian Operator"""
-@withmetadata struct SHermitianOperator <: Symbolic{AbstractOperator}
+struct SHermitianOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
 isexpr(::SHermitianOperator) = false
@@ -51,7 +51,7 @@ hermitian(x::Symbolic{AbstractOperator}) = SHermitianOperator(x)
 ishermitian(::SHermitianOperator) = true
 
 """Unitary Operator"""
-@withmetadata struct SUnitaryOperator <: Symbolic{AbstractOperator}
+struct SUnitaryOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
 isexpr(::SUnitaryOperator) = false
@@ -61,7 +61,7 @@ unitary(x::Symbolic{AbstractOperator}) = SUnitaryOperator(x)
 isunitary(::SUnitaryOperator) = true
 
 """Commutative Operator"""
-@withmetadata struct SCommutativeOperator <: Symbolic{AbstractOperator}
+struct SCommutativeOperator <: Symbolic{AbstractOperator}
     op::Symbolic{AbstractOperator}
 end
 isexpr(::SCommutativeOperator) = false

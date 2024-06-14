@@ -136,7 +136,7 @@ const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 
-function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
+function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<:Union{SymQObj, Symbolic{Complex}}}
     if X==Y
         if isexpr(x)
             if operation(x)==operation(y)
@@ -155,7 +155,7 @@ end
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
-propsequal(x,y) = all(n->getproperty(x,n)==getproperty(y,n), propertynames(x))
+propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynames(x))
 
 ##
 # Most symbolic objects defined here

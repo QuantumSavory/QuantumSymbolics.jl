@@ -266,10 +266,10 @@ A⁻¹
 end
 isexpr(::SDagger) = true
 iscall(::SDagger) = true
-arguments(x::SDagger) = [x.ket]
+arguments(x::SDagger) = [x.obj]
 operation(x::SDagger) = dagger
 head(x::SDagger) = :dagger
-children(x::SDagger) = [:dagger, x.ket]
+children(x::SDagger) = [:dagger, x.obj]
 dagger(x::SKet) = SBra(x.name, x.basis)
 dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
@@ -279,9 +279,9 @@ dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (b,v) in pairs(x.dict)))
 dagger(x::SOperator) = SDagger{AbstractOperator}(x)
 dagger(x::SAddOperator) = SAddOperator(Dict(dagger(o)=>v for (o,v) in pairs(x.dict)))
 dagger(x::SHermitianOperator) = x
-dagger(x::SUnitaryOperator) = inverse(x.op)
-dagger(x::STensorBra) = STensorBra([dagger(i) for i in x.terms])
-dagger(x::STensorKet) = STensorKet([dagger(i) for i in x.terms])
+dagger(x::SUnitaryOperator) = inverse(x)
+dagger(x::STensorBra) = STensorKet([dagger(i) for i in x.terms])
+dagger(x::STensorKet) = STensorBra([dagger(i) for i in x.terms])
 dagger(x::STensorOperator) = STensorOperator([dagger(i) for i in x.terms])
 dagger(x::SScaledOperator) = SScaledOperator(conj(x.coeff), dagger(x.obj))
 dagger(x::SApplyKet) = dagger(x.ket)*dagger(x.op)

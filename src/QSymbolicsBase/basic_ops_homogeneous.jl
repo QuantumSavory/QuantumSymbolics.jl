@@ -103,10 +103,12 @@ AB
         coeff*new(cleanterms)
     end
 end
-istree(::SApplyOp) = true
+isexpr(::SApplyOp) = true
+iscall(::SApplyOp) = true
 arguments(x::SApplyOp) = x.terms
 operation(x::SApplyOp) = *
-exprhead(x::SApplyOp) = :*
+head(x::SApplyOp) = :*
+children(x::SApplyOp) = pushfirst!(x.terms,:*)
 Base.:(*)(xs::Symbolic{AbstractOperator}...) = SApplyOp(collect(xs))
 Base.show(io::IO, x::SApplyOp) = print(io, join(map(string, arguments(x)),""))
 basis(x::SApplyOp) = basis(x.terms)
@@ -176,10 +178,12 @@ julia> commutator(commutative(A), B)
         cleanterms[1] === cleanterms[2] ? 0 : coeff*new(cleanterms...)
     end
 end
-istree(::SCommutator) = true
+isexpr(::SCommutator) = true
+iscall(::SCommutator) = true
 arguments(x::SCommutator) = [x.op1, x.op2]
 operation(x::SCommutator) = commutator
-exprhead(x::SCommutator) = :commutator
+head(x::SCommutator) = :commutator
+children(x::SCommutator) = [:commutator, x.op1, x.op2]
 commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
 commutator(o1::SCommutativeOperator, o2::Symbolic{AbstractOperator}) = 0
 commutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 0
@@ -211,10 +215,12 @@ julia> anticommutator(commutative(A), B)
         coeff*new(cleanterms...)
     end
 end
-istree(::SAnticommutator) = true
+isexpr(::SAnticommutator) = true
+iscall(::SAnticommutator) = true
 arguments(x::SAnticommutator) = [x.op1, x.op2]
 operation(x::SAnticommutator) = anticommutator
-exprhead(x::SAnticommutator) = :anticommutator
+head(x::SAnticommutator) = :anticommutator
+children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
 anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
 anticommutator(o1::SCommutativeOperator, o2::Symbolic{AbstractOperator}) = 2*o1*o2
 anticommutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 2*o1*o2

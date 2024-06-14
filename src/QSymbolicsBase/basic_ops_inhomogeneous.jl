@@ -89,9 +89,9 @@ iscall(::SApplyOpSuper) = true
 arguments(x::SApplyOpSuper) = [x.sop,x.op]
 operation(x::SApplyOpSuper) = *
 head(x::SApplyOpSuper) = :*
-children(x::SApplyOp) = [:*,x.sop,x.op]
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplyOp(sop,op)
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplyOp(sop,SProjector(k))
+children(x::SApplyOpSuper) = [:*,x.sop,x.op]
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplyOpSuper(sop,op)
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplyOpSuper(sop,SProjector(k))
 Base.show(io::IO, x::SApplyOpSuper) = begin print(io, x.sop); print(io, x.op) end
 basis(x::SApplyOpSuper) = basis(x.op)
 
