@@ -208,7 +208,7 @@ children(x::SCommutator) = [:commutator, x.op1, x.op2]
 commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
-expand(x::SCommutator) = x == 0 ? x : SMulOperator([x.op1, x.op2]) - SMulOperator([x.op2, x.op1])
+expand(x::SCommutator) = x == 0 ? x : x.op1*x.op2 - x.op2*x.op1
 
 """Symbolic anticommutator of two operators
 
@@ -236,4 +236,4 @@ children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
 anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
-expand(x::SAnticommutator) = x == 0 ? x : SMulOperator([x.op1, x.op2]) + SMulOperator([x.op2, x.op1])
+expand(x::SAnticommutator) = x == 0 ? x : x.op1*x.op2 + x.op2*x.op1
