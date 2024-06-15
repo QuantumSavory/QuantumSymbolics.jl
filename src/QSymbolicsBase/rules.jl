@@ -6,10 +6,7 @@ function hasscalings(xs)
         operation(x) == *
     end
 end
-_isH(x) = x isa HGate
-_isX(x) = x isa XGate
-_isY(x) = x isa YGate
-_isZ(x) = x isa ZGate
+_isa(T) = x->isa(x,T)
 
 """Flattening terms"""
 function prefactorscalings(xs)
@@ -52,78 +49,47 @@ FLATTEN_RULES = [
 
 tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
 
-"""Quantum circuit identities"""
-_isXX(x) = x isa SApplyOp && x.terms == [X,X] # work on this with identity op
-_isYY(x) = x isa SApplyOp && x.terms == [Y,Y]
-_isZZ(x) = x isa SApplyOp && x.terms == [Z,Z]
-_isXY(x) = x isa SApplyOp && x.terms == [X,Y]
-_isYZ(x) = x isa SApplyOp && x.terms == [Y,Z]
-_isZX(x) = x isa SApplyOp && x.terms == [Z,X]
-_isYX(x) = x isa SApplyOp && x.terms == [Y,X]
-_isZY(x) = x isa SApplyOp && x.terms == [Z,Y]
-_isXZ(x) = x isa SApplyOp && x.terms == [X,Z]
-_isHXH(x) = x isa SApplyOp && x.terms == [H,X,H]
-_isHYH(x) = x isa SApplyOp && x.terms == [H,Y,H]
-_isHZH(x) = x isa SApplyOp && x.terms == [H,Z,H]
-
-
-CIRCUIT_RULES = [
-    @rule(~x::_isXX => I),
-    @rule(~x::_isYY => I),
-    @rule(~x::_isZZ => I),
-    @rule(~x::_isXY => im*Z),
-    @rule(~x::_isYZ => im*X),
-    @rule(~x::_isZX => im*Y),
-    @rule(~x::_isYX => -im*Z),
-    @rule(~x::_isZY => -im*X),
-    @rule(~x::_isXZ => -im*Y),
-    @rule(~x::_isHXH => Z),
-    @rule(~x::_isHYH => -Y),
-    @rule(~x::_isHZH => X)
+"""Pauli identities"""
+PAULI_RULES = [
+    @rule(~o1::_isa(XGate)*~o2::_isa(XGate) => I),
+    @rule(~o1::_isa(YGate)*~o2::_isa(YGate) => I),
+    @rule(~o1::_isa(ZGate)*~o2::_isa(ZGate) => I),
+    @rule(~o1::_isa(XGate)*~o2::_isa(YGate) => im*Z),
+    @rule(~o1::_isa(YGate)*~o2::_isa(ZGate) => im*X),
+    @rule(~o1::_isa(ZGate)*~o2::_isa(XGate) => im*Y),
+    @rule(~o1::_isa(YGate)*~o2::_isa(XGate) => -im*Z),
+    @rule(~o1::_isa(ZGate)*~o2::_isa(YGate) => -im*X),
+    @rule(~o1::_isa(XGate)*~o2::_isa(ZGate) => -im*Y),
+    @rule(~o1::_isa(HGate)*~o2::_isa(XGate)*~o3::_isa(HGate) => Z),
+    @rule(~o1::_isa(HGate)*~o2::_isa(YGate)*~o3::_isa(HGate) => -Y),
+    @rule(~o1::_isa(HGate)*~o2::_isa(ZGate)*~o3::_isa(HGate) => X)
 ]
 
-circuit_simplify = Fixpoint(Chain(CIRCUIT_RULES))
+pauli_simplify = Fixpoint(Chain(PAULI_RULES))
 
 """Commutator identities"""
-_isXYcommutator(x) = x isa SCommutator && _isX(x.op1) && _isY(x.op2)
-_isYZcommutator(x) = x isa SCommutator && _isY(x.op1) && _isZ(x.op2)
-_isZXcommutator(x) = x isa SCommutator && _isZ(x.op1) && _isX(x.op2)
-_isYXcommutator(x) = x isa SCommutator && _isY(x.op1) && _isX(x.op2)
-_isZYcommutator(x) = x isa SCommutator && _isZ(x.op1) && _isY(x.op2)
-_isXZcommutator(x) = x isa SCommutator && _isX(x.op1) && _isZ(x.op2)
-
 COMMUTATOR_RULES = [
-    @rule(~x::_isXYcommutator => 2*im*Z),
-    @rule(~x::_isYZcommutator => 2*im*X),
-    @rule(~x::_isZXcommutator => 2*im*Y),
-    @rule(~x::_isYXcommutator => -2*im*Z),
-    @rule(~x::_isZYcommutator => -2*im*X),
-    @rule(~x::_isXZcommutator => -2*im*Y)
+    @rule(commutator(~o1::_isa(XGate), ~o2::_isa(YGate)) => 2*im*Z),
+    @rule(commutator(~o1::_isa(YGate), ~o2::_isa(ZGate)) => 2*im*X),
+    @rule(commutator(~o1::_isa(ZGate), ~o2::_isa(XGate)) => 2*im*Y),
+    @rule(commutator(~o1::_isa(YGate), ~o2::_isa(XGate)) => -2*im*Z),
+    @rule(commutator(~o1::_isa(ZGate), ~o2::_isa(YGate)) => -2*im*X),
+    @rule(commutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => -2*im*Y)
 ]
 
 commutator_simplify = Fixpoint(Chain(COMMUTATOR_RULES))
 
 """Anticommutator identities"""
-_isXXanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isX(x.op2)
-_isYYanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isY(x.op2)
-_isZZanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isZ(x.op2)
-_isXYanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isY(x.op2)
-_isYZanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isZ(x.op2)
-_isZXanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isX(x.op2)
-_isYXanticommutator(x) = x isa SAnticommutator && _isY(x.op1) && _isX(x.op2)
-_isZYanticommutator(x) = x isa SAnticommutator && _isZ(x.op1) && _isY(x.op2)
-_isXZanticommutator(x) = x isa SAnticommutator && _isX(x.op1) && _isZ(x.op2)
-
 ANTICOMMUTATOR_RULES = [
-    @rule(~x::_isXXanticommutator => 2*I),
-    @rule(~x::_isYYanticommutator => 2*I),
-    @rule(~x::_isZZanticommutator => 2*I),
-    @rule(~x::_isXYanticommutator => 0),
-    @rule(~x::_isYZanticommutator => 0),
-    @rule(~x::_isZXanticommutator => 0),
-    @rule(~x::_isYXanticommutator => 0),
-    @rule(~x::_isZYanticommutator => 0),
-    @rule(~x::_isXZanticommutator => 0)
+    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(XGate)) => 2*I),
+    @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(YGate)) => 2*I),
+    @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(ZGate)) => 2*I),
+    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(YGate))=> 0),
+    @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(ZGate)) => 0),
+    @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(XGate)) => 0),
+    @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(XGate)) => 0),
+    @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(YGate)) => 0),
+    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0)
 ]
 
 anticommutator_simplify = Fixpoint(Chain(ANTICOMMUTATOR_RULES))

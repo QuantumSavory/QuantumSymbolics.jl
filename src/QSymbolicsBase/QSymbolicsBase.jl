@@ -6,7 +6,7 @@ using TermInterface
 import TermInterface: isexpr, head, iscall, children, operation, arguments, metadata
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs, ishermitian
+import LinearAlgebra: eigvecs, ishermitian, inv
 
 import QuantumInterface:
     apply!,
@@ -17,7 +17,7 @@ import QuantumInterface:
     AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 export SymQObj,QObj,
-       AbstractRepresentation, AbstractUse, 
+       AbstractRepresentation, AbstractUse,
        QuantumOpticsRepr, QuantumMCRepr, CliffordRepr,
        UseAsState, UseAsObservable, UseAsOperation,
        apply!,
@@ -33,15 +33,14 @@ export SymQObj,QObj,
        SAddBra,SAddKet,SAddOperator,
        SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
-       SProjector,MixedState,IdentityOp,SInverseOperator,SHermitianOperator,SUnitaryOperator,SCommutativeOperator,
-       SApplyKet,SApplyBra,SApplyOp,SApplyOpSuper,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
+       SProjector,MixedState,IdentityOp,SInvOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
+       SApplyKet,SApplyBra,SMulOperator,SApplySuperop,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
        XBasisState, YBasisState, ZBasisState,
        NumberOp, CreateOp, DestroyOp,
-       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate, 
-       circuit_simplify, commutator_simplify, anticommutator_simplify, 
-       ishermitian, isunitary, iscommutative,
-       hermitian, unitary, commutative, inverse
+       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
+       pauli_simplify, commutator_simplify, anticommutator_simplify,
+       isunitary
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()
@@ -164,7 +163,7 @@ propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynam
 # Most symbolic objects defined here
 ##
 
-include("objects.jl")
+include("literal_objects.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
 include("predefined.jl")

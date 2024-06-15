@@ -65,10 +65,6 @@ julia> b*k
 @withmetadata struct SBraKet <: Symbolic{Complex}
     bra
     ket
-    function SBraKet(b, k)
-        coeff, cleanterms = prefactorscalings([b k])
-        coeff*new(cleanterms...)
-    end
 end
 isexpr(::SBraKet) = true
 iscall(::SBraKet) = true
@@ -80,20 +76,20 @@ Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) = SBraKet(b,k)
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 
 """Symbolic application of a superoperator on an operator"""
-@withmetadata struct SApplyOpSuper <: Symbolic{AbstractOperator}
+@withmetadata struct SApplySuperop <: Symbolic{AbstractOperator}
     sop
     op
 end
-isexpr(::SApplyOpSuper) = true
-iscall(::SApplyOpSuper) = true
-arguments(x::SApplyOpSuper) = [x.sop,x.op]
-operation(x::SApplyOpSuper) = *
-head(x::SApplyOpSuper) = :*
-children(x::SApplyOpSuper) = [:*,x.sop,x.op]
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplyOpSuper(sop,op)
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplyOpSuper(sop,SProjector(k))
-Base.show(io::IO, x::SApplyOpSuper) = begin print(io, x.sop); print(io, x.op) end
-basis(x::SApplyOpSuper) = basis(x.op)
+isexpr(::SApplySuperop) = true
+iscall(::SApplySuperop) = true
+arguments(x::SApplySuperop) = [x.sop,x.op]
+operation(x::SApplySuperop) = *
+head(x::SApplySuperop) = :*
+children(x::SApplySuperop) = [:*,x.sop,x.op]
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplySuperop(sop,op)
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplySuperop(sop,SProjector(k))
+Base.show(io::IO, x::SApplySuperop) = begin print(io, x.sop); print(io, x.op) end
+basis(x::SApplySuperop) = basis(x.op)
 
 """Symbolic outer product of a ket and a bra
 ```jldoctest 

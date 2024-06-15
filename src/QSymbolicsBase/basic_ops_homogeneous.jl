@@ -123,22 +123,22 @@ julia> A*B
 AB
 ```
 """
-@withmetadata struct SApplyOp <: Symbolic{AbstractOperator}
+@withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
     terms
-    function SApplyOp(terms)
+    function SMulOperator(terms)
         coeff, cleanterms = prefactorscalings(terms)
         coeff*new(cleanterms)
     end
 end
-isexpr(::SApplyOp) = true
-iscall(::SApplyOp) = true
-arguments(x::SApplyOp) = x.terms
-operation(x::SApplyOp) = *
-head(x::SApplyOp) = :*
-children(x::SApplyOp) = pushfirst!(x.terms,:*)
-Base.:(*)(xs::Symbolic{AbstractOperator}...) = SApplyOp(collect(xs))
-Base.show(io::IO, x::SApplyOp) = print(io, join(map(string, arguments(x)),""))
-basis(x::SApplyOp) = basis(x.terms)
+isexpr(::SMulOperator) = true
+iscall(::SMulOperator) = true
+arguments(x::SMulOperator) = x.terms
+operation(x::SMulOperator) = *
+head(x::SMulOperator) = :*
+children(x::SMulOperator) = pushfirst!(x.terms,:*)
+Base.:(*)(xs::Symbolic{AbstractOperator}...) = SMulOperator(collect(xs))
+Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
+basis(x::SMulOperator) = basis(x.terms)
 
 """Tensor product of quantum objects (kets, operators, or bras)
 
@@ -187,13 +187,7 @@ julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
 julia> commutator(A, B)
 [A,B]
 
-julia> expand(commutator(A, B))
-(AB+-1BA)
-
 julia> commutator(A, A)
-0
-
-julia> commutator(commutative(A), B)
 0
 ```
 """
@@ -212,12 +206,9 @@ operation(x::SCommutator) = commutator
 head(x::SCommutator) = :commutator
 children(x::SCommutator) = [:commutator, x.op1, x.op2]
 commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
-commutator(o1::SCommutativeOperator, o2::Symbolic{AbstractOperator}) = 0
-commutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 0
-commutator(o1::SCommutativeOperator, o2::SCommutativeOperator) = 0
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
-expand(x::SCommutator) = x == 0 ? x : SApplyOp([x.op1, x.op2]) - SApplyOp([x.op2, x.op1])
+expand(x::SCommutator) = x == 0 ? x : SMulOperator([x.op1, x.op2]) - SMulOperator([x.op2, x.op1])
 
 """Symbolic anticommutator of two operators
 
@@ -226,12 +217,6 @@ julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
 
 julia> anticommutator(A, B)
 {A,B}
-
-julia> expand(anticommutator(A, B))
-(AB+BA)
-
-julia> anticommutator(commutative(A), B)
-2AB
 ```
 """
 @withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
@@ -249,9 +234,6 @@ operation(x::SAnticommutator) = anticommutator
 head(x::SAnticommutator) = :anticommutator
 children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
 anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
-anticommutator(o1::SCommutativeOperator, o2::Symbolic{AbstractOperator}) = 2*o1*o2
-anticommutator(o1::Symbolic{AbstractOperator}, o2::SCommutativeOperator) = 2*o1*o2
-anticommutator(o1::SCommutativeOperator, o2::SCommutativeOperator) = 2*o1*o2
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
-expand(x::SAnticommutator) = x == 0 ? x : SApplyOp([x.op1, x.op2]) + SApplyOp([x.op2, x.op1])
+expand(x::SAnticommutator) = x == 0 ? x : SMulOperator([x.op1, x.op2]) + SMulOperator([x.op2, x.op1])

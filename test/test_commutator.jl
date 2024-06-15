@@ -7,10 +7,6 @@ B = SOperator(:B, SpinBasis(1//2))
 @testset "symbolic commutator tests" begin
     @test isequal(commutator(2*A, B), commutator(A, 2*B)) && isequal(2*commutator(A, B), commutator(2*A, B)) && isequal(commutator(A, 2*B), 2*commutator(A, B))
     @test commutator(A, A) == 0
-
-    @test isequal(commutator(commutative(A), A), 0)
-    @test isequal(commutator(A, commutative(A)), 0)
-    @test isequal(commutator(commutative(A), commutative(A)), 0)
 end
 
 @testset "commutator Pauli tests" begin
