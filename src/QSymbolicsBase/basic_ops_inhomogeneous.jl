@@ -1,4 +1,6 @@
-"""This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are inhomogeneous in their arguments."""
+##
+# This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are inhomogeneous in their arguments.
+##
 
 """Symbolic application of an operator on a ket (from the left)
 
@@ -76,20 +78,20 @@ Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) = SBraKet(b,k)
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 
 """Symbolic application of a superoperator on an operator"""
-@withmetadata struct SApplySuperop <: Symbolic{AbstractOperator}
+@withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
     sop
     op
 end
-isexpr(::SApplySuperop) = true
-iscall(::SApplySuperop) = true
-arguments(x::SApplySuperop) = [x.sop,x.op]
-operation(x::SApplySuperop) = *
-head(x::SApplySuperop) = :*
-children(x::SApplySuperop) = [:*,x.sop,x.op]
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SApplySuperop(sop,op)
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SApplySuperop(sop,SProjector(k))
-Base.show(io::IO, x::SApplySuperop) = begin print(io, x.sop); print(io, x.op) end
-basis(x::SApplySuperop) = basis(x.op)
+isexpr(::SSuperOpApply) = true
+iscall(::SSuperOpApply) = true
+arguments(x::SSuperOpApply) = [x.sop,x.op]
+operation(x::SSuperOpApply) = *
+head(x::SSuperOpApply) = :*
+children(x::SSuperOpApply) = [:*,x.sop,x.op]
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SSuperOpApply(sop,op)
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SSuperOpApply(sop,SProjector(k))
+Base.show(io::IO, x::SSuperOpApply) = begin print(io, x.sop); print(io, x.op) end
+basis(x::SSuperOpApply) = basis(x.op)
 
 """Symbolic outer product of a ket and a bra
 ```jldoctest 

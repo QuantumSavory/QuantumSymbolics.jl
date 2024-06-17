@@ -17,29 +17,29 @@ import QuantumInterface:
     AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 export SymQObj,QObj,
-       AbstractRepresentation, AbstractUse,
-       QuantumOpticsRepr, QuantumMCRepr, CliffordRepr,
-       UseAsState, UseAsObservable, UseAsOperation,
+       AbstractRepresentation,AbstractUse,
+       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,
+       UseAsState,UseAsObservable,UseAsOperation,
        apply!,
        express,
        tensor,⊗,
-       dagger,projector,commutator, anticommutator, expand,
+       dagger,projector,commutator,anticommutator,expand,
        I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
-       N,n̂,Create,âꜛ,Destroy,â, SpinBasis, FockBasis,
+       N,n̂,Create,âꜛ,Destroy,â,SpinBasis,FockBasis,
        SBra,SKet,SOperator,
        SAddBra,SAddKet,SAddOperator,
-       SScaledBra,SScaledOperator,SScaledKet,
+       SScaled,SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
        SProjector,MixedState,IdentityOp,SInvOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
-       SApplyKet,SApplyBra,SMulOperator,SApplySuperop,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
-       HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
-       XBasisState, YBasisState, ZBasisState,
-       NumberOp, CreateOp, DestroyOp,
-       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
-       pauli_simplify, commutator_simplify, anticommutator_simplify,
+       SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
+       HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
+       XBasisState,YBasisState,ZBasisState,
+       NumberOp,CreateOp,DestroyOp,
+       XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
+       qsimplify,qsimplify_pauli,qsimplify_flatten,qsimplify_commutator,qsimplify_anticommutator,
        isunitary
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
@@ -143,7 +143,11 @@ function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
-                (length(ax) == length(ay)) && all(zip(ax,ay)) do xy isequal(xy...) end
+                if operation(x) === :+
+                    Set(ax) == Set(ay)
+                else
+                    (length(ax) == length(ay)) && all(zip(ax,ay)) do xy isequal(xy...) end
+                end
             else
                 false
             end

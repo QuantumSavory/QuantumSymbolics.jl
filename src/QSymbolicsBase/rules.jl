@@ -1,6 +1,10 @@
-"""This file defines automatic simplification rules for specific operations of quantum objects"""
+##
+# This file defines automatic simplification rules for specific operations of quantum objects.
+##
 
-"""Predicate functions"""
+##
+# Predicate functions
+##
 function hasscalings(xs)
     any(xs) do x
         operation(x) == *
@@ -8,15 +12,25 @@ function hasscalings(xs)
 end
 _isa(T) = x->isa(x,T)
 
-"""Flattening terms"""
-function prefactorscalings(xs)
+##
+# Determining factors for expressions containing quantum objects
+##
+
+function prefactorscalings(xs; scalar=false) # If the scalar keyword is true, then only scalar factors will be returned as coefficients
     terms = []
     coeff = 1::Any
     for x in xs
         if isexpr(x) && operation(x) == *
             c,t = arguments(x)
-            coeff *= c
-            push!(terms,t)
+            if scalar == false
+                coeff *= c
+                push!(terms,t)
+            elseif scalar == true && c isa Number
+                coeff *= c
+                push!(terms, t)
+            else
+                push!(terms,(*)(arguments(x)...))
+            end
         else
             push!(terms,x)
         end
@@ -42,15 +56,18 @@ function isnotflat_precheck(*)
     end
 end
 
-FLATTEN_RULES = [
+##
+# Simplification rules
+## 
+
+# Flattening expressions
+RULES_FLATTEN = [
     @rule(~x::isnotflat_precheck(⊗) => flatten_term(⊗, ~x)),
-    @rule ⊗(~~xs::hasscalings) => prefactorscalings_rule(xs) # Used to perform (a*|k⟩) ⊗ (b*|l⟩) → (a*b) * (|k⟩⊗|l⟩) 
+    @rule ⊗(~~xs::hasscalings) => prefactorscalings_rule(xs)
 ]
 
-tensor_simplify = Fixpoint(Chain(FLATTEN_RULES))
-
-"""Pauli identities"""
-PAULI_RULES = [
+# Pauli identities
+RULES_PAULI = [
     @rule(~o1::_isa(XGate)*~o2::_isa(XGate) => I),
     @rule(~o1::_isa(YGate)*~o2::_isa(YGate) => I),
     @rule(~o1::_isa(ZGate)*~o2::_isa(ZGate) => I),
@@ -65,10 +82,8 @@ PAULI_RULES = [
     @rule(~o1::_isa(HGate)*~o2::_isa(ZGate)*~o3::_isa(HGate) => X)
 ]
 
-pauli_simplify = Fixpoint(Chain(PAULI_RULES))
-
-"""Commutator identities"""
-COMMUTATOR_RULES = [
+# Commutator identities
+RULES_COMMUTATOR = [
     @rule(commutator(~o1::_isa(XGate), ~o2::_isa(YGate)) => 2*im*Z),
     @rule(commutator(~o1::_isa(YGate), ~o2::_isa(ZGate)) => 2*im*X),
     @rule(commutator(~o1::_isa(ZGate), ~o2::_isa(XGate)) => 2*im*Y),
@@ -77,10 +92,8 @@ COMMUTATOR_RULES = [
     @rule(commutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => -2*im*Y)
 ]
 
-commutator_simplify = Fixpoint(Chain(COMMUTATOR_RULES))
-
-"""Anticommutator identities"""
-ANTICOMMUTATOR_RULES = [
+# Anticommutator identities
+RULES_ANTICOMMUTATOR = [
     @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(XGate)) => 2*I),
     @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(YGate)) => 2*I),
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(ZGate)) => 2*I),
@@ -92,4 +105,35 @@ ANTICOMMUTATOR_RULES = [
     @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0)
 ]
 
-anticommutator_simplify = Fixpoint(Chain(ANTICOMMUTATOR_RULES))
+RULES_ALL = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR]
+
+##
+# Rewriters
+##
+qsimplify_flatten = Chain(RULES_FLATTEN)
+qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
+qsimplify_pauli = Chain(RULES_PAULI)
+qsimplify_commutator = Chain(RULES_COMMUTATOR)
+
+"""Manually simplify a symbolic expression of quantum objects. 
+
+If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression. 
+For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
+
+```jldoctest
+julia> qsimplify(anticommutator(σˣ, σˣ), rewriter=qsimplify_anticommutator)
+2𝕀
+```
+"""
+function qsimplify(s; rewriter=nothing)
+    if QuantumSymbolics.isexpr(s)
+        if rewriter == nothing
+            Fixpoint(Chain(RULES_ALL))(s)
+        else
+            Fixpoint(rewriter)(s)
+        end
+    else
+        error("Object $(s) of type $(typeof(s)) is not an expression.")
+    end
+end
+

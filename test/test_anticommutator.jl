@@ -9,13 +9,13 @@ B = SOperator(:B, SpinBasis(1//2))
 end
 
 @testset "anticommutator Pauli tests" begin
-    @test isequal(anticommutator(X, X), 2*I)
-    @test isequal(anticommutator(Y, Y), 2*I)
-    @test isequal(anticommutator(Z, Z), 2*I)
-    @test isequal(anticommutator(X, Y), 0)
-    @test isequal(anticommutator(Y, X), 0)
-    @test isequal(anticommutator(Y, Z), 0)
-    @test isequal(anticommutator(Z, Y), 0)
-    @test isequal(anticommutator(Z, X), 0)
-    @test isequal(anticommutator(X, Z), 0)
+    @test isequal(qsimplify(anticommutator(X, X), rewriter=qsimplify_anticommutator), 2*I)
+    @test isequal(qsimplify(anticommutator(Y, Y), rewriter=qsimplify_anticommutator), 2*I)
+    @test isequal(qsimplify(anticommutator(Z, Z), rewriter=qsimplify_anticommutator), 2*I)
+    @test isequal(qsimplify(anticommutator(X, Y), rewriter=qsimplify_anticommutator), 0)
+    @test isequal(qsimplify(anticommutator(Y, X), rewriter=qsimplify_anticommutator), 0)
+    @test isequal(qsimplify(anticommutator(Y, Z), rewriter=qsimplify_anticommutator), 0)
+    @test isequal(qsimplify(anticommutator(Z, Y), rewriter=qsimplify_anticommutator), 0)
+    @test isequal(qsimplify(anticommutator(Z, X), rewriter=qsimplify_anticommutator), 0)
+    @test isequal(qsimplify(anticommutator(X, Z), rewriter=qsimplify_anticommutator), 0)
 end

@@ -1,4 +1,6 @@
-"""This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments."""
+##
+# This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments.
+##
 
 """Scaling of a quantum object (ket, operator, or bra) by a number
 
@@ -27,8 +29,8 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = SScaled{T}(c,x)
-Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
+Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = c == 0 ? 0 : SScaled{T}(c,x)
+Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c == 0 ? 0 : SScaled{T}(c,x)
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
 basis(x::SScaled) = basis(x.obj)
 
@@ -86,33 +88,6 @@ const SAddOperator = SAdd{AbstractOperator}
 Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
 const SAddBra = SAdd{AbstractBra}
 Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
-
-# defines commutativity for addition of quantum objects
-const CommQObj = Union{SAddBra, SAddKet, SAddOperator} 
-function _in(x::SymQObj, sadd::CommQObj)
-    for i in arguments(sadd)
-        if isequal(x, i)
-            return true
-        end
-    end
-    false
-end
-function Base.isequal(x::CommQObj, y::CommQObj)
-    if typeof(x)==typeof(y)
-        if isexpr(x)
-            if operation(x)==operation(y)
-                ax,ay = arguments(x),arguments(y)
-                (length(ax) == length(ay)) && all(x -> _in(x, y), ax)
-            else
-                false
-            end
-        else
-            propsequal(x,y) # this is unholy
-        end
-    else
-        false
-    end
-end
 
 """Symbolic application of operator on operator
 
@@ -195,7 +170,7 @@ julia> commutator(A, A)
     op1
     op2
     function SCommutator(o1, o2) 
-        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
         cleanterms[1] === cleanterms[2] ? 0 : coeff*new(cleanterms...)
     end
 end
@@ -223,7 +198,7 @@ julia> anticommutator(A, B)
     op1
     op2
     function SAnticommutator(o1, o2) 
-        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
         coeff*new(cleanterms...)
     end
 end

@@ -10,11 +10,10 @@ B = SOperator(:B, SpinBasis(1//2))
 end
 
 @testset "commutator Pauli tests" begin
-    @test commutator(X, X) == 0 && commutator(Y, Y) == 0 && commutator(Z, Z) == 0
-    @test isequal(commutator(X, Y), 2*im*Z)
-    @test isequal(commutator(Y, X), -2*im*Z)
-    @test isequal(commutator(Y, Z), 2*im*X)
-    @test isequal(commutator(Z, Y), -2*im*X)
-    @test isequal(commutator(Z, X), 2*im*Y)
-    @test isequal(commutator(X, Z), -2*im*Y)
+    @test isequal(qsimplify(commutator(X, Y), rewriter=qsimplify_commutator), 2*im*Z)
+    @test isequal(qsimplify(commutator(Y, X), rewriter=qsimplify_commutator), -2*im*Z)
+    @test isequal(qsimplify(commutator(Y, Z), rewriter=qsimplify_commutator), 2*im*X)
+    @test isequal(qsimplify(commutator(Z, Y), rewriter=qsimplify_commutator), -2*im*X)
+    @test isequal(qsimplify(commutator(Z, X), rewriter=qsimplify_commutator), 2*im*Y)
+    @test isequal(qsimplify(commutator(X, Z), rewriter=qsimplify_commutator), -2*im*Y)
 end

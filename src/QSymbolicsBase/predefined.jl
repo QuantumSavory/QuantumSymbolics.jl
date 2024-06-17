@@ -90,10 +90,6 @@ basis(::AbstractSingleQubitGate) = qubit_basis
 basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
 Base.show(io::IO, x::AbstractSingleQubitOp) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::AbstractTwoQubitOp) = print(io, "$(symbollabel(x))")
-Base.:(*)(xs::AbstractSingleQubitGate...) = pauli_simplify(SMulOperator(collect(xs)))
-commutator(o1::AbstractSingleQubitGate, o2::AbstractSingleQubitGate) = commutator_simplify(SCommutator(o1, o2))
-anticommutator(o1::AbstractSingleQubitGate, o2::AbstractSingleQubitGate) = anticommutator_simplify(SAnticommutator(o1, o2))
-
 
 @withmetadata struct OperatorEmbedding <: Symbolic{AbstractOperator}
     gate::Symbolic{AbstractOperator} # TODO parameterize
