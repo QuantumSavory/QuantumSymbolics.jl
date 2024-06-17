@@ -138,15 +138,23 @@ const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 
+function _in(x::SymQObj, y::SymQObj)
+    for i in arguments(y)
+        if isequal(x, i)
+            return true
+        end
+    end
+    false
+end
 function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<:Union{SymQObj, Symbolic{Complex}}}
     if X==Y
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
-                if operation(x) === :+
-                    Set(ax) == Set(ay)
+                if (operation(x) === +) && (length(ax) == length(ay))
+                    all(x -> _in(x, y), ax)
                 else
-                    (length(ax) == length(ay)) && all(zip(ax,ay)) do xy isequal(xy...) end
+                    all(zip(ax,ay)) do xy isequal(xy...) end
                 end
             else
                 false
