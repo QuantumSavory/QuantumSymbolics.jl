@@ -83,11 +83,20 @@ Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type paramete
 basis(x::SAdd) = basis(first(x.dict).first)
 
 const SAddKet = SAdd{AbstractKet}
-Base.show(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+function Base.show(io::IO, x::SAddKet)
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(map(string, ordered_terms),"+")::String*")") # type assert to help inference
+end
 const SAddOperator = SAdd{AbstractOperator}
-Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+function Base.show(io::IO, x::SAddOperator) 
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(map(string, ordered_terms),"+")::String*")") # type assert to help inference
+end
 const SAddBra = SAdd{AbstractBra}
-Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+function Base.show(io::IO, x::SAddBra)
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(map(string, ordered_terms),"+")::String*")") # type assert to help inference
+end
 
 """Symbolic application of operator on operator
 
