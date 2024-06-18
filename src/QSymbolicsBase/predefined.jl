@@ -260,6 +260,9 @@ arguments(x::SDagger) = [x.obj]
 operation(x::SDagger) = dagger
 head(x::SDagger) = :dagger
 children(x::SDagger) = [:dagger, x.obj]
+dagger(x::Symbolic{AbstractBra}) = SDagger{AbstractKet}(x)
+dagger(x::Symbolic{AbstractKet}) = SDagger{AbstractBra}(x)
+dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
 dagger(x::SKet) = SBra(x.name, x.basis)
 dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
@@ -282,7 +285,7 @@ dagger(x::SBraKet) = SBraKet(dagger(x.ket), dagger(x.bra))
 dagger(x::SOuterKetBra) = SOuterKetBra(dagger(x.bra), dagger(x.ket))
 dagger(x::SDagger) = x.obj
 basis(x::SDagger) = basis(x.obj)
-function Base.show(io::IO, x::SDagger{AbstractOperator})
+function Base.show(io::IO, x::SDagger)
     print(io,x.obj)
     print(io,"†")
 end
