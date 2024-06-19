@@ -26,6 +26,9 @@ operation(x::SApplyKet) = *
 head(x::SApplyKet) = :*
 children(x::SApplyKet) = [:*,x.op,x.ket]
 Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet}) = SApplyKet(op,k)
+Base.:(*)(op::SZeroOperator, k::Symbolic{AbstractKet}) = SZeroKet()
+Base.:(*)(op::Symbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
+Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
 Base.show(io::IO, x::SApplyKet) = begin print(io, x.op); print(io, x.ket) end
 basis(x::SApplyKet) = basis(x.ket)
 
@@ -52,6 +55,9 @@ operation(x::SApplyBra) = *
 head(x::SApplyBra) = :*
 children(x::SApplyBra) = [:*,x.bra,x.op]
 Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) = SApplyBra(b,op)
+Base.:(*)(b::SZeroBra, op::Symbolic{AbstractOperator}) = SZeroBra()
+Base.:(*)(b::Symbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
+Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
 Base.show(io::IO, x::SApplyBra) = begin print(io, x.bra); print(io, x.op) end
 basis(x::SApplyBra) = basis(x.bra)
 
@@ -75,6 +81,9 @@ operation(x::SBraKet) = *
 head(x::SBraKet) = :*
 children(x::SBraKet) = [:*,x.bra,x.ket]
 Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) = SBraKet(b,k)
+Base.:(*)(b::SZeroBra, k::Symbolic{AbstractKet}) = 0
+Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
+Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 
 """Symbolic application of a superoperator on an operator"""
@@ -89,7 +98,9 @@ operation(x::SSuperOpApply) = *
 head(x::SSuperOpApply) = :*
 children(x::SSuperOpApply) = [:*,x.sop,x.op]
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SSuperOpApply(sop,op)
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::SZeroOperator) = SZeroOperator()
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SSuperOpApply(sop,SProjector(k))
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::SZeroKet) = SZeroKet()
 Base.show(io::IO, x::SSuperOpApply) = begin print(io, x.sop); print(io, x.op) end
 basis(x::SSuperOpApply) = basis(x.op)
 
@@ -115,5 +126,8 @@ operation(x::SOuterKetBra) = *
 head(x::SOuterKetBra) = :*
 children(x::SOuterKetBra) = [:*,x.ket,x.bra]
 Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra}) = SOuterKetBra(k,b)
+Base.:(*)(k::SZeroKet, b::Symbolic{AbstractBra}) = SZeroOperator()
+Base.:(*)(k::Symbolic{AbstractKet}, b::SZeroBra) = SZeroOperator()
+Base.:(*)(k::SZeroKet, b::SZeroBra) = SZeroOperator()
 Base.show(io::IO, x::SOuterKetBra) = begin print(io, x.ket); print(io, x.bra) end
 basis(x::SOuterKetBra) = basis(x.ket)

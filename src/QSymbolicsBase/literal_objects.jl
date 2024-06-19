@@ -40,7 +40,7 @@ end
 ishermitian(::SHermitianUnitaryOperator) = true
 isunitary(::SHermitianUnitaryOperator) = true
 
-const SymQ = Union{SKet, SBra, SOperator, SHermitianOperator, SUnitaryOperator, SHermitianUnitaryOperator}
+const SymQ = Union{SKet,SBra,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator}
 isexpr(::SymQ) = false
 metadata(::SymQ) = nothing
 symbollabel(x::SymQ) = x.name
@@ -48,5 +48,20 @@ basis(x::SymQ) = x.basis
 
 Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
 Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
-Base.show(io::IO, x::Union{SOperator, SHermitianOperator, SUnitaryOperator, SHermitianUnitaryOperator}) = print(io, "$(symbollabel(x))")
+Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator}) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
+
+struct SZeroKet <: Symbolic{AbstractKet} end
+
+struct SZeroBra <: Symbolic{AbstractBra} end
+
+struct SZeroOperator <: Symbolic{AbstractOperator} end
+
+const SymZeroObj = Union{SZeroKet,SZeroBra,SZeroOperator}
+
+isexpr(::SymZeroObj) = false
+metadata(::SymZeroObj) = nothing
+symbollabel(x::SymZeroObj) =  "𝟎"
+basis(x::SymZeroObj) = nothing
+
+Base.show(io::IO, x::SymZeroObj) = print(io, symbollabel(x))

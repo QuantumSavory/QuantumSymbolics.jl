@@ -222,6 +222,7 @@ operation(x::SProjector) = projector
 head(x::SProjector) = :projector
 children(x::SProjector) = [:projector,x.ket]
 projector(x::Symbolic{AbstractKet}) = SProjector(x)
+projector(x::SZeroKet) = SZeroOperator()
 basis(x::SProjector) = basis(x.ket)
 function Base.show(io::IO, x::SProjector)
     print(io,"𝐏[")
@@ -268,6 +269,7 @@ dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
 dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (b,v) in pairs(x.dict)))
 dagger(x::SAddOperator) = SAddOperator(Dict(dagger(o)=>v for (o,v) in pairs(x.dict)))
+dagger(x::SZeroOperator) = x
 dagger(x::SHermitianOperator) = x
 dagger(x::SHermitianUnitaryOperator) = x
 dagger(x::SUnitaryOperator) = inv(x)
