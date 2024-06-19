@@ -22,10 +22,10 @@ function prefactorscalings(xs; scalar=false) # If the scalar keyword is true, th
     for x in xs
         if isexpr(x) && operation(x) == *
             c,t = arguments(x)
-            if scalar == false
+            if !scalar
                 coeff *= c
                 push!(terms,t)
-            elseif scalar == true && c isa Number
+            elseif scalar && c isa Number
                 coeff *= c
                 push!(terms, t)
             else
@@ -127,7 +127,7 @@ julia> qsimplify(anticommutator(σˣ, σˣ), rewriter=qsimplify_anticommutator)
 """
 function qsimplify(s; rewriter=nothing)
     if QuantumSymbolics.isexpr(s)
-        if rewriter == nothing
+        if isnothing(rewriter)
             Fixpoint(Chain(RULES_ALL))(s)
         else
             Fixpoint(rewriter)(s)

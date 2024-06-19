@@ -235,7 +235,7 @@ end
 julia> a = SKet(:a, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
 
 julia> dagger(2*im*A*a)
-0 - 2im⟨a|A†
+0 - 2im|a⟩†A†
 
 julia> B = SOperator(:B, SpinBasis(1//2));
 
@@ -263,13 +263,10 @@ children(x::SDagger) = [:dagger, x.obj]
 dagger(x::Symbolic{AbstractBra}) = SDagger{AbstractKet}(x)
 dagger(x::Symbolic{AbstractKet}) = SDagger{AbstractBra}(x)
 dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
-dagger(x::SKet) = SBra(x.name, x.basis)
 dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
-dagger(x::SBra) = SKet(x.name, x.basis)
 dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (b,v) in pairs(x.dict)))
-dagger(x::SOperator) = SDagger{AbstractOperator}(x)
 dagger(x::SAddOperator) = SAddOperator(Dict(dagger(o)=>v for (o,v) in pairs(x.dict)))
 dagger(x::SHermitianOperator) = x
 dagger(x::SHermitianUnitaryOperator) = x

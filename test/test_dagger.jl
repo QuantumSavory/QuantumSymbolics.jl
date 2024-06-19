@@ -15,11 +15,9 @@ U = SUnitaryOperator(:U, SpinBasis(1//2))
 ℋ = SHermitianOperator(:ℋ, SpinBasis(1//2))
 
 @testset "symbolic dagger tests" begin
-    @test isequal(dagger(k₁), SBra(:k₁, SpinBasis(1//2)))
-    @test isequal(dagger(im*k₁), -im*SBra(:k₁, SpinBasis(1//2)))
+    @test isequal(dagger(im*k₁), -im*dagger(k₁))
     @test isequal(dagger(k₁+k₂), dagger(k₁)+dagger(k₂))
-    @test isequal(dagger(b₁), SKet(:b₁, SpinBasis(1//2)))
-    @test isequal(dagger(im*b₁), -im*SKet(:b₁, SpinBasis(1//2)))
+    @test isequal(dagger(im*b₁), -im*dagger(b₁))
     @test isequal(dagger(b₁+b₂), dagger(b₁)+dagger(b₂))
     @test isequal(dagger(A+B), dagger(A) + dagger(B))
     @test isequal(dagger(ℋ), ℋ)

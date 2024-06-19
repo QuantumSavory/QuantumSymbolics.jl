@@ -29,8 +29,8 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = c == 0 ? 0 : SScaled{T}(c,x)
-Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c == 0 ? 0 : SScaled{T}(c,x)
+Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = SScaled{T}(c,x)
+Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
 basis(x::SScaled) = basis(x.obj)
 
@@ -85,17 +85,17 @@ basis(x::SAdd) = basis(first(x.dict).first)
 const SAddKet = SAdd{AbstractKet}
 function Base.show(io::IO, x::SAddKet)
     ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(map(string, ordered_terms),"+")::String*")") # type assert to help inference
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
 const SAddOperator = SAdd{AbstractOperator}
 function Base.show(io::IO, x::SAddOperator) 
     ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(map(string, ordered_terms),"+")::String*")") # type assert to help inference
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
 const SAddBra = SAdd{AbstractBra}
 function Base.show(io::IO, x::SAddBra)
     ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(map(string, ordered_terms),"+")::String*")") # type assert to help inference
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
 
 """Symbolic application of operator on operator
@@ -119,7 +119,7 @@ iscall(::SMulOperator) = true
 arguments(x::SMulOperator) = x.terms
 operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
-children(x::SMulOperator) = pushfirst!(x.terms,:*)
+children(x::SMulOperator) = [:*;x.terms]
 Base.:(*)(xs::Symbolic{AbstractOperator}...) = SMulOperator(collect(xs))
 Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
 basis(x::SMulOperator) = basis(x.terms)
