@@ -1,24 +1,23 @@
-"""This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments."""
+##
+# This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments.
+##
 
-struct SKet <: Symbolic{AbstractKet}
-    name::Symbol
-    basis::Basis
-end
-struct SOperator <: Symbolic{AbstractKet}
-    name::Symbol
-    basis::Basis
-end
-const SymQ = Union{SKet, SOperator}
-isexpr(::SymQ) = false
-metadata(::SymQ) = nothing
-basis(x::SymQ) = x.basis
+"""Scaling of a quantum object (ket, operator, or bra) by a number
 
-symbollabel(x::SymQ) = x.name
-Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
-Base.show(io::IO, x::SOperator) = print(io, "$(symbollabel(x))")
-Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
+```jldoctest
+julia> k = SKet(:k, SpinBasis(1//2))
+|k⟩
 
-"""Scaling of a quantum object (ket, operator, or bra) by a number."""
+julia> 2*k
+2|k⟩
+
+julia> A = SOperator(:A, SpinBasis(1//2))
+A 
+
+julia> 2*A
+2A
+````
+"""
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
     obj
@@ -54,13 +53,21 @@ end
 const SScaledBra = SScaled{AbstractBra}
 function Base.show(io::IO, x::SScaledBra)
     if x.coeff isa Number
-        print(io, "$(x.obj)$(x.coeff)")
+        print(io, "$(x.coeff)$(x.obj)")
     else
-        print(io, "$(x.obj)($(x.coeff))")
+        print(io, "($(x.coeff))$(x.obj)")
     end
 end
 
-"""Addition of quantum objects (kets, operators, or bras)."""
+"""Addition of quantum objects (kets, operators, or bras)
+
+```jldoctest
+julia> k₁ = SKet(:k₁, SpinBasis(1//2)); k₂ = SKet(:k₂, SpinBasis(1//2));
+
+julia> k₁ + k₂
+(|k₁⟩+|k₂⟩)
+```
+"""
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
     dict
     SAdd{S}(d) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d)
@@ -76,13 +83,61 @@ Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type paramete
 basis(x::SAdd) = basis(first(x.dict).first)
 
 const SAddKet = SAdd{AbstractKet}
-Base.show(io::IO, x::SAddKet) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+function Base.show(io::IO, x::SAddKet)
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+end
 const SAddOperator = SAdd{AbstractOperator}
-Base.show(io::IO, x::SAddOperator) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+function Base.show(io::IO, x::SAddOperator) 
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+end
 const SAddBra = SAdd{AbstractBra}
-Base.show(io::IO, x::SAddBra) = print(io, "("*join(map(string, arguments(x)),"+")::String*")") # type assert to help inference
+function Base.show(io::IO, x::SAddBra)
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+end
 
-"""Tensor product of quantum objects (kets, operators, or bras)."""
+"""Symbolic application of operator on operator
+
+```jldoctest
+julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+
+julia> A*B 
+AB
+```
+"""
+@withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
+    terms
+    function SMulOperator(terms)
+        coeff, cleanterms = prefactorscalings(terms)
+        coeff*new(cleanterms)
+    end
+end
+isexpr(::SMulOperator) = true
+iscall(::SMulOperator) = true
+arguments(x::SMulOperator) = x.terms
+operation(x::SMulOperator) = *
+head(x::SMulOperator) = :*
+children(x::SMulOperator) = [:*;x.terms]
+Base.:(*)(xs::Symbolic{AbstractOperator}...) = SMulOperator(collect(xs))
+Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
+basis(x::SMulOperator) = basis(x.terms)
+
+"""Tensor product of quantum objects (kets, operators, or bras)
+
+```jldoctest
+julia> k₁ = SKet(:k₁, SpinBasis(1//2)); k₂ = SKet(:k₂, SpinBasis(1//2));
+
+julia> k₁ ⊗ k₂
+|k₁⟩|k₂⟩
+
+julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+
+julia> A ⊗ B 
+A⊗B
+```
+"""
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
     terms
     function STensor{S}(terms) where S
@@ -107,3 +162,62 @@ const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
 const STensorBra = STensor{AbstractBra}
 Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
+
+"""Symbolic commutator of two operators
+
+```jldoctest
+julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+
+julia> commutator(A, B)
+[A,B]
+
+julia> commutator(A, A)
+0
+```
+"""
+@withmetadata struct SCommutator <: Symbolic{AbstractOperator}
+    op1
+    op2
+    function SCommutator(o1, o2) 
+        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
+        cleanterms[1] === cleanterms[2] ? 0 : coeff*new(cleanterms...)
+    end
+end
+isexpr(::SCommutator) = true
+iscall(::SCommutator) = true
+arguments(x::SCommutator) = [x.op1, x.op2]
+operation(x::SCommutator) = commutator
+head(x::SCommutator) = :commutator
+children(x::SCommutator) = [:commutator, x.op1, x.op2]
+commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
+Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
+basis(x::SCommutator) = basis(x.op1)
+expand(x::SCommutator) = x == 0 ? x : x.op1*x.op2 - x.op2*x.op1
+
+"""Symbolic anticommutator of two operators
+
+```jldoctest
+julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+
+julia> anticommutator(A, B)
+{A,B}
+```
+"""
+@withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
+    op1
+    op2
+    function SAnticommutator(o1, o2) 
+        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
+        coeff*new(cleanterms...)
+    end
+end
+isexpr(::SAnticommutator) = true
+iscall(::SAnticommutator) = true
+arguments(x::SAnticommutator) = [x.op1, x.op2]
+operation(x::SAnticommutator) = anticommutator
+head(x::SAnticommutator) = :anticommutator
+children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
+anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
+Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
+basis(x::SAnticommutator) = basis(x.op1)
+expand(x::SAnticommutator) = x == 0 ? x : x.op1*x.op2 + x.op2*x.op1

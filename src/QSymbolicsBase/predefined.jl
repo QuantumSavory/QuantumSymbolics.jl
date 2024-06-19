@@ -91,7 +91,6 @@ basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
 Base.show(io::IO, x::AbstractSingleQubitOp) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::AbstractTwoQubitOp) = print(io, "$(symbollabel(x))")
 
-
 @withmetadata struct OperatorEmbedding <: Symbolic{AbstractOperator}
     gate::Symbolic{AbstractOperator} # TODO parameterize
     indices::Vector{Int}
@@ -102,22 +101,45 @@ isexpr(::OperatorEmbedding) = true
 @withmetadata struct XGate <: AbstractSingleQubitGate end
 eigvecs(g::XGate) = [X1,X2]
 symbollabel(::XGate) = "X"
+ishermitian(::XGate) = true
+isunitary(::XGate) = true
+
 @withmetadata struct YGate <: AbstractSingleQubitGate end
 eigvecs(g::YGate) = [Y1,Y2]
 symbollabel(::YGate) = "Y"
+ishermitian(::YGate) = true
+isunitary(::YGate) = true
+
 @withmetadata struct ZGate <: AbstractSingleQubitGate end
 eigvecs(g::ZGate) = [Z1,Z2]
 symbollabel(::ZGate) = "Z"
+ishermitian(::ZGate) = true
+isunitary(::ZGate) = true
+
 @withmetadata struct PauliM <: AbstractSingleQubitGate end
 symbollabel(::PauliM) = "σ₋"
+ishermitian(::PauliM) = true
+isunitary(::PauliM) = true
+
 @withmetadata struct PauliP <: AbstractSingleQubitGate end
 symbollabel(::PauliP) = "σ₊"
+ishermitian(::PauliP) = true
+isunitary(::PauliP) = true
+
 @withmetadata struct HGate <: AbstractSingleQubitGate end
 symbollabel(::HGate) = "H"
+ishermitian(::HGate) = true
+isunitary(::HGate) = true
+
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
+ishermitian(::CNOTGate) = true
+isunitary(::CNOTGate) = true
+
 @withmetadata struct CPHASEGate <: AbstractTwoQubitGate end
 symbollabel(::CPHASEGate) = "CPHASE"
+ishermitian(::CPHASEGate) = true
+isunitary(::CPHASEGate) = true
 
 const xyzsuplabeldict = Dict(:X=>"ˣ",:Y=>"ʸ",:Z=>"ᶻ")
 for control in (:X, :Y, :Z)
@@ -207,25 +229,91 @@ function Base.show(io::IO, x::SProjector)
     print(io,"]")
 end
 
-"""Dagger a Ket into Bra."""
-@withmetadata struct SDagger <: Symbolic{AbstractBra}
-    ket::Symbolic{AbstractKet}
+"""Dagger, i.e., adjoint of quantum objects (kets, bras, operators)
+
+```jldoctest 
+julia> a = SKet(:a, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+
+julia> dagger(2*im*A*a)
+0 - 2im|a⟩†A†
+
+julia> B = SOperator(:B, SpinBasis(1//2));
+
+julia> dagger(A*B)
+B†A†
+
+julia> ℋ = SHermitianOperator(:ℋ, SpinBasis(1//2)); U = SUnitaryOperator(:U, SpinBasis(1//2));
+
+julia> dagger(ℋ)
+ℋ
+
+julia> dagger(U) 
+U⁻¹
+```
+"""
+@withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
+    obj
 end
 isexpr(::SDagger) = true
 iscall(::SDagger) = true
-arguments(x::SDagger) = [x.ket]
+arguments(x::SDagger) = [x.obj]
 operation(x::SDagger) = dagger
 head(x::SDagger) = :dagger
-children(x::SDagger) = [:dagger, x.ket]
-dagger(x::Symbolic{AbstractKet}) = SDagger(x)
-dagger(x::SScaledKet) = SScaledBra(x.coeff, dagger(x.obj))
+children(x::SDagger) = [:dagger, x.obj]
+dagger(x::Symbolic{AbstractBra}) = SDagger{AbstractKet}(x)
+dagger(x::Symbolic{AbstractKet}) = SDagger{AbstractBra}(x)
+dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
+dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
 dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
-basis(x::SDagger) = basis(x.ket)
+dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
+dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (b,v) in pairs(x.dict)))
+dagger(x::SAddOperator) = SAddOperator(Dict(dagger(o)=>v for (o,v) in pairs(x.dict)))
+dagger(x::SHermitianOperator) = x
+dagger(x::SHermitianUnitaryOperator) = x
+dagger(x::SUnitaryOperator) = inv(x)
+dagger(x::STensorBra) = STensorKet([dagger(i) for i in x.terms])
+dagger(x::STensorKet) = STensorBra([dagger(i) for i in x.terms])
+dagger(x::STensorOperator) = STensorOperator([dagger(i) for i in x.terms])
+dagger(x::SScaledOperator) = SScaledOperator(conj(x.coeff), dagger(x.obj))
+dagger(x::SApplyKet) = dagger(x.ket)*dagger(x.op)
+dagger(x::SApplyBra) = dagger(x.op)*dagger(x.bra)
+dagger(x::SMulOperator) = SMulOperator([dagger(i) for i in reverse(x.terms)])
+dagger(x::SBraKet) = SBraKet(dagger(x.ket), dagger(x.bra))
+dagger(x::SOuterKetBra) = SOuterKetBra(dagger(x.bra), dagger(x.ket))
+dagger(x::SDagger) = x.obj
+basis(x::SDagger) = basis(x.obj)
 function Base.show(io::IO, x::SDagger)
-    print(io,x.ket)
+    print(io,x.obj)
     print(io,"†")
 end
-symbollabel(x::SDagger) = symbollabel(x.ket)
+symbollabel(x::SDagger) = symbollabel(x.obj)
+
+"""Inverse Operator
+
+```jldoctest
+julia> A = SOperator(:A, SpinBasis(1//2));
+
+julia> inv(A)
+A⁻¹
+
+julia> inv(A)*A
+𝕀
+```
+"""
+@withmetadata struct SInvOperator <: Symbolic{AbstractOperator}
+    op::Symbolic{AbstractOperator}
+end
+isexpr(::SInvOperator) = true
+iscall(::SInvOperator) = true
+arguments(x::SInvOperator) = [x.op]
+operation(x::SInvOperator) = inv
+head(x::SInvOperator) = :inv
+children(x::SInvOperator) = [:inv, x.op]
+basis(x::SInvOperator) = basis(x.op)
+Base.show(io::IO, x::SInvOperator) = print(io, "$(x.op)⁻¹")
+Base.:(*)(invop::SInvOperator, op::SOperator) = isequal(invop.op, op) ? IdentityOp(basis(op)) : SMulOperator(invop, op)
+Base.:(*)(op::SOperator, invop::SInvOperator) = isequal(op, invop.op) ? IdentityOp(basis(op)) : SMulOperator(op, invop)
+inv(x::Symbolic{AbstractOperator}) = SInvOperator(x)
 
 """Completely depolarized state
 
@@ -276,3 +364,8 @@ IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))
 isexpr(::IdentityOp) = false
 basis(x::IdentityOp) = x.basis
 symbollabel(x::IdentityOp) = "𝕀"
+ishermitian(::IdentityOp) = true
+isunitary(::IdentityOp) = true
+
+"""Identity operator in qubit basis"""
+const I = IdentityOp(qubit_basis)

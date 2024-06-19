@@ -6,7 +6,7 @@ using TermInterface
 import TermInterface: isexpr, head, iscall, children, operation, arguments, metadata
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs
+import LinearAlgebra: eigvecs, ishermitian, inv
 
 import QuantumInterface:
     apply!,
@@ -17,24 +17,30 @@ import QuantumInterface:
     AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
 
 export SymQObj,QObj,
-       AbstractRepresentation, AbstractUse,
-       QuantumOpticsRepr, QuantumMCRepr, CliffordRepr,
-       UseAsState, UseAsObservable, UseAsOperation,
+       AbstractRepresentation,AbstractUse,
+       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,
+       UseAsState,UseAsObservable,UseAsOperation,
        apply!,
        express,
        tensor,⊗,
-       dagger,projector,
-       X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
+       dagger,projector,commutator,anticommutator,expand,
+       I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
-       N,n̂,Create,âꜛ,Destroy,â,
-       SProjector,MixedState,IdentityOp,
-       STensorKet,STensorOperator,SScaledKet,SScaledOperator,SAddKet,SAddOperator,SScaledBra,SAddBra,STensorBra,SDagger,
-       HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
-       XBasisState, YBasisState, ZBasisState,
-       NumberOp, CreateOp, DestroyOp,
-       XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate
+       N,n̂,Create,âꜛ,Destroy,â,SpinBasis,FockBasis,
+       SBra,SKet,SOperator,
+       SAdd,SAddBra,SAddKet,SAddOperator,
+       SScaled,SScaledBra,SScaledOperator,SScaledKet,
+       STensorBra,STensorKet,STensorOperator,
+       SProjector,MixedState,IdentityOp,SInvOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
+       SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
+       HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
+       XBasisState,YBasisState,ZBasisState,
+       NumberOp,CreateOp,DestroyOp,
+       XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
+       qsimplify,qsimplify_pauli,qsimplify_flatten,qsimplify_commutator,qsimplify_anticommutator,
+       isunitary
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()
@@ -127,17 +133,29 @@ newwithmetadata(x) = x
 # Basic Types
 ##
 
-const QObj = Union{AbstractKet,AbstractOperator,AbstractSuperOperator,AbstractBra}
+const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator}
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 
-function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
+function _in(x::SymQObj, y::SymQObj)
+    for i in arguments(y)
+        if isequal(x, i)
+            return true
+        end
+    end
+    false
+end
+function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<:Union{SymQObj, Symbolic{Complex}}}
     if X==Y
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
-                (length(ax) == length(ay)) && all(zip(ax,ay)) do xy isequal(xy...) end
+                if (operation(x) === +) && (length(ax) == length(ay))
+                    all(x -> _in(x, y), ax)
+                else
+                    all(zip(ax,ay)) do xy isequal(xy...) end
+                end
             else
                 false
             end
@@ -151,12 +169,13 @@ end
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
-propsequal(x,y) = all(n->getproperty(x,n)==getproperty(y,n), propertynames(x))
+propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynames(x))
 
 ##
 # Most symbolic objects defined here
 ##
 
+include("literal_objects.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
 include("predefined.jl")
