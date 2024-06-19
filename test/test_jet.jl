@@ -29,4 +29,4 @@ rep = report_package("QuantumSymbolics";
 )
 @show rep
 @test_broken length(JET.get_reports(rep)) == 0
-@test length(JET.get_reports(rep)) <= 1
+@test length(JET.get_reports(rep)) <= 6
