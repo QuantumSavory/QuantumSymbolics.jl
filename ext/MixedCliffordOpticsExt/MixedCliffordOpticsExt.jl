@@ -11,8 +11,6 @@ using QuantumSymbolics: @withmetadata, Symbolic, AbstractKet, Metadata
 
 using QuantumClifford: _T_str
 
-using Graphs: edges
-
 import QuantumSymbolics: StabilizerState, express_nolookup
 
 # using QuantumOpticsExt: _cphase, _z, _phase, _hadamard, _s₊
