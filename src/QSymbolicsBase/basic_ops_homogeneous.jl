@@ -76,7 +76,7 @@ julia> k₁ + k₂
 end
 function SAdd{S}(d) where S 
     xs = [c*obj for (c,obj) in d]
-    length(d)==1 ? SScaled{S}(reverse(first(d))...) : SAdd{S}(d,Set(xs),xs)
+    length(d)==1 ? first(xs) : SAdd{S}(d,Set(xs),xs)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
