@@ -84,17 +84,19 @@ julia> k₁ + k₂
 """
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
     dict
-    SAdd{S}(d) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d)
+    _set_precomputed
+    _arguments_precomputed
+    SAdd{S}(d,s,a) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d,s,a)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
-arguments(x::SAdd) = [SScaledKet(v,k) for (k,v) in pairs(x.dict)]
+arguments(x::SAdd) = x._arguments_precomputed
 operation(x::SAdd) = +
 head(x::SAdd) = :+
-children(x::SAdd) = [:+,SScaledKet(v,k) for (k,v) in pairs(x.dict)]
+children(x::SAdd) = [:+; x._arguments_precomputed]
 function Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} 
     nonzero_terms = filter!(x->!isa(x,SymZeroObj),collect(xs))
-    isempty(nonzero_terms) ? xs[1] : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}))
+    isempty(nonzero_terms) ? xs[1] : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}), Set(collect(xs)), collect(xs))
 end
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)

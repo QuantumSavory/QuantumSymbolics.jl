@@ -265,10 +265,8 @@ dagger(x::Symbolic{AbstractBra}) = SDagger{AbstractKet}(x)
 dagger(x::Symbolic{AbstractKet}) = SDagger{AbstractBra}(x)
 dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
 dagger(x::SScaledKet) = SScaledBra(conj(x.coeff), dagger(x.obj))
-dagger(x::SAddKet) = SAddBra(Dict(dagger(k)=>v for (k,v) in pairs(x.dict)))
+dagger(x::SAdd) = (+)([dagger(i) for i in arguments(x)]...)
 dagger(x::SScaledBra) = SScaledKet(conj(x.coeff), dagger(x.obj))
-dagger(x::SAddBra) = SAddKet(Dict(dagger(b)=>v for (b,v) in pairs(x.dict)))
-dagger(x::SAddOperator) = SAddOperator(Dict(dagger(o)=>v for (o,v) in pairs(x.dict)))
 dagger(x::SZeroOperator) = x
 dagger(x::SHermitianOperator) = x
 dagger(x::SHermitianUnitaryOperator) = x
