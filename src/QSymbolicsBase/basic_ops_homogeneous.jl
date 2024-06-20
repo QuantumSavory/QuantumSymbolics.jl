@@ -30,22 +30,9 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} 
-    if iszero(c) || isa(x,SymZeroObj)
-        first(filter(i->i<:Symbolic{T}, Base.uniontypes(SymZeroObj)))()
-    else
-        SScaled{T}(c, x)
-    end
-end
-function Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} 
-    if iszero(c) || isa(x,SymZeroObj)
-        first(filter(i->i<:Symbolic{T}, Base.uniontypes(SymZeroObj)))()
-    else
-        SScaled{T}(c, x)
-    end
-end
-Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = iszero(c) ? error("cannot divide by zero") : SScaled{T}(1/c,x)
-Base.:(/)(x::SymZeroObj, c) = x
+Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = iszero(c) || iszero(x) ? SZero{T}() : SScaled{T}(c, x)
+Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c*x
+Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
@@ -86,7 +73,10 @@ julia> k₁ + k₂
     dict
     _set_precomputed
     _arguments_precomputed
-    SAdd{S}(d,s,a) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d,s,a)
+end
+function SAdd{S}(d) where S 
+    xs = [c*obj for (c,obj) in d]
+    length(d)==1 ? SScaled{S}(reverse(first(d))...) : SAdd{S}(d,Set(xs),xs)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -95,8 +85,10 @@ operation(x::SAdd) = +
 head(x::SAdd) = :+
 children(x::SAdd) = [:+; x._arguments_precomputed]
 function Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} 
-    nonzero_terms = filter!(x->!isa(x,SymZeroObj),collect(xs))
-    isempty(nonzero_terms) ? xs[1] : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}), Set(collect(xs)), collect(xs))
+    xs = collect(xs)
+    f = first(xs)
+    nonzero_terms = filter!(x->!iszero(x),xs)
+    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}))
 end
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
@@ -140,7 +132,7 @@ operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
 function Base.:(*)(xs::Symbolic{AbstractOperator}...) 
-    zero_ind = findfirst(x->isa(x,SZeroOperator), xs)
+    zero_ind = findfirst(x->iszero(x), xs)
     isnothing(zero_ind) ? SMulOperator(collect(xs)) : SZeroOperator()
 end
 Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
@@ -174,8 +166,8 @@ operation(x::STensor) = ⊗
 head(x::STensor) = :⊗
 children(x::STensor) = pushfirst!(x.terms,:⊗)
 function ⊗(xs::Symbolic{T}...) where {T<:QObj}
-    zero_ind = findfirst(x->isa(x,SymZeroObj), xs)
-    isnothing(zero_ind) ? STensor{T}(collect(xs)) : xs[zero_ind]
+    zero_ind = findfirst(x->iszero(x), xs)
+    isnothing(zero_ind) ? STensor{T}(collect(xs)) : SZero{T}()
 end
 basis(x::STensor) = tensor(basis.(x.terms)...)
 

@@ -51,17 +51,18 @@ Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
 Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator}) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
-struct SZeroKet <: Symbolic{AbstractKet} end
+struct SZero{T<:QObj} <: Symbolic{T} end
 
-struct SZeroBra <: Symbolic{AbstractBra} end
+const SZeroBra = SZero{AbstractBra}
 
-struct SZeroOperator <: Symbolic{AbstractOperator} end
+const SZeroKet = SZero{AbstractKet}
 
-const SymZeroObj = Union{SZeroKet,SZeroBra,SZeroOperator}
+const SZeroOperator = SZero{AbstractOperator}
 
-isexpr(::SymZeroObj) = false
-metadata(::SymZeroObj) = nothing
-symbollabel(x::SymZeroObj) =  "𝟎"
-basis(x::SymZeroObj) = nothing
+isexpr(::SZero) = false
+metadata(::SZero) = nothing
+symbollabel(x::SZero) =  "𝟎"
+basis(x::SZero) = nothing
 
-Base.show(io::IO, x::SymZeroObj) = print(io, symbollabel(x))
+Base.show(io::IO, x::SZero) = print(io, symbollabel(x))
+Base.iszero(x::SymQObj) = isa(x, SZero)

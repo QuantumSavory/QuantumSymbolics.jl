@@ -138,9 +138,10 @@ const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperato
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
-Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash(arguments(x), h) : hash([typeof(x),basis(x)], h)
+Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) : 
+hash((typeof(x),symbollabel(x),basis(x)), h)
 
-function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<:Union{SymQObj, Symbolic{Complex}}}
+function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y
         if isexpr(x)
             if operation(x)==operation(y)
@@ -156,6 +157,9 @@ function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<
         false
     end
 end
+Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
+Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
+
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case

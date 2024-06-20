@@ -85,6 +85,7 @@ Base.:(*)(b::SZeroBra, k::Symbolic{AbstractKet}) = 0
 Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
+Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
 """Symbolic application of a superoperator on an operator"""
 @withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}

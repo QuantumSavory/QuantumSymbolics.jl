@@ -23,6 +23,7 @@ Ket(dim=2)
 end
 isexpr(::StabilizerState) = false
 basis(x::StabilizerState) = SpinBasis(1//2)^nqubits(x.stabilizer)
-Base.show(io::IO, x::StabilizerState) = print(io, "𝒮$(num_to_sub(nqubits(x.stabilizer)))")
+symbollabel(x::StabilizerState) = "𝒮$(num_to_sub(nqubits(x.stabilizer)))"
+Base.show(io::IO, x::StabilizerState) = print(io, symbollabel(x))
 
 StabilizerState(s::T) where {T} = StabilizerState{T}(s) # TODO this is necessary because the @withmetadata macro is not very smart
