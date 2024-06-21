@@ -5,7 +5,7 @@
 """Symbolic application of an operator on a ket (from the left)
 
 ```jldoctest
-julia> k = SKet(:k, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+julia> @sket k; @sop A;
 
 julia> A*k
 A|k⟩
@@ -32,7 +32,7 @@ basis(x::SApplyKet) = basis(x.ket)
 """Symbolic application of an operator on a bra (from the right)
 
 ```jldoctest
-julia> b = SBra(:b, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+julia> @sbra b; @sop A;
 
 julia> b*A
 ⟨b|A
@@ -58,7 +58,7 @@ basis(x::SApplyBra) = basis(x.bra)
 """Symbolic inner product of a bra and a ket
 
 ```jldoctest
-julia> b = SBra(:b, SpinBasis(1//2)); k = SKet(:k, SpinBasis(1//2));
+julia> @sbra b; @sket k;
 
 julia> b*k
 ⟨b||k⟩
@@ -95,7 +95,7 @@ basis(x::SSuperOpApply) = basis(x.op)
 
 """Symbolic outer product of a ket and a bra
 ```jldoctest 
-julia> b = SBra(:b, SpinBasis(1//2)); k = SKet(:k, SpinBasis(1//2));
+julia> @sbra b; @sket k;
 
 julia> k*b 
 |k⟩⟨b|

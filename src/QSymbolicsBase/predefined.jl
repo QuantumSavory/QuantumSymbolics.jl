@@ -232,17 +232,17 @@ end
 """Dagger, i.e., adjoint of quantum objects (kets, bras, operators)
 
 ```jldoctest 
-julia> a = SKet(:a, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
+julia> @sket a; @sop A;
 
 julia> dagger(2*im*A*a)
 0 - 2im|a⟩†A†
 
-julia> B = SOperator(:B, SpinBasis(1//2));
+julia> @sop B;
 
 julia> dagger(A*B)
 B†A†
 
-julia> ℋ = SHermitianOperator(:ℋ, SpinBasis(1//2)); U = SUnitaryOperator(:U, SpinBasis(1//2));
+julia> @shermitianop ℋ; @sunitaryop U;
 
 julia> dagger(ℋ)
 ℋ
@@ -291,7 +291,7 @@ symbollabel(x::SDagger) = symbollabel(x.obj)
 """Inverse Operator
 
 ```jldoctest
-julia> A = SOperator(:A, SpinBasis(1//2));
+julia> @sop A;
 
 julia> inv(A)
 A⁻¹
