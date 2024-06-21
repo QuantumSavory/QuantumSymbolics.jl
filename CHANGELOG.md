@@ -1,5 +1,12 @@
 # News
 
+## v0.3.1 - 2024-06-21
+
+- Macros for defining symbolic quantum objects.
+- Implement zero objects.
+- Equality for commutative operations, hashing, and lexicographic ordering when printing.
+- Added tests.
+  
 ## v0.3.0 - 2024-06-12
 
 - Bump compat for symbolics-related foundational packages.
