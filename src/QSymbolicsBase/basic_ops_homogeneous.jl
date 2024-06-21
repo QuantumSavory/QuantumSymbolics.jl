@@ -1,5 +1,6 @@
 ##
-# This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are homogeneous in their arguments.
+# This file defines the symbolic operations for quantum objects (kets, operators, and bras) 
+# that are homogeneous in their arguments.
 ##
 
 """Scaling of a quantum object (ket, operator, or bra) by a number
@@ -16,7 +17,7 @@ A
 
 julia> 2*A
 2A
-````
+```
 """
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
@@ -29,9 +30,9 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = SScaled{T}(c,x)
-Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(c,x)
-Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = SScaled{T}(1/c,x)
+Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = iszero(c) || iszero(x) ? SZero{T}() : SScaled{T}(c, x)
+Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c*x
+Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
@@ -70,15 +71,25 @@ julia> k₁ + k₂
 """
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
     dict
-    SAdd{S}(d) where S = length(d)==1 ? SScaled{S}(reverse(first(d))...) : new{S}(d)
+    _set_precomputed
+    _arguments_precomputed
+end
+function SAdd{S}(d) where S 
+    xs = [c*obj for (c,obj) in d]
+    length(d)==1 ? first(xs) : SAdd{S}(d,Set(xs),xs)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
-arguments(x::SAdd) = [SScaledKet(v,k) for (k,v) in pairs(x.dict)]
+arguments(x::SAdd) = x._arguments_precomputed
 operation(x::SAdd) = +
 head(x::SAdd) = :+
-children(x::SAdd) = [:+,SScaledKet(v,k) for (k,v) in pairs(x.dict)]
-Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} = SAdd{T}(countmap_flatten(xs, SScaled{T}))
+children(x::SAdd) = [:+; x._arguments_precomputed]
+function Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} 
+    xs = collect(xs)
+    f = first(xs)
+    nonzero_terms = filter!(x->!iszero(x),xs)
+    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}))
+end
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
 
@@ -120,7 +131,10 @@ arguments(x::SMulOperator) = x.terms
 operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
-Base.:(*)(xs::Symbolic{AbstractOperator}...) = SMulOperator(collect(xs))
+function Base.:(*)(xs::Symbolic{AbstractOperator}...) 
+    zero_ind = findfirst(x->iszero(x), xs)
+    isnothing(zero_ind) ? SMulOperator(collect(xs)) : SZeroOperator()
+end
 Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
 basis(x::SMulOperator) = basis(x.terms)
 
@@ -151,7 +165,10 @@ arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
 head(x::STensor) = :⊗
 children(x::STensor) = pushfirst!(x.terms,:⊗)
-⊗(xs::Symbolic{T}...) where {T<:QObj} = STensor{T}(collect(xs))
+function ⊗(xs::Symbolic{T}...) where {T<:QObj}
+    zero_ind = findfirst(x->iszero(x), xs)
+    isnothing(zero_ind) ? STensor{T}(collect(xs)) : SZero{T}()
+end
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
 const STensorKet = STensor{AbstractKet}
@@ -172,7 +189,7 @@ julia> commutator(A, B)
 [A,B]
 
 julia> commutator(A, A)
-0
+𝟎
 ```
 """
 @withmetadata struct SCommutator <: Symbolic{AbstractOperator}
@@ -180,7 +197,7 @@ julia> commutator(A, A)
     op2
     function SCommutator(o1, o2) 
         coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
-        cleanterms[1] === cleanterms[2] ? 0 : coeff*new(cleanterms...)
+        cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff*new(cleanterms...)
     end
 end
 isexpr(::SCommutator) = true
@@ -190,6 +207,9 @@ operation(x::SCommutator) = commutator
 head(x::SCommutator) = :commutator
 children(x::SCommutator) = [:commutator, x.op1, x.op2]
 commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SCommutator(o1, o2)
+commutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
+commutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
+commutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
 expand(x::SCommutator) = x == 0 ? x : x.op1*x.op2 - x.op2*x.op1
@@ -218,6 +238,9 @@ operation(x::SAnticommutator) = anticommutator
 head(x::SAnticommutator) = :anticommutator
 children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
 anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator}) = SAnticommutator(o1, o2)
+anticommutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
+anticommutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
+anticommutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
 expand(x::SAnticommutator) = x == 0 ? x : x.op1*x.op2 + x.op2*x.op1

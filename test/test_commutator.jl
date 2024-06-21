@@ -5,7 +5,7 @@ using Test
 
 @testset "symbolic commutator tests" begin
     @test isequal(commutator(2*A, B), commutator(A, 2*B)) && isequal(2*commutator(A, B), commutator(2*A, B)) && isequal(commutator(A, 2*B), 2*commutator(A, B))
-    @test commutator(A, A) == 0
+    @test commutator(A, A) == SZeroOperator()
 end
 
 @testset "commutator Pauli tests" begin

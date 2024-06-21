@@ -34,7 +34,8 @@ export SymQObj,QObj,
        SAdd,SAddBra,SAddKet,SAddOperator,
        SScaled,SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
-       SProjector,MixedState,IdentityOp,SInvOperator,
+       SZeroBra,SZeroKet,SZeroOperator,
+       SProjector,MixedState,IdentityOp,SInvOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
        XBasisState,YBasisState,ZBasisState,
@@ -138,25 +139,15 @@ const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperato
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
+Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) : 
+hash((typeof(x),symbollabel(x),basis(x)), h)
 
-function _in(x::SymQObj, y::SymQObj)
-    for i in arguments(y)
-        if isequal(x, i)
-            return true
-        end
-    end
-    false
-end
-function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<:Union{SymQObj, Symbolic{Complex}}}
+function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
-                if (operation(x) === +) && (length(ax) == length(ay))
-                    all(x -> _in(x, y), ax)
-                else
-                    all(zip(ax,ay)) do xy isequal(xy...) end
-                end
+                (operation(x) === +) ? x._set_precomputed == y._set_precomputed : all(zip(ax,ay)) do xy isequal(xy...) end
             else
                 false
             end
@@ -167,6 +158,9 @@ function Base.isequal(x::X,y::Y) where {X<:Union{SymQObj, Symbolic{Complex}}, Y<
         false
     end
 end
+Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
+Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
+
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
