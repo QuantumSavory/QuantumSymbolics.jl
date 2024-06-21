@@ -39,6 +39,7 @@ julia> b = SBra(:b, SpinBasis(1//2)); A = SOperator(:A, SpinBasis(1//2));
 
 julia> b*A
 ⟨b|A
+```
 """
 @withmetadata struct SApplyBra <: Symbolic{AbstractBra}
     bra
@@ -111,6 +112,7 @@ julia> b = SBra(:b, SpinBasis(1//2)); k = SKet(:k, SpinBasis(1//2));
 
 julia> k*b 
 |k⟩⟨b|
+```
 """
 @withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
     ket

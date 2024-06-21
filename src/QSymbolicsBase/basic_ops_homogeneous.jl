@@ -17,7 +17,7 @@ A
 
 julia> 2*A
 2A
-````
+```
 """
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
     coeff
