@@ -1,5 +1,9 @@
 # News
 
+## v0.3.1 - dev
+
+- Macros for defining symbolic quantum objects.
+  
 ## v0.3.0 - 2024-06-12
 
 - Bump compat for symbolics-related foundational packages.
