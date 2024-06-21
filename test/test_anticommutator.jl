@@ -1,7 +1,7 @@
 using QuantumSymbolics
 using Test
 
-@sop A; @sop B;
+@op A; @op B;
 
 @testset "symbolic anticommutator tests" begin
     @test isequal(anticommutator(2*A, B), anticommutator(A, 2*B)) && isequal(2*anticommutator(A, B), anticommutator(2*A, B)) && isequal(2*anticommutator(A, B), anticommutator(2*A, B))
