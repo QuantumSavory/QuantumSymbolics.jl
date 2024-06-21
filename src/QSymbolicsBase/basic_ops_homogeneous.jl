@@ -6,13 +6,13 @@
 """Scaling of a quantum object (ket, operator, or bra) by a number
 
 ```jldoctest
-julia> k = SKet(:k, SpinBasis(1//2))
+julia> @ket k
 |k⟩
 
 julia> 2*k
 2|k⟩
 
-julia> A = SOperator(:A, SpinBasis(1//2))
+julia> @op A
 A 
 
 julia> 2*A
@@ -63,7 +63,7 @@ end
 """Addition of quantum objects (kets, operators, or bras)
 
 ```jldoctest
-julia> k₁ = SKet(:k₁, SpinBasis(1//2)); k₂ = SKet(:k₂, SpinBasis(1//2));
+julia> @ket k₁; @ket k₂;
 
 julia> k₁ + k₂
 (|k₁⟩+|k₂⟩)
@@ -112,7 +112,7 @@ end
 """Symbolic application of operator on operator
 
 ```jldoctest
-julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+julia> @op A; @op B;
 
 julia> A*B 
 AB
@@ -141,12 +141,12 @@ basis(x::SMulOperator) = basis(x.terms)
 """Tensor product of quantum objects (kets, operators, or bras)
 
 ```jldoctest
-julia> k₁ = SKet(:k₁, SpinBasis(1//2)); k₂ = SKet(:k₂, SpinBasis(1//2));
+julia> @ket k₁; @ket k₂;
 
 julia> k₁ ⊗ k₂
 |k₁⟩|k₂⟩
 
-julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+julia> @op A; @op B;
 
 julia> A ⊗ B 
 A⊗B
@@ -183,7 +183,7 @@ Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 """Symbolic commutator of two operators
 
 ```jldoctest
-julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+julia> @op A; @op B;
 
 julia> commutator(A, B)
 [A,B]
@@ -217,7 +217,7 @@ expand(x::SCommutator) = x == 0 ? x : x.op1*x.op2 - x.op2*x.op1
 """Symbolic anticommutator of two operators
 
 ```jldoctest
-julia> A = SOperator(:A, SpinBasis(1//2)); B = SOperator(:B, SpinBasis(1//2));
+julia> @op A; @op B;
 
 julia> anticommutator(A, B)
 {A,B}

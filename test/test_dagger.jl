@@ -2,17 +2,11 @@ using QuantumSymbolics
 using QuantumInterface: AbstractOperator
 using Test
 
-b₁ = SBra(:b₁, SpinBasis(1//2))
-b₂ = SBra(:b₂, SpinBasis(1//2))
-k₁ = SKet(:k₁, SpinBasis(1//2))
-k₂ = SKet(:k₂, SpinBasis(1//2))
+@bra b₁; @bra b₂;
+@ket k₁; @ket k₂;
 
-A = SOperator(:A, SpinBasis(1//2))
-B = SOperator(:B, SpinBasis(1//2))
-C = SOperator(:C, SpinBasis(1//2))
-
-U = SUnitaryOperator(:U, SpinBasis(1//2))
-ℋ = SHermitianOperator(:ℋ, SpinBasis(1//2))
+@op A; @op B; @op C;
+U = SUnitaryOperator(:U); ℋ = SHermitianOperator(:ℋ);
 
 @testset "symbolic dagger tests" begin
     @test isequal(dagger(im*k₁), -im*dagger(k₁))

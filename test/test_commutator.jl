@@ -1,8 +1,7 @@
 using QuantumSymbolics
 using Test
 
-A = SOperator(:A, SpinBasis(1//2))
-B = SOperator(:B, SpinBasis(1//2))
+@op A; @op B;
 
 @testset "symbolic commutator tests" begin
     @test isequal(commutator(2*A, B), commutator(A, 2*B)) && isequal(2*commutator(A, B), commutator(2*A, B)) && isequal(commutator(A, 2*B), 2*commutator(A, B))
