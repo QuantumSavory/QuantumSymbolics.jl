@@ -326,6 +326,55 @@ tr(x::SOuterKetBra) = x.bra*x.ket
 tr(x::SCommutator) = 0
 tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...) # TODO add tr properties
 
+"""Partial trace over system i of a composite quantum system
+
+```jldoctest
+julia> @op A; @op B;
+
+julia> ptrace(A⊗B, 1))
+tr1(A⊗B)
+
+julia> @ket k; @bra b;
+
+julia> comp = A ⊗ (k*b)
+A⊗|k⟩⟨b|
+
+julia> ptrace(comp, 1)
+(tr(A))|k⟩⟨b|
+
+julia> ptrace(comp, 2)
+(⟨b||k⟩)A
+```
+"""
+@withmetadata struct SPartialTrace <: Symbolic{Complex}
+    obj
+    sys::Int
+end
+isexpr(::SPartialTrace) = true
+iscall(::SPartialTrace) = true
+arguments(x::SPartialTrace) = [x.obj, x.sys]
+operation(x::SPartialTrace) = ptrace
+head(x::SPartialTrace) = :ptrace
+children(x::SPartialTrace) = [:ptrace, x.obj, x.sys]
+#basis(x::SPartialTrace) = basis(x.op)
+Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
+ptrace(x::Symbolic{AbstractOperator}, s) = SPartialTrace(x, s)
+function ptrace(x::STensorOperator, s)
+    terms = arguments(x)
+    sys_op = terms[s]
+    tr(sys_op)*STensorOperator(deleteat!(copy(terms), s))
+end
+function ptrace(x::SAddOperator, s)
+    terms = arguments(x)
+    new_terms = []
+    for i in terms
+        isa(i, SScaledOperator) ? prod_terms = arguments(i.obj) : prod_terms = arguments(i)
+        sys_op = prod_terms[s]
+        push!(new_terms, tr(sys_op)*STensorOperator(deleteat!(copy(prod_terms), s)))
+    end
+    new_terms
+end
+
 @withmetadata struct SVec <: Symbolic{AbstractKet}
     op::Symbolic{AbstractOperator}
 end
