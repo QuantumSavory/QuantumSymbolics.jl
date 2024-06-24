@@ -67,7 +67,21 @@ SHermitianUnitaryOperator(name) = SHermitianUnitaryOperator(name, qubit_basis)
 ishermitian(::SHermitianUnitaryOperator) = true
 isunitary(::SHermitianUnitaryOperator) = true
 
-const SymQ = Union{SKet,SBra,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator}
+struct SSuperOperator <: Symbolic{AbstractSuperOperator}
+    name::Symbol
+    basis::Basis
+end
+SSuperOperator(name) = SSuperOperator(name, qubit_basis)
+macro superop(name, basis)
+    :($(esc(name)) = SSuperOperator($(Expr(:quote, name)), $(basis)))
+end
+macro superop(name)
+    :($(esc(name)) = SSuperOperator($(Expr(:quote, name))))
+end
+ishermitian(x::SSuperOperator) = false
+isunitary(x::SSuperOperator) = false
+
+const SymQ = Union{SKet,SBra,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator}
 isexpr(::SymQ) = false
 metadata(::SymQ) = nothing
 symbollabel(x::SymQ) = x.name
@@ -75,7 +89,7 @@ basis(x::SymQ) = x.basis
 
 Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
 Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
-Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator}) = print(io, "$(symbollabel(x))")
+Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator}) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
 struct SZero{T<:QObj} <: Symbolic{T} end

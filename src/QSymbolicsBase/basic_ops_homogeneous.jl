@@ -164,7 +164,7 @@ iscall(::STensor) = true
 arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
 head(x::STensor) = :⊗
-children(x::STensor) = pushfirst!(x.terms,:⊗)
+children(x::STensor) = [:⊗; x.terms]
 function ⊗(xs::Symbolic{T}...) where {T<:QObj}
     zero_ind = findfirst(x->iszero(x), xs)
     isnothing(zero_ind) ? STensor{T}(collect(xs)) : SZero{T}()

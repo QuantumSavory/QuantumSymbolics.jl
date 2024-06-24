@@ -1,20 +1,20 @@
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic, _isone, flatten_term, isnotflat, Chain, Fixpoint
+import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint
 using TermInterface
-import TermInterface: isexpr, head, iscall, children, operation, arguments, metadata
+import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs, ishermitian, inv
+import LinearAlgebra: eigvecs,ishermitian,inv
 
 import QuantumInterface:
     apply!,
     tensor, ⊗,
-    basis, Basis, SpinBasis, FockBasis,
+    basis,Basis,SpinBasis,FockBasis,
     nqubits,
-    projector, dagger,
-    AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
+    projector,dagger,tr,ptrace,vec,
+    AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
@@ -23,26 +23,28 @@ export SymQObj,QObj,
        apply!,
        express,
        tensor,⊗,
-       dagger,projector,commutator,anticommutator,expand,
+       dagger,projector,commutator,anticommutator,expand,tr,ptrace,
        I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
        N,n̂,Create,âꜛ,Destroy,â,SpinBasis,FockBasis,
-       SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
-       @ket,@bra,@op,
+       SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator,
+       @ket,@bra,@op,@superop,
        SAdd,SAddBra,SAddKet,SAddOperator,
        SScaled,SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
        SZeroBra,SZeroKet,SZeroOperator,
-       SProjector,MixedState,IdentityOp,SInvOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
+       SProjector,MixedState,IdentityOp,SInvOperator,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
        XBasisState,YBasisState,ZBasisState,
        NumberOp,CreateOp,DestroyOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
        qsimplify,qsimplify_pauli,qsimplify_flatten,qsimplify_commutator,qsimplify_anticommutator,
-       isunitary
+       isunitary,
+       KrausRepr,
+       kraus
 
 function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
     counts = Dict{Any,Any}()
@@ -171,6 +173,7 @@ propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynam
 ##
 
 include("literal_objects.jl")
+include("repr_CPTP.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
 include("predefined.jl")

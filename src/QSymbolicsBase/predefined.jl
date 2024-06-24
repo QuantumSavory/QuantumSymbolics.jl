@@ -288,6 +288,59 @@ function Base.show(io::IO, x::SDagger)
 end
 symbollabel(x::SDagger) = symbollabel(x.obj)
 
+"""Trace of an operator
+
+```jldoctest
+julia> @op A; @op B;
+
+julia> tr(A)
+tr(A)
+
+julia> tr(A⊗B)
+tr(B)*tr(A)
+
+julia> tr(commutator(A, B))
+0
+
+julia> @bra b; @ket k;
+
+julia> tr(k*b)
+⟨b||k⟩
+```
+"""
+@withmetadata struct STrace <: Symbolic{Complex}
+    op::Symbolic{AbstractOperator}
+end
+isexpr(::STrace) = true
+iscall(::STrace) = true
+arguments(x::STrace) = [x.op]
+operation(x::STrace) = tr
+head(x::STrace) = :tr
+children(x::STrace) = [:tr, x.op]
+basis(x::STrace) = basis(x.op)
+Base.show(io::IO, x::STrace) = print(io, "tr($(x.op))")
+tr(x::Symbolic{AbstractOperator}) = STrace(x)
+tr(x::SScaled{AbstractOperator}) = x.coeff*tr(x.obj)
+tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
+tr(x::SOuterKetBra) = x.bra*x.ket
+tr(x::SCommutator) = 0
+tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...) # TODO add tr properties
+
+@withmetadata struct SVec <: Symbolic{AbstractKet}
+    op::Symbolic{AbstractOperator}
+end
+isexpr(::SVec) = true
+iscall(::SVec) = true
+arguments(x::SVec) = [x.op]
+operation(x::SVec) = vec
+head(x::SVec) = :vec
+children(x::SVec) = [:vec, x.op]
+basis(x::SVec) = basis(x.op)
+Base.show(io::IO, x::SVec) = print(io, "vec($(x.op))")
+vec(x::Symbolic{AbstractOperator}) = SVec(x)
+vec(x::SScaled{AbstractOperator}) = x.coeff*vec(x.obj)
+vec(x::SAdd{AbstractOperator}) = (+)((vec(i) for i in arguments(x))...) # TODO add vec properties
+
 """Inverse Operator
 
 ```jldoctest
@@ -368,4 +421,4 @@ ishermitian(::IdentityOp) = true
 isunitary(::IdentityOp) = true
 
 """Identity operator in qubit basis"""
-const I = IdentityOp(qubit_basis)
+const I = IdentityOp(qubit_basis)   

@@ -103,7 +103,8 @@ Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) 
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::SZeroOperator) = SZeroOperator()
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SSuperOpApply(sop,SProjector(k))
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::SZeroKet) = SZeroKet()
-Base.show(io::IO, x::SSuperOpApply) = begin print(io, x.sop); print(io, x.op) end
+Base.:(*)(sop::KrausRepr, op::Symbolic{AbstractOperator}) = (+)((i*op*dagger(i) for i in sop.krausops)...)
+Base.show(io::IO, x::SSuperOpApply) = print(io, "$(x.sop)[$(x.op)]")
 basis(x::SSuperOpApply) = basis(x.op)
 
 """Symbolic outer product of a ket and a bra
