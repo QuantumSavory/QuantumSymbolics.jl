@@ -12,7 +12,6 @@ function hasscalings(xs)
 end
 _isa(T) = x->isa(x,T)
 
-
 ##
 # Determining factors for expressions containing quantum objects
 ##
@@ -23,7 +22,7 @@ function prefactorscalings(xs; scalar=false) # If the scalar keyword is true, th
     for x in xs
         if isexpr(x) && operation(x) == *
             c,t = arguments(x)
-            if !scalar && !isa(x, SOuterKetBra)
+            if !scalar && !isa(x,SOuterKetBra)
                 coeff *= c
                 push!(terms,t)
             elseif scalar && c isa Number

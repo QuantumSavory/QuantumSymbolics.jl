@@ -93,6 +93,11 @@ end
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
 
+const SAddBra = SAdd{AbstractBra}
+function Base.show(io::IO, x::SAddBra)
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+end
 const SAddKet = SAdd{AbstractKet}
 function Base.show(io::IO, x::SAddKet)
     ordered_terms = sort([repr(i) for i in arguments(x)])
@@ -100,11 +105,6 @@ function Base.show(io::IO, x::SAddKet)
 end
 const SAddOperator = SAdd{AbstractOperator}
 function Base.show(io::IO, x::SAddOperator) 
-    ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
-end
-const SAddBra = SAdd{AbstractBra}
-function Base.show(io::IO, x::SAddBra)
     ordered_terms = sort([repr(i) for i in arguments(x)])
     print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
@@ -171,14 +171,14 @@ function ⊗(xs::Symbolic{T}...) where {T<:QObj}
 end
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
+const STensorBra = STensor{AbstractBra}
+Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 const STensorKet = STensor{AbstractKet}
 Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}
 Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
 const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
-const STensorBra = STensor{AbstractBra}
-Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 
 """Symbolic commutator of two operators
 

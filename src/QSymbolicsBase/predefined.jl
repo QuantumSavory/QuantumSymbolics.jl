@@ -331,19 +331,28 @@ tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...) # TODO add tr pro
 ```jldoctest
 julia> @op A; @op B;
 
-julia> ptrace(A⊗B, 1))
+julia> ptrace(A⊗B, 1)
 tr1(A⊗B)
 
 julia> @ket k; @bra b;
 
-julia> comp = A ⊗ (k*b)
+julia> pure_state = A ⊗ (k*b)
 A⊗|k⟩⟨b|
 
-julia> ptrace(comp, 1)
+julia> ptrace(pure_state, 1)
 (tr(A))|k⟩⟨b|
 
-julia> ptrace(comp, 2)
+julia> ptrace(pure_state, 2)
 (⟨b||k⟩)A
+
+julia> mixed_state = (A⊗(k*b)) + ((k*b)⊗B)
+(A⊗|k⟩⟨b|+|k⟩⟨b|⊗B)
+
+julia> ptrace(mixed_state, 1)
+((0 + ⟨b||k⟩)B+(tr(A))|k⟩⟨b|)
+
+julia> ptrace(mixed_state, 2)
+((0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|)
 ```
 """
 @withmetadata struct SPartialTrace <: Symbolic{Complex}
@@ -368,13 +377,26 @@ function ptrace(x::SAddOperator, s)
     terms = arguments(x)
     new_terms = []
     for i in terms
-        isa(i, SScaledOperator) ? prod_terms = arguments(i.obj) : prod_terms = arguments(i)
-        sys_op = prod_terms[s]
-        push!(new_terms, tr(sys_op)*STensorOperator(deleteat!(copy(prod_terms), s)))
+        if isexpr(i) && operation(i) === ⊗
+            isa(i, SScaledOperator) ? prod_terms = arguments(i.obj) : prod_terms = arguments(i)
+            sys_op = prod_terms[s]
+            push!(new_terms, tr(sys_op)*STensorOperator(deleteat!(copy(prod_terms), s)))
+        else
+            throw(ArgumentError("cannot take partial trace of a single quantum system"))
+        end
     end
-    new_terms
+    (+)(new_terms...)
 end
 
+"""Vectorization of a symbolic operator
+
+```jldoctest
+julia> @op A;
+
+julia> vec(A)
+vec(A)
+```
+"""
 @withmetadata struct SVec <: Symbolic{AbstractKet}
     op::Symbolic{AbstractOperator}
 end
