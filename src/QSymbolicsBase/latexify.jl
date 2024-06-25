@@ -20,31 +20,47 @@ function num_to_sub(n::Int)
         "0"=>"₀",
     )
 end
-
+@latexrecipe function f(x::SBra)
+    return Expr(:latexifymerge, "\\left\\langle ", symbollabel(x), "\\right|")
+end
 @latexrecipe function f(x::Union{SpecialKet,SKet})
     return Expr(:latexifymerge, "\\left|", symbollabel(x), "\\right\\rangle")
 end
-@latexrecipe function f(x::Union{SOperator,AbstractSingleQubitOp,AbstractTwoQubitOp,AbstractSingleBosonGate})
+@latexrecipe function f(x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,AbstractSingleQubitOp,AbstractTwoQubitOp,AbstractSingleBosonGate})
     return LaTeXString("\\hat $(symbollabel(x))")
 end
+@latexrecipe function f(x::SZero)
+    return LaTeXString("\\bm{O}")
+end
 @latexrecipe function f(x::SDagger)
-    if isexpr(x.ket)
-        return Expr(:latexifymerge, "\\left( ", x.ket, "\\right)^\\dagger")
+    if isexpr(x.obj)
+        return Expr(:latexifymerge, "\\left( ", latexify(x.obj), "\\right)^\\dagger")
     else
-        return Expr(:latexifymerge, "\\left\\langle ", symbollabel(x), "\\right|")
+        return Expr(:latexifymerge, latexify(x.obj), "\\^\\dagger")
     end
 end
-@latexrecipe function f(x::SScaled)
+@latexrecipe function f(x::Union{SScaled,SMulOperator,SOuterKetBra,SApplyKet,SApplyBra})
     cdot --> false
     return _toexpr(x)
 end
-
+@latexrecipe function f(x::SCommutator)
+    return Expr(:latexifymerge, "\\left\\lbrack", latexify(x.op1), ",", latexify(x.op2), "\\right\\rbrack")
+end
+@latexrecipe function f(x::SAnticommutator)
+    return Expr(:latexifymerge, "\\left\\{", latexify(x.op1), ",", latexify(x.op2), "\\right\\}")
+end
+@latexrecipe function f(x::SBraKet)
+    return Expr(:latexifymerge, "\\left\\langle ", symbollabel(x.bra), "\\mid ", symbollabel(x.ket), "\\right\\rangle")
+end
 @latexrecipe function f(x::MixedState)
     return LaTeXString("\\mathbb{M}")
 end
 
 @latexrecipe function f(x::IdentityOp)
     return LaTeXString("\\mathbb{I}")
+end
+@latexrecipe function f(x::SInvOperator)
+    return Expr(:latexifymerge, latexify(x.op), "\\^{-1}")
 end
 
 function _toexpr(x)
