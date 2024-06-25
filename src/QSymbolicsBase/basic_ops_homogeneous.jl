@@ -149,7 +149,7 @@ julia> k₁ ⊗ k₂
 julia> @op A; @op B;
 
 julia> A ⊗ B 
-A⊗B
+(A⊗B)
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
@@ -176,9 +176,9 @@ Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 const STensorKet = STensor{AbstractKet}
 Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}
-Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+Base.show(io::IO, x::STensorOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
 const STensorSuperOperator = STensor{AbstractSuperOperator}
-Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+Base.show(io::IO, x::STensorSuperOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
 
 """Symbolic commutator of two operators
 
