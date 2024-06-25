@@ -173,11 +173,10 @@ propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynam
 ##
 
 include("literal_objects.jl")
-include("repr_CPTP.jl")
+include("predefined_CPTP.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
 include("predefined.jl")
-include("predefined_CPTP.jl")
 
 ##
 # Symbolic and simplification rules

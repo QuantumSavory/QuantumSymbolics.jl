@@ -88,7 +88,14 @@ Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
-"""Symbolic application of a superoperator on an operator"""
+"""Symbolic application of a superoperator on an operator
+
+```jldoctest
+julia> @op A; @superop S;
+
+julia> S*A
+S[A]
+"""
 @withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
     sop
     op

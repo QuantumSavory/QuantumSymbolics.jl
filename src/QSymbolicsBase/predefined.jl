@@ -297,7 +297,7 @@ julia> tr(A)
 tr(A)
 
 julia> tr(A⊗B)
-tr(B)*tr(A)
+tr(A)*tr(B)
 
 julia> tr(commutator(A, B))
 0
@@ -325,14 +325,18 @@ tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
 tr(x::SOuterKetBra) = x.bra*x.ket
 tr(x::SCommutator) = 0
 tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...) # TODO add tr properties
+Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
 
 """Partial trace over system i of a composite quantum system
 
 ```jldoctest
 julia> @op A; @op B;
 
+julia> ptrace(A, 1)
+tr1(A)
+
 julia> ptrace(A⊗B, 1)
-tr1(A⊗B)
+(tr(A))B
 
 julia> @ket k; @bra b;
 
@@ -394,7 +398,7 @@ end
 julia> @op A;
 
 julia> vec(A)
-vec(A)
+|A⟩⟩
 ```
 """
 @withmetadata struct SVec <: Symbolic{AbstractKet}
@@ -407,7 +411,7 @@ operation(x::SVec) = vec
 head(x::SVec) = :vec
 children(x::SVec) = [:vec, x.op]
 basis(x::SVec) = basis(x.op)
-Base.show(io::IO, x::SVec) = print(io, "vec($(x.op))")
+Base.show(io::IO, x::SVec) = print(io, "|$(x.op)⟩⟩")
 vec(x::Symbolic{AbstractOperator}) = SVec(x)
 vec(x::SScaled{AbstractOperator}) = x.coeff*vec(x.obj)
 vec(x::SAdd{AbstractOperator}) = (+)((vec(i) for i in arguments(x))...) # TODO add vec properties
