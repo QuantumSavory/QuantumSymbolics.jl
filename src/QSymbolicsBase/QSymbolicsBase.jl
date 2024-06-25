@@ -13,7 +13,7 @@ import QuantumInterface:
     tensor, ⊗,
     basis,Basis,SpinBasis,FockBasis,
     nqubits,
-    projector,dagger,tr,ptrace,vec,
+    projector,dagger,tr,ptrace,
     AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator
 
 export SymQObj,QObj,

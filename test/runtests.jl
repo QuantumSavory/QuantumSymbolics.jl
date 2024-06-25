@@ -35,6 +35,7 @@ println("Starting tests with $(Threads.nthreads()) threads out of `Sys.CPU_THREA
 @doset "anticommutator"
 @doset "dagger"
 @doset "zero_obj"
+@doset "trace"
 
 VERSION >= v"1.9" && @doset "doctests"
 get(ENV,"JET_TEST","")=="true" && @doset "jet"

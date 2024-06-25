@@ -369,52 +369,29 @@ arguments(x::SPartialTrace) = [x.obj, x.sys]
 operation(x::SPartialTrace) = ptrace
 head(x::SPartialTrace) = :ptrace
 children(x::SPartialTrace) = [:ptrace, x.obj, x.sys]
-#basis(x::SPartialTrace) = basis(x.op)
 Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
 ptrace(x::Symbolic{AbstractOperator}, s) = SPartialTrace(x, s)
 function ptrace(x::STensorOperator, s)
     terms = arguments(x)
     sys_op = terms[s]
-    tr(sys_op)*STensorOperator(deleteat!(copy(terms), s))
+    new_terms = deleteat!(copy(terms), s)
+    isone(length(new_terms)) ? tr(sys_op)*first(new_terms) : tr(sys_op)*STensorOperator(new_terms)
 end
 function ptrace(x::SAddOperator, s)
     terms = arguments(x)
-    new_terms = []
+    add_terms = []
     for i in terms
         if isexpr(i) && operation(i) === ⊗
             isa(i, SScaledOperator) ? prod_terms = arguments(i.obj) : prod_terms = arguments(i)
             sys_op = prod_terms[s]
-            push!(new_terms, tr(sys_op)*STensorOperator(deleteat!(copy(prod_terms), s)))
+            new_terms = deleteat!(copy(prod_terms), s)
+            isone(length(new_terms)) ? push!(add_terms, tr(sys_op)*first(new_terms)) : push!(add_terms, tr(sys_op)*STensorOperator(new_terms))
         else
             throw(ArgumentError("cannot take partial trace of a single quantum system"))
         end
     end
-    (+)(new_terms...)
+    (+)(add_terms...)
 end
-
-"""Vectorization of a symbolic operator
-
-```jldoctest
-julia> @op A;
-
-julia> vec(A)
-|A⟩⟩
-```
-"""
-@withmetadata struct SVec <: Symbolic{AbstractKet}
-    op::Symbolic{AbstractOperator}
-end
-isexpr(::SVec) = true
-iscall(::SVec) = true
-arguments(x::SVec) = [x.op]
-operation(x::SVec) = vec
-head(x::SVec) = :vec
-children(x::SVec) = [:vec, x.op]
-basis(x::SVec) = basis(x.op)
-Base.show(io::IO, x::SVec) = print(io, "|$(x.op)⟩⟩")
-vec(x::Symbolic{AbstractOperator}) = SVec(x)
-vec(x::SScaled{AbstractOperator}) = x.coeff*vec(x.obj)
-vec(x::SAdd{AbstractOperator}) = (+)((vec(i) for i in arguments(x))...) # TODO add vec properties
 
 """Inverse Operator
 
