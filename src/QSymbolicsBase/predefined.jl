@@ -286,7 +286,6 @@ function Base.show(io::IO, x::SDagger)
     print(io,x.obj)
     print(io,"†")
 end
-symbollabel(x::SDagger) = symbollabel(x.obj)
 
 """Trace of an operator
 
@@ -317,7 +316,6 @@ arguments(x::STrace) = [x.op]
 operation(x::STrace) = tr
 head(x::STrace) = :tr
 children(x::STrace) = [:tr, x.op]
-basis(x::STrace) = basis(x.op)
 Base.show(io::IO, x::STrace) = print(io, "tr($(x.op))")
 tr(x::Symbolic{AbstractOperator}) = STrace(x)
 tr(x::SScaled{AbstractOperator}) = x.coeff*tr(x.obj)
@@ -325,6 +323,7 @@ tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
 tr(x::SOuterKetBra) = x.bra*x.ket
 tr(x::SCommutator) = 0
 tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...) # TODO add tr properties
+Base.hash(x::STrace, h::UInt) = hash((head(x), arguments(x)), h)
 Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
 
 """Partial trace over system i of a composite quantum system
