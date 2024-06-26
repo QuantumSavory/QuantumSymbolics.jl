@@ -295,9 +295,6 @@ julia> @op A; @op B;
 julia> tr(A)
 tr(A)
 
-julia> tr(A⊗B)
-tr(A)*tr(B)
-
 julia> tr(commutator(A, B))
 0
 
