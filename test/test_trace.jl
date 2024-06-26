@@ -16,4 +16,6 @@ end
 @testset "partial trace tests" begin
     @test isequal(ptrace(A⊗B, 1), tr(A)*B)
     @test isequal(ptrace(A⊗B, 2), tr(B)*A)
+    @test isequal(ptrace((k₁*b₁)⊗A + (k₂*b₂)⊗B, 1), (b₁*k₁)*A + (b₂*k₂)*B)
+    @test isequal(ptrace((k₁*b₁)⊗A + (k₂*b₂)⊗B, 2), tr(A)*(k₁*b₁) + tr(B)*(k₂*b₂))
 end
