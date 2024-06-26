@@ -45,7 +45,7 @@ function Base.show(io::IO, x::SScaledKet)
 end
 const SScaledOperator = SScaled{AbstractOperator}
 function Base.show(io::IO, x::SScaledOperator)
-    if x.coeff isa Number
+    if x.coeff isa Real
         print(io, "$(x.coeff)$(x.obj)")
     else
         print(io, "($(x.coeff))$(x.obj)")
