@@ -1,7 +1,7 @@
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint
+import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,sorted_arguments
 using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata
 

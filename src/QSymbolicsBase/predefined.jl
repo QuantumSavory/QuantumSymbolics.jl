@@ -313,6 +313,7 @@ end
 isexpr(::STrace) = true
 iscall(::STrace) = true
 arguments(x::STrace) = [x.op]
+sorted_arguments(x::STrace) = arguments(x)
 operation(x::STrace) = tr
 head(x::STrace) = :tr
 children(x::STrace) = [:tr, x.op]
@@ -322,7 +323,7 @@ tr(x::SScaled{AbstractOperator}) = x.coeff*tr(x.obj)
 tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
 tr(x::SOuterKetBra) = x.bra*x.ket
 tr(x::SCommutator) = 0
-tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...) # TODO add tr properties
+tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...)
 Base.hash(x::STrace, h::UInt) = hash((head(x), arguments(x)), h)
 Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
 
