@@ -110,8 +110,9 @@ children(x::SSuperOpApply) = [:*,x.sop,x.op]
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SSuperOpApply(sop,op)
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::SZeroOperator) = SZeroOperator()
 Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SSuperOpApply(sop,SProjector(k))
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::SZeroKet) = SZeroKet()
+Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::SZeroKet) = SZeroOperator()
 Base.:(*)(sop::KrausRepr, op::Symbolic{AbstractOperator}) = (+)((i*op*dagger(i) for i in sop.krausops)...)
+Base.:(*)(sop::KrausRepr, k::Symbolic{AbstractKet}) = (+)((i*SProjector(k)*dagger(i) for i in sop.krausops)...)
 Base.show(io::IO, x::SSuperOpApply) = print(io, "$(x.sop)[$(x.op)]")
 basis(x::SSuperOpApply) = basis(x.op)
 
