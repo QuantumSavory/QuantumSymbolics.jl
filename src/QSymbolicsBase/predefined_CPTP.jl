@@ -73,10 +73,10 @@ julia> K*ρ
 end
 isexpr(::KrausRepr) = true
 iscall(::KrausRepr) = true
-arguments(x::KrausRepr) = [sop, x.krausops]
+arguments(x::KrausRepr) = [x.sop, x.krausops]
 operation(x::KrausRepr) = kraus
 head(x::KrausRepr) = :kraus
-children(x::KrausRepr) = [:kraus, sop, x.krausops]
+children(x::KrausRepr) = [:kraus, x.sop, x.krausops]
 kraus(s::Symbolic{AbstractSuperOperator}, xs::Symbolic{AbstractOperator}...) = KrausRepr(s,collect(xs))
 symbollabel(x::KrausRepr) = symbollabel(x.sop)
 basis(x::KrausRepr) = basis(x.sop)

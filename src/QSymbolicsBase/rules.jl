@@ -63,7 +63,7 @@ end
 # Flattening expressions
 RULES_FLATTEN = [
     @rule(~x::isnotflat_precheck(⊗) => flatten_term(⊗, ~x)),
-    @rule ⊗(~~xs::hasscalings) => prefactorscalings_rule(xs)
+    @rule ⊗(~~xs::hasscalings) => prefactorscalings_rule(~~xs)
 ]
 
 # Pauli identities
