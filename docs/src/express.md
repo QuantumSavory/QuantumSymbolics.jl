@@ -41,6 +41,7 @@ Here, we specified an instance of [`CliffordRepr`](@ref) in the second argument 
 More involved examples can be explored. For instance, say we want to apply the tensor product $X\otimes Y$ of the Pauli operators $X$ and $Y$ to the Bell state $|\Phi^{+}\rangle = \dfrac{1}{\sqrt{2}}\left(|00\rangle + |11\rangle\right)$, and numerically express the result in the quantum optics formalism. This would be done as follows:
 
 ```@example 2
+using QuantumSymbolics, QuantumClifford, QuantumOptics # hide
 bellstate = (Z1⊗Z1+Z2⊗Z2)/√2
 tp = σˣ⊗σʸ
 express(tp*bellstate)
