@@ -11,6 +11,7 @@ A principle feature of `QuantumSymbolics` is to numerically represent symbolic q
 As a straightforward example, consider the spin-up state $|\uparrow\rangle = |0\rangle$, the eigenstate of the Pauli operator $Z$, which can be expressed in `QuantumSymbolics` as follows:
 
 ```@example 1
+using QuantumSymbolics, QuantumClifford, QuantumOptics # hide
 ψ = Z1
 ```
 Using [`express`](@ref), we can translate this symbolic object into its numerical state vector form in `QuantumOptics.jl`.
