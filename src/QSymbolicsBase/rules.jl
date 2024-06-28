@@ -121,7 +121,7 @@ If the keyword `rewriter` is not specified, then `qsimplify` will apply every de
 For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
 
 ```jldoctest
-julia> qsimplify(Y*commutator(X*Z, Z))
+julia> qsimplify(σʸ*commutator(σˣ*σᶻ, σᶻ))
 (0 - 2im)Z
 
 julia> qsimplify(anticommutator(σˣ, σˣ), rewriter=qsimplify_anticommutator)

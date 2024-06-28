@@ -44,10 +44,10 @@ julia> express(ψ, CliffordRepr())
 + Z
 
 julia> ψ.metadata
-QuantumSymbolics.Metadata(Dict{Tuple{AbstractRepresentation, AbstractUse}, Any}((QuantumOpticsRepr(), UseAsState()) => Ket(dim=2)
+QuantumSymbolics.Metadata(Dict{Tuple{AbstractRepresentation, AbstractUse}, Any}((CliffordRepr(), UseAsState()) => MixedDestablizer 1×1, (QuantumOpticsRepr(), UseAsState()) => Ket(dim=2)
   basis: Spin(1/2)
  1.0 + 0.0im
- 0.0 + 0.0im, (CliffordRepr(), UseAsState()) => MixedDestablizer 1×1))
+ 0.0 + 0.0im))
 ```
 
 Here, we specified an instance of [`CliffordRepr`](@ref) in the second argument to convert `ψ` into a tableau of Pauli operators containing its stabilizer and destabilizer states. Now, both the state vector and Clifford representation of `ψ` have been cached.
