@@ -56,7 +56,6 @@ express_nolookup(::YGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P
 express_nolookup(::ZGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P"Z"
 express_nolookup(op::SScaledOperator, r::CliffordRepr, u::UseAsObservable) = arguments(op)[1] * express(arguments(op)[2],r,u)
 express_nolookup(x::SMulOperator,     r::CliffordRepr, u::UseAsObservable) = (*)((express(t,r,u) for t in arguments(x))...)
-express_nolookup(x::STensorOperator,  r::CliffordRepr, u::UseAsObservable) = QuantumClifford.tensor((express(t,r,u) for t in arguments(x))...)
 express_nolookup(op, ::CliffordRepr, ::UseAsObservable) = error("Can not convert $(op) into a `PauliOperator`, which is the only observable that can be computed for QuantumClifford objects. Consider defining `express_nolookup(op, ::CliffordRepr, ::UseAsObservable)::PauliOperator` for this object.")
 
 struct QCRandomSampler # TODO specify types

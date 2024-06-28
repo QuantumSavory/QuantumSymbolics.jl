@@ -121,6 +121,9 @@ If the keyword `rewriter` is not specified, then `qsimplify` will apply every de
 For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
 
 ```jldoctest
+julia> qsimplify(Y*commutator(X*Z, Z))
+(0 - 2im)Z
+
 julia> qsimplify(anticommutator(σˣ, σˣ), rewriter=qsimplify_anticommutator)
 2𝕀
 ```
@@ -128,12 +131,11 @@ julia> qsimplify(anticommutator(σˣ, σˣ), rewriter=qsimplify_anticommutator)
 function qsimplify(s; rewriter=nothing)
     if QuantumSymbolics.isexpr(s)
         if isnothing(rewriter)
-            Fixpoint(Chain(RULES_ALL))(s)
+            Fixpoint(Prewalk(Chain(RULES_ALL)))(s)
         else
-            Fixpoint(rewriter)(s)
+            Fixpoint(Prewalk(rewriter))(s)
         end
     else
         error("Object $(s) of type $(typeof(s)) is not an expression.")
     end
 end
-
