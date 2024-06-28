@@ -20,7 +20,7 @@ Using [`express`](@ref), we can translate this symbolic object into its numerica
 express(ψ)
 ```
 
-By default, [`express`](@ref) converts a quantum object with [`QuantumOpticRepr`](@ref). It should be noted that [`express`](@ref) automatically caches this particular conversion of `ψ`. Thus, after running the above example, the numerical representation of the spin-up state is stored in the metadata of `ψ`.
+By default, [`express`](@ref) converts a quantum object with `QuantumOpticRepr`. It should be noted that [`express`](@ref) automatically caches this particular conversion of `ψ`. Thus, after running the above example, the numerical representation of the spin-up state is stored in the metadata of `ψ`.
 
 ```@example 1
 ψ.metadata
@@ -32,7 +32,7 @@ The caching feature of [`express`](@ref) prevents a specific representation for 
 express(ψ, CliffordRepr())
 ```
 
-Here, we specified an instance of [`CliffordRepr`](@ref) in the second argument to convert `ψ` into a tableau of Pauli operators containing its stabilizer and destabilizer states. Now, both the state vector and Clifford representation of `ψ` have been cached:
+Here, we specified an instance of `CliffordRepr` in the second argument to convert `ψ` into a tableau of Pauli operators containing its stabilizer and destabilizer states. Now, both the state vector and Clifford representation of `ψ` have been cached:
 
 ```@example 1
 ψ.metadata
@@ -48,7 +48,7 @@ express(tp*bellstate)
 ```
 
 ## Examples of Edge Cases
-For Pauli operators, additional flexibility is given for translations to the Clifford formalism. Users have the option to convert a multi-qubit Pauli operator to an observable or operation with instances of [`UseAsObservable`](@ref) and [`UseAsOperation`](@ref), respectively. Take the Pauli operator $Y$, for example, which in `QuantumSymbolics` is the constants `Y` or `σʸ`:
+For Pauli operators, additional flexibility is given for translations to the Clifford formalism. Users have the option to convert a multi-qubit Pauli operator to an observable or operation with instances of `UseAsObservable` and `UseAsOperation`, respectively. Take the Pauli operator $Y$, for example, which in `QuantumSymbolics` is the constants `Y` or `σʸ`:
 
 ```jldoctest
 julia> express(σʸ, CliffordRepr(), UseAsObservable())
