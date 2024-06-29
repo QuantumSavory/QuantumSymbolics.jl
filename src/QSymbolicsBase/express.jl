@@ -24,8 +24,15 @@ julia> express(X1, CliffordRepr())
 𝒮𝓉𝒶𝒷
 + X
 
+julia> express(QuantumSymbolics.X)
+Operator(dim=2x2)
+  basis: Spin(1/2)sparse([2, 1], [1, 2], ComplexF64[1.0 + 0.0im, 1.0 + 0.0im], 2, 2)
+
 julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsOperation())
 sX
+
+julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsObservable())
++ X
 ```
 """
 function express end

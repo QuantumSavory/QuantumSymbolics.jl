@@ -30,14 +30,20 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} = iszero(c) || iszero(x) ? SZero{T}() : SScaled{T}(c, x)
+function Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} 
+    if iszero(c) || iszero(x)
+        SZero{T}()
+    else 
+        x isa SScaled ? SScaled{T}(c*x.coeff, x.obj) : SScaled{T}(c, x) 
+    end
+end
 Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c*x
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
 function Base.show(io::IO, x::SScaledKet)
-    if x.coeff isa Number
+    if x.coeff isa Real
         print(io, "$(x.coeff)$(x.obj)")
     else
         print(io, "($(x.coeff))$(x.obj)")
@@ -45,7 +51,7 @@ function Base.show(io::IO, x::SScaledKet)
 end
 const SScaledOperator = SScaled{AbstractOperator}
 function Base.show(io::IO, x::SScaledOperator)
-    if x.coeff isa Number
+    if x.coeff isa Real
         print(io, "$(x.coeff)$(x.obj)")
     else
         print(io, "($(x.coeff))$(x.obj)")
@@ -53,7 +59,7 @@ function Base.show(io::IO, x::SScaledOperator)
 end
 const SScaledBra = SScaled{AbstractBra}
 function Base.show(io::IO, x::SScaledBra)
-    if x.coeff isa Number
+    if x.coeff isa Real
         print(io, "$(x.coeff)$(x.obj)")
     else
         print(io, "($(x.coeff))$(x.obj)")
@@ -171,14 +177,14 @@ function ⊗(xs::Symbolic{T}...) where {T<:QObj}
 end
 basis(x::STensor) = tensor(basis.(x.terms)...)
 
+const STensorBra = STensor{AbstractBra}
+Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 const STensorKet = STensor{AbstractKet}
 Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}
 Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
 const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
-const STensorBra = STensor{AbstractBra}
-Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 
 """Symbolic commutator of two operators
 
