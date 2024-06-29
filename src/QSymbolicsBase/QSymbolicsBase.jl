@@ -46,27 +46,6 @@ export SymQObj,QObj,
        KrausRepr,
        kraus
 
-function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
-    counts = Dict{Any,Any}()
-    for s in samples
-        counts[s] = get(counts, s, 0)+1
-    end
-    counts
-end
-
-function countmap_flatten(samples, flattenhead)
-    counts = Dict{Any,Any}()
-    for s in samples
-        if isexpr(s) && s isa flattenhead # TODO Could you use the TermInterface `operation` here instead of `flattenhead`?
-            coef, term = arguments(s)
-            counts[term] = get(counts, term, 0)+coef
-        else
-            counts[s] = get(counts, s, 0)+1
-        end
-    end
-    counts
-end
-
 ##
 # Metadata cache helpers
 ##
@@ -168,15 +147,24 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 # use a macro to provide specializations if that is indeed the case
 propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynames(x))
 
+
+##
+# Utilities
+##
+
+include("utils.jl")
+
 ##
 # Most symbolic objects defined here
 ##
 
 include("literal_objects.jl")
-include("predefined_CPTP.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
+include("basic_superops.jl")
+include("linalg.jl")
 include("predefined.jl")
+include("predefined_CPTP.jl")
 
 ##
 # Symbolic and simplification rules

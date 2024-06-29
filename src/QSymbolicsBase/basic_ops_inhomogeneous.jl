@@ -89,33 +89,6 @@ Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
-"""Symbolic application of a superoperator on an operator
-
-```jldoctest
-julia> @op A; @superop S;
-
-julia> S*A
-S[A]
-"""
-@withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
-    sop
-    op
-end
-isexpr(::SSuperOpApply) = true
-iscall(::SSuperOpApply) = true
-arguments(x::SSuperOpApply) = [x.sop,x.op]
-operation(x::SSuperOpApply) = *
-head(x::SSuperOpApply) = :*
-children(x::SSuperOpApply) = [:*,x.sop,x.op]
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SSuperOpApply(sop,op)
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::SZeroOperator) = SZeroOperator()
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SSuperOpApply(sop,SProjector(k))
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::SZeroKet) = SZeroOperator()
-Base.:(*)(sop::KrausRepr, op::Symbolic{AbstractOperator}) = (+)((i*op*dagger(i) for i in sop.krausops)...)
-Base.:(*)(sop::KrausRepr, k::Symbolic{AbstractKet}) = (+)((i*SProjector(k)*dagger(i) for i in sop.krausops)...)
-Base.show(io::IO, x::SSuperOpApply) = print(io, "$(x.sop)[$(x.op)]")
-basis(x::SSuperOpApply) = basis(x.op)
-
 """Symbolic outer product of a ket and a bra
 ```jldoctest 
 julia> @bra b; @ket k;

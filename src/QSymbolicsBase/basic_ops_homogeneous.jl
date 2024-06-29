@@ -75,8 +75,8 @@ julia> k₁ + k₂
     _arguments_precomputed
 end
 function SAdd{S}(d) where S 
-    xs = [c*obj for (c,obj) in d]
-    length(d)==1 ? first(xs) : SAdd{S}(d,Set(xs),xs)
+    terms = flattenop(+,[c*obj for (c,obj) in d])
+    length(d)==1 ? first(xs) : SAdd{S}(d,Set(terms),terms)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -121,8 +121,8 @@ AB
 @withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
     terms
     function SMulOperator(terms)
-        coeff, cleanterms = prefactorscalings(terms, scalar=true)
-        coeff*new(cleanterms)
+        coeff, cleanterms = prefactorscalings(terms)
+        coeff*new(flattenop(*,cleanterms))
     end
 end
 isexpr(::SMulOperator) = true
@@ -156,7 +156,7 @@ julia> A ⊗ B
     terms
     function STensor{S}(terms) where S
         coeff, cleanterms = prefactorscalings(terms)
-        coeff * new{S}(cleanterms)
+        coeff * new{S}(flattenop(⊗,cleanterms))
     end
 end
 isexpr(::STensor) = true
@@ -199,7 +199,7 @@ julia> commutator(A, A)
     op1
     op2
     function SCommutator(o1, o2) 
-        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
+        coeff, cleanterms = prefactorscalings([o1 o2])
         cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff*new(cleanterms...)
     end
 end
@@ -233,7 +233,7 @@ julia> expand(anticommutator(A, B))
     op1
     op2
     function SAnticommutator(o1, o2) 
-        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
+        coeff, cleanterms = prefactorscalings([o1 o2])
         coeff*new(cleanterms...)
     end
 end
