@@ -82,7 +82,7 @@ julia> k₁ + k₂
 end
 function SAdd{S}(d) where S 
     terms = flattenop(+,[c*obj for (c,obj) in d])
-    length(d)==1 ? first(xs) : SAdd{S}(d,Set(terms),terms)
+    length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -194,9 +194,6 @@ julia> @op A; @op B;
 julia> commutator(A, B)
 [A,B]
 
-julia> expand(commutator(A, B))
-(-1BA+AB)
-
 julia> commutator(A, A)
 𝟎
 ```
@@ -221,7 +218,6 @@ commutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
 commutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
-expand(x::SCommutator) = x == 0 ? x : x.op1*x.op2 - x.op2*x.op1
 
 """Symbolic anticommutator of two operators
 
@@ -230,9 +226,6 @@ julia> @op A; @op B;
 
 julia> anticommutator(A, B)
 {A,B}
-
-julia> expand(anticommutator(A, B))
-(AB+BA)
 ```
 """
 @withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
@@ -255,4 +248,3 @@ anticommutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperato
 anticommutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
-expand(x::SAnticommutator) = x == 0 ? x : x.op1*x.op2 + x.op2*x.op1

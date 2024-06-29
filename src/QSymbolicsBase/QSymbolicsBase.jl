@@ -23,7 +23,7 @@ export SymQObj,QObj,
        apply!,
        express,
        tensor,⊗,
-       dagger,projector,commutator,anticommutator,expand,
+       dagger,projector,commutator,anticommutator,
        I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
@@ -42,7 +42,8 @@ export SymQObj,QObj,
        NumberOp,CreateOp,DestroyOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
        qsimplify,qsimplify_pauli,qsimplify_flatten,qsimplify_commutator,qsimplify_anticommutator,
-       isunitary,
+       qexpand,
+       isunitary
 
 ##
 # Metadata cache helpers
@@ -120,7 +121,7 @@ Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) : 
 hash((typeof(x),symbollabel(x),basis(x)), h)
-maketerm(::Type{<:SymQObj}, f, a, t, m) = f(a...)
+maketerm(::Type{<:Union{SymQObj, SBraKet}}, f, a, t, m) = f(a...)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y
@@ -160,7 +161,6 @@ include("utils.jl")
 include("literal_objects.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
-include("basic_superops.jl")
 include("linalg.jl")
 include("predefined.jl")
 include("predefined_CPTP.jl")
