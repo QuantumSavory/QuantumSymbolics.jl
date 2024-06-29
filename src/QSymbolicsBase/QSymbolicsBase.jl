@@ -1,20 +1,20 @@
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic, _isone, flatten_term, isnotflat, Chain, Fixpoint, Prewalk
+import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk
 using TermInterface
-import TermInterface: isexpr, head, iscall, children, operation, arguments, metadata, maketerm
+import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs, ishermitian, inv
+import LinearAlgebra: eigvecs,ishermitian,inv
 
 import QuantumInterface:
     apply!,
     tensor, ⊗,
-    basis, Basis, SpinBasis, FockBasis,
+    basis,Basis,SpinBasis,FockBasis,
     nqubits,
-    projector, dagger,
-    AbstractKet, AbstractOperator, AbstractSuperOperator, AbstractBra
+    projector,dagger,
+    AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
@@ -35,35 +35,14 @@ export SymQObj,QObj,
        SScaled,SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
        SZeroBra,SZeroKet,SZeroOperator,
-       SProjector,MixedState,IdentityOp,SInvOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
+       SProjector,MixedState,IdentityOp,SInvOperator,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
        XBasisState,YBasisState,ZBasisState,
        NumberOp,CreateOp,DestroyOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
        qsimplify,qsimplify_pauli,qsimplify_flatten,qsimplify_commutator,qsimplify_anticommutator,
-       isunitary
-
-function countmap(samples) # A simpler version of StatsBase.countmap, because StatsBase is slow to import
-    counts = Dict{Any,Any}()
-    for s in samples
-        counts[s] = get(counts, s, 0)+1
-    end
-    counts
-end
-
-function countmap_flatten(samples, flattenhead)
-    counts = Dict{Any,Any}()
-    for s in samples
-        if isexpr(s) && s isa flattenhead # TODO Could you use the TermInterface `operation` here instead of `flattenhead`?
-            coef, term = arguments(s)
-            counts[term] = get(counts, term, 0)+coef
-        else
-            counts[s] = get(counts, s, 0)+1
-        end
-    end
-    counts
-end
+       isunitary,
 
 ##
 # Metadata cache helpers
@@ -167,6 +146,13 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 # use a macro to provide specializations if that is indeed the case
 propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynames(x))
 
+
+##
+# Utilities
+##
+
+include("utils.jl")
+
 ##
 # Most symbolic objects defined here
 ##
@@ -174,6 +160,8 @@ propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynam
 include("literal_objects.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
+include("basic_superops.jl")
+include("linalg.jl")
 include("predefined.jl")
 include("predefined_CPTP.jl")
 

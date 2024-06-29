@@ -92,4 +92,4 @@ symbollabel(x::SZero) =  "𝟎"
 basis(x::SZero) = nothing
 
 Base.show(io::IO, x::SZero) = print(io, symbollabel(x))
-Base.iszero(x::SymQObj) = isa(x, SZero)
+Base.iszero(x::Union{SymQObj, Symbolic{Number}, Symbolic{Complex}}) = isa(x, SZero)

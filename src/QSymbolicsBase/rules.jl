@@ -1,5 +1,5 @@
 ##
-# This file defines automatic simplification rules for specific operations of quantum objects.
+# This file defines manual simplification rules for specific operations of quantum objects.
 ##
 
 ##
@@ -13,58 +13,8 @@ end
 _isa(T) = x->isa(x,T)
 
 ##
-# Determining factors for expressions containing quantum objects
-##
-
-function prefactorscalings(xs; scalar=false) # If the scalar keyword is true, then only scalar factors will be returned as coefficients
-    terms = []
-    coeff = 1::Any
-    for x in xs
-        if isexpr(x) && operation(x) == *
-            c,t = arguments(x)
-            if !scalar
-                coeff *= c
-                push!(terms,t)
-            elseif scalar && c isa Number
-                coeff *= c
-                push!(terms, t)
-            else
-                push!(terms,(*)(arguments(x)...))
-            end
-        else
-            push!(terms,x)
-        end
-    end
-    coeff, terms
-end
-
-function prefactorscalings_rule(xs)
-    coeff, terms = prefactorscalings(xs)
-    coeff * ⊗(terms...)
-end
-
-function isnotflat_precheck(*)
-    function (x)
-        operation(x) === (*) || return false
-        args = arguments(x)
-        for t in args
-            if isexpr(t) && operation(t) === (*)
-                return true
-            end
-        end
-        return false
-    end
-end
-
-##
 # Simplification rules
 ## 
-
-# Flattening expressions
-RULES_FLATTEN = [
-    @rule(~x::isnotflat_precheck(⊗) => flatten_term(⊗, ~x)),
-    @rule ⊗(~~xs::hasscalings) => prefactorscalings_rule(xs)
-]
 
 # Pauli identities
 RULES_PAULI = [
@@ -110,7 +60,7 @@ RULES_ALL = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR]
 ##
 # Rewriters
 ##
-qsimplify_flatten = Chain(RULES_FLATTEN)
+
 qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 qsimplify_pauli = Chain(RULES_PAULI)
 qsimplify_commutator = Chain(RULES_COMMUTATOR)

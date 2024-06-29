@@ -81,8 +81,8 @@ julia> k₁ + k₂
     _arguments_precomputed
 end
 function SAdd{S}(d) where S 
-    xs = [c*obj for (c,obj) in d]
-    length(d)==1 ? first(xs) : SAdd{S}(d,Set(xs),xs)
+    terms = flattenop(+,[c*obj for (c,obj) in d])
+    length(d)==1 ? first(xs) : SAdd{S}(d,Set(terms),terms)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -99,6 +99,11 @@ end
 Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
 
+const SAddBra = SAdd{AbstractBra}
+function Base.show(io::IO, x::SAddBra)
+    ordered_terms = sort([repr(i) for i in arguments(x)])
+    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+end
 const SAddKet = SAdd{AbstractKet}
 function Base.show(io::IO, x::SAddKet)
     ordered_terms = sort([repr(i) for i in arguments(x)])
@@ -106,11 +111,6 @@ function Base.show(io::IO, x::SAddKet)
 end
 const SAddOperator = SAdd{AbstractOperator}
 function Base.show(io::IO, x::SAddOperator) 
-    ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
-end
-const SAddBra = SAdd{AbstractBra}
-function Base.show(io::IO, x::SAddBra)
     ordered_terms = sort([repr(i) for i in arguments(x)])
     print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
@@ -128,7 +128,7 @@ AB
     terms
     function SMulOperator(terms)
         coeff, cleanterms = prefactorscalings(terms)
-        coeff*new(cleanterms)
+        coeff*new(flattenop(*,cleanterms))
     end
 end
 isexpr(::SMulOperator) = true
@@ -155,14 +155,14 @@ julia> k₁ ⊗ k₂
 julia> @op A; @op B;
 
 julia> A ⊗ B 
-A⊗B
+(A⊗B)
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
     terms
     function STensor{S}(terms) where S
         coeff, cleanterms = prefactorscalings(terms)
-        coeff * new{S}(cleanterms)
+        coeff * new{S}(flattenop(⊗,cleanterms))
     end
 end
 isexpr(::STensor) = true
@@ -170,7 +170,7 @@ iscall(::STensor) = true
 arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
 head(x::STensor) = :⊗
-children(x::STensor) = pushfirst!(x.terms,:⊗)
+children(x::STensor) = [:⊗; x.terms]
 function ⊗(xs::Symbolic{T}...) where {T<:QObj}
     zero_ind = findfirst(x->iszero(x), xs)
     isnothing(zero_ind) ? STensor{T}(collect(xs)) : SZero{T}()
@@ -182,9 +182,9 @@ Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 const STensorKet = STensor{AbstractKet}
 Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}
-Base.show(io::IO, x::STensorOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+Base.show(io::IO, x::STensorOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
 const STensorSuperOperator = STensor{AbstractSuperOperator}
-Base.show(io::IO, x::STensorSuperOperator) = print(io, join(map(string, arguments(x)),"⊗"))
+Base.show(io::IO, x::STensorSuperOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
 
 """Symbolic commutator of two operators
 
@@ -194,6 +194,9 @@ julia> @op A; @op B;
 julia> commutator(A, B)
 [A,B]
 
+julia> expand(commutator(A, B))
+(-1BA+AB)
+
 julia> commutator(A, A)
 𝟎
 ```
@@ -202,7 +205,7 @@ julia> commutator(A, A)
     op1
     op2
     function SCommutator(o1, o2) 
-        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
+        coeff, cleanterms = prefactorscalings([o1 o2])
         cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff*new(cleanterms...)
     end
 end
@@ -227,13 +230,16 @@ julia> @op A; @op B;
 
 julia> anticommutator(A, B)
 {A,B}
+
+julia> expand(anticommutator(A, B))
+(AB+BA)
 ```
 """
 @withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
     op1
     op2
     function SAnticommutator(o1, o2) 
-        coeff, cleanterms = prefactorscalings([o1 o2], scalar=true)
+        coeff, cleanterms = prefactorscalings([o1 o2])
         coeff*new(cleanterms...)
     end
 end
