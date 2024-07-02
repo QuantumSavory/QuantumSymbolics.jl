@@ -147,7 +147,7 @@ function Base.:(*)(xs::Symbolic{AbstractOperator}...)
     end
 end
 Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
-basis(x::SMulOperator) = basis(x.terms)
+basis(x::SMulOperator) = basis(first(x.terms))
 
 """Tensor product of quantum objects (kets, operators, or bras)
 

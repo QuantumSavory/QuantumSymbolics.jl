@@ -129,7 +129,7 @@ Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
 """Partial trace over system i of a composite quantum system
 
 ```jldoctest
-julia> @op 𝒪 SpinBasis(1//2) ⊗ SpinBasis(1//2);
+julia> @op 𝒪 SpinBasis(1//2)⊗SpinBasis(1//2);
 
 julia> op = ptrace(𝒪, 1)
 tr1(𝒪)
@@ -180,21 +180,15 @@ function basis(x::SPartialTrace)
 end
 Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
 function ptrace(x::Symbolic{AbstractOperator}, s) 
-    if isa(basis(x), CompositeBasis)
-        SPartialTrace(x, s)
+    ex = isexpr(x) ? qexpand(x) : x
+    if isa(ex, typeof(x))
+        if isa(basis(x), CompositeBasis)
+            SPartialTrace(x, s)
+        else
+            throw(ArgumentError("cannot take partial trace of a single quantum system"))
+        end
     else
-        throw(ArgumentError("cannot take partial trace of a single quantum system"))
-    end
-end
-function ptrace(x::STensorOperator, s)
-    terms = arguments(x)
-    newterms = []
-    if isa(basis(terms[s]), CompositeBasis)
-        SPartial(x, s)
-    else 
-        sys_op = terms[s]
-        new_terms = deleteat!(copy(terms), s)
-        isone(length(new_terms)) ? tr(sys_op)*first(new_terms) : tr(sys_op)*STensorOperator(new_terms)
+        ptrace(ex, s)
     end
 end
 function ptrace(x::SAddOperator, s)
@@ -211,6 +205,22 @@ function ptrace(x::SAddOperator, s)
         end
     end
     (+)(add_terms...)
+end
+function ptrace(x::STensorOperator, s)
+    ex = qexpand(x)
+    if isa(ex, SAddOperator)
+        ptrace(ex, s)
+    else
+        terms = arguments(ex)
+        newterms = []
+        if isa(basis(terms[s]), CompositeBasis)
+            SPartial(ex, s)
+        else 
+            sys_op = terms[s]
+            new_terms = deleteat!(copy(terms), s)
+            isone(length(new_terms)) ? tr(sys_op)*first(new_terms) : tr(sys_op)*STensorOperator(new_terms)
+        end
+    end
 end
 
 """Inverse Operator
