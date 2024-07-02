@@ -129,10 +129,15 @@ Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
 """Partial trace over system i of a composite quantum system
 
 ```jldoctest
-julia> @op A; @op B;
+julia> @op 𝒪 SpinBasis(1//2) ⊗ SpinBasis(1//2);
 
-julia> ptrace(A, 1)
-tr1(A)
+julia> op = ptrace(𝒪, 1)
+tr1(𝒪)
+
+julia> QuantumSymbolics.basis(op)
+Spin(1/2)
+
+julia> @op A; @op B;
 
 julia> ptrace(A⊗B, 1)
 (tr(A))B
@@ -175,7 +180,7 @@ function basis(x::SPartialTrace)
 end
 Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
 function ptrace(x::Symbolic{AbstractOperator}, s) 
-    if isa(basis(x), QuantumInterface.CompositeBasis)
+    if isa(basis(x), CompositeBasis)
         SPartialTrace(x, s)
     else
         throw(ArgumentError("cannot take partial trace of a single quantum system"))
@@ -184,7 +189,7 @@ end
 function ptrace(x::STensorOperator, s)
     terms = arguments(x)
     newterms = []
-    if isa(basis(terms[s]), QuantumInterface.CompositeBasis)
+    if isa(basis(terms[s]), CompositeBasis)
         SPartial(x, s)
     else 
         sys_op = terms[s]

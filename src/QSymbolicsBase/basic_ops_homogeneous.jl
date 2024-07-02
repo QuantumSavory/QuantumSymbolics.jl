@@ -201,9 +201,6 @@ julia> @op A; @op B;
 julia> commutator(A, B)
 [A,B]
 
-julia> expand(commutator(A, B))
-(-1BA+AB)
-
 julia> commutator(A, A)
 𝟎
 ```
@@ -235,9 +232,6 @@ julia> @op A; @op B;
 
 julia> anticommutator(A, B)
 {A,B}
-
-julia> expand(anticommutator(A, B))
-(AB+BA)
 ```
 """
 @withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}

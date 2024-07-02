@@ -11,7 +11,7 @@ import LinearAlgebra: eigvecs,ishermitian,inv
 import QuantumInterface:
     apply!,
     tensor, ⊗,
-    basis,Basis,SpinBasis,FockBasis,
+    basis,Basis,SpinBasis,FockBasis,CompositeBasis,
     nqubits,
     projector,dagger,tr,ptrace,
     AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator
