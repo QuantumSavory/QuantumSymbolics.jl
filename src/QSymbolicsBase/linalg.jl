@@ -89,6 +89,130 @@ function Base.show(io::IO, x::SDagger)
     print(io,"†")
 end
 
+"""Trace of an operator
+
+```jldoctest
+julia> @op A; @op B;
+
+julia> tr(A)
+tr(A)
+
+julia> tr(commutator(A, B))
+0
+
+julia> @bra b; @ket k;
+
+julia> tr(k*b)
+⟨b||k⟩
+```
+"""
+@withmetadata struct STrace <: Symbolic{Complex}
+    op::Symbolic{AbstractOperator}
+end
+isexpr(::STrace) = true
+iscall(::STrace) = true
+arguments(x::STrace) = [x.op]
+sorted_arguments(x::STrace) = arguments(x)
+operation(x::STrace) = tr
+head(x::STrace) = :tr
+children(x::STrace) = [:tr, x.op]
+Base.show(io::IO, x::STrace) = print(io, "tr($(x.op))")
+tr(x::Symbolic{AbstractOperator}) = STrace(x)
+tr(x::SScaled{AbstractOperator}) = x.coeff*tr(x.obj)
+tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
+tr(x::SOuterKetBra) = x.bra*x.ket
+tr(x::SCommutator) = 0
+tr(x::STensorOperator) = (*)((tr(i) for i in arguments(x))...)
+Base.hash(x::STrace, h::UInt) = hash((head(x), arguments(x)), h)
+Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
+
+"""Partial trace over system i of a composite quantum system
+
+```jldoctest
+julia> @op 𝒪 SpinBasis(1//2) ⊗ SpinBasis(1//2);
+
+julia> op = ptrace(𝒪, 1)
+tr1(𝒪)
+
+julia> QuantumSymbolics.basis(op)
+Spin(1/2)
+
+julia> @op A; @op B;
+
+julia> ptrace(A⊗B, 1)
+(tr(A))B
+
+julia> @ket k; @bra b;
+
+julia> pure_state = A ⊗ (k*b)
+(A⊗|k⟩⟨b|)
+
+julia> ptrace(pure_state, 1)
+(tr(A))|k⟩⟨b|
+
+julia> ptrace(pure_state, 2)
+(⟨b||k⟩)A
+
+julia> mixed_state = (A⊗(k*b)) + ((k*b)⊗B)
+((A⊗|k⟩⟨b|)+(|k⟩⟨b|⊗B))
+
+julia> ptrace(mixed_state, 1)
+((0 + ⟨b||k⟩)B+(tr(A))|k⟩⟨b|)
+
+julia> ptrace(mixed_state, 2)
+((0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|)
+```
+"""
+@withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}
+    obj
+    sys::Int
+end
+isexpr(::SPartialTrace) = true
+iscall(::SPartialTrace) = true
+arguments(x::SPartialTrace) = [x.obj, x.sys]
+operation(x::SPartialTrace) = ptrace
+head(x::SPartialTrace) = :ptrace
+children(x::SPartialTrace) = [:ptrace, x.obj, x.sys]
+function basis(x::SPartialTrace)
+    obj_bases = collect(basis(x.obj).bases)
+    new_bases = deleteat!(copy(obj_bases), x.sys)
+    tensor(new_bases...)
+end
+Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
+function ptrace(x::Symbolic{AbstractOperator}, s) 
+    if isa(basis(x), CompositeBasis)
+        SPartialTrace(x, s)
+    else
+        throw(ArgumentError("cannot take partial trace of a single quantum system"))
+    end
+end
+function ptrace(x::STensorOperator, s)
+    terms = arguments(x)
+    newterms = []
+    if isa(basis(terms[s]), CompositeBasis)
+        SPartial(x, s)
+    else 
+        sys_op = terms[s]
+        new_terms = deleteat!(copy(terms), s)
+        isone(length(new_terms)) ? tr(sys_op)*first(new_terms) : tr(sys_op)*STensorOperator(new_terms)
+    end
+end
+function ptrace(x::SAddOperator, s)
+    terms = arguments(x)
+    add_terms = []
+    for i in terms
+        if isexpr(i) && operation(i) === ⊗
+            isa(i, SScaledOperator) ? prod_terms = arguments(i.obj) : prod_terms = arguments(i)
+            sys_op = prod_terms[s]
+            new_terms = deleteat!(copy(prod_terms), s)
+            isone(length(new_terms)) ? push!(add_terms, tr(sys_op)*first(new_terms)) : push!(add_terms, tr(sys_op)*STensorOperator(new_terms))
+        else
+            throw(ArgumentError("cannot take partial trace of a single quantum system"))
+        end
+    end
+    (+)(add_terms...)
+end
+
 """Inverse Operator
 
 ```jldoctest

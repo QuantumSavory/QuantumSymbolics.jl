@@ -44,6 +44,19 @@ noisy_pair_fromdm = (noiseop ⊗ noiseop) * pure_pair_dm
 @test tr(express(noisy_pair)) ≈ tr(express(noisy_pair_fromdm)) ≈ 1
 @test express(noisy_pair) ≈ express(noisy_pair_fromdm)
 
+@op A; @op B; @op C; @op O; @ket k;
+@superop S; K = kraus(S, A, B, C);
+
+
+
+@testset "symbolic superoperator tests" begin
+    @test isequal(S*SZeroOperator(), SZeroOperator())
+    @test isequal(S*SZeroKet(), SZeroOperator())
+    @test isequal(S*k, S*projector(k))
+    @test isequal(K*O, A*O*dagger(A) + B*O*dagger(B) + C*O*dagger(C))
+    @test isequal(K*k, A*projector(k)*dagger(A) + B*projector(k)*dagger(B) + C*projector(k)*dagger(C))
+end
+
 # TODO
 # test against depolarization
 # Depolarization over two qubits is different from depolarizing each separately (see related tutorial)
