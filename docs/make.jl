@@ -26,6 +26,7 @@ function main()
     pages = [
         "QuantumSymbolics.jl" => "index.md",
         "Qubit Basis Choice" => "qubit_basis.md",
+        "Express Functionality" => "express.md",
         "API" => "API.md",
     ]
     )

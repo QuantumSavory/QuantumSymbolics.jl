@@ -1,5 +1,11 @@
 # News
 
+## v0.3.3 - 2024-07-02
+
+- Introduced `qexpand` function that manually expands expressions containing quantum objects.
+- Organized automatic scaling and flattening procedures.
+- Added `express.md` to docs.
+
 ## v0.3.2 - 2024-06-28
 
 - Added documentation for `express`.
