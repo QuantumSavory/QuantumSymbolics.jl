@@ -38,7 +38,7 @@ end
 julia> @ket a; @op A;
 
 julia> dagger(2*im*A*a)
-0 - 2im|a⟩†A†
+(0 - 2im)|a⟩†A†
 
 julia> @op B;
 

@@ -1,9 +1,9 @@
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,sorted_arguments
+import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
 using TermInterface
-import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata
+import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
 
 using LinearAlgebra
 import LinearAlgebra: eigvecs,ishermitian,inv
@@ -41,11 +41,11 @@ export SymQObj,QObj,
        XBasisState,YBasisState,ZBasisState,
        NumberOp,CreateOp,DestroyOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
-       qsimplify,qsimplify_pauli,qsimplify_flatten,qsimplify_commutator,qsimplify_anticommutator,
+       qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,
+       qexpand,
        isunitary,
-       KrausRepr,
-       kraus
-
+       KrausRepr,kraus
+       
 ##
 # Metadata cache helpers
 ##
@@ -122,6 +122,7 @@ Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) : 
 hash((typeof(x),symbollabel(x),basis(x)), h)
+maketerm(::Type{<:SymQObj}, f, a, t, m) = f(a...)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y

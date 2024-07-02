@@ -87,6 +87,7 @@ Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
+maketerm(::Type{<:SBraKet}, f, a, t, m) = f(a...)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
 """Symbolic outer product of a ket and a bra

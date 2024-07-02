@@ -1,5 +1,18 @@
 # News
 
+## v0.3.3 - 2024-07-02
+
+- Introduced `qexpand` function that manually expands expressions containing quantum objects.
+- Organized automatic scaling and flattening procedures.
+- Added `express.md` to docs.
+
+## v0.3.2 - 2024-06-28
+
+- Added documentation for `express`.
+- `qsimplify` can now traverse through subexpressions using Prewalk from SymbolicUtils.jl.
+- Updated `latexify` capabilities.
+- **(fix)** There was a bug for latexifying dagger objects.
+
 ## v0.3.1 - 2024-06-21
 
 - Macros for defining symbolic quantum objects.
