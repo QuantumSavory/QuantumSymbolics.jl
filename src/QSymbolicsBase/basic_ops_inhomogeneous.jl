@@ -14,10 +14,6 @@ A|k⟩
 @withmetadata struct SApplyKet <: Symbolic{AbstractKet}
     op
     ket
-    function SApplyKet(o, k)
-        coeff, cleanterms = prefactorscalings([o k])
-        coeff*new(cleanterms...)
-    end
 end
 isexpr(::SApplyKet) = true
 iscall(::SApplyKet) = true
@@ -25,7 +21,14 @@ arguments(x::SApplyKet) = [x.op,x.ket]
 operation(x::SApplyKet) = *
 head(x::SApplyKet) = :*
 children(x::SApplyKet) = [:*,x.op,x.ket]
-Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet}) = SApplyKet(op,k)
+function Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet})
+    if !(samebases(basis(op),basis(k)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([op k])
+        coeff*SApplyKet(cleanterms...)
+    end
+end
 Base.:(*)(op::SZeroOperator, k::Symbolic{AbstractKet}) = SZeroKet()
 Base.:(*)(op::Symbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
 Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
@@ -44,10 +47,6 @@ julia> b*A
 @withmetadata struct SApplyBra <: Symbolic{AbstractBra}
     bra
     op
-    function SApplyBra(b, o)
-        coeff, cleanterms = prefactorscalings([b o])
-        coeff*new(cleanterms...)
-    end
 end
 isexpr(::SApplyBra) = true
 iscall(::SApplyBra) = true
@@ -55,7 +54,14 @@ arguments(x::SApplyBra) = [x.bra,x.op]
 operation(x::SApplyBra) = *
 head(x::SApplyBra) = :*
 children(x::SApplyBra) = [:*,x.bra,x.op]
-Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) = SApplyBra(b,op)
+function Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) 
+    if !(samebases(basis(b),basis(op)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([b op])
+        coeff*SApplyBra(cleanterms...)
+    end
+end
 Base.:(*)(b::SZeroBra, op::Symbolic{AbstractOperator}) = SZeroBra()
 Base.:(*)(b::Symbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
 Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
@@ -81,13 +87,20 @@ arguments(x::SBraKet) = [x.bra,x.ket]
 operation(x::SBraKet) = *
 head(x::SBraKet) = :*
 children(x::SBraKet) = [:*,x.bra,x.ket]
-Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) = SBraKet(b,k)
+function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) 
+    if !(samebases(basis(b),basis(k)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([b k])
+        coeff == 1 ? SBraKet(cleanterms...) : coeff*SBraKet(cleanterms...)
+    end
+end
 Base.:(*)(b::SZeroBra, k::Symbolic{AbstractKet}) = 0
 Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
-maketerm(::Type{<:SBraKet}, f, a, t, m) = f(a...)
+maketerm(::Type{SBraKet}, f, a, t, m) = f(a...)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
 """Symbolic outer product of a ket and a bra
@@ -101,10 +114,6 @@ julia> k*b
 @withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
     ket
     bra
-    function SOuterKetBra(k, b)
-        coeff, cleanterms = prefactorscalings([k b])
-        coeff*new(cleanterms...)
-    end
 end
 isexpr(::SOuterKetBra) = true
 iscall(::SOuterKetBra) = true
@@ -112,7 +121,14 @@ arguments(x::SOuterKetBra) = [x.ket,x.bra]
 operation(x::SOuterKetBra) = *
 head(x::SOuterKetBra) = :*
 children(x::SOuterKetBra) = [:*,x.ket,x.bra]
-Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra}) = SOuterKetBra(k,b)
+function Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra})
+    if !(samebases(basis(k),basis(b)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([k b])
+        coeff*SOuterKetBra(cleanterms...)
+    end
+end
 Base.:(*)(k::SZeroKet, b::Symbolic{AbstractBra}) = SZeroOperator()
 Base.:(*)(k::Symbolic{AbstractKet}, b::SZeroBra) = SZeroOperator()
 Base.:(*)(k::SZeroKet, b::SZeroBra) = SZeroOperator()

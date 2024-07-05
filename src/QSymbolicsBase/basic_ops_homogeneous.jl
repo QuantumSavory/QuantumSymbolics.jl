@@ -139,9 +139,13 @@ children(x::SMulOperator) = [:*;x.terms]
 function Base.:(*)(xs::Symbolic{AbstractOperator}...) 
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
-        terms = flattenop(*, collect(xs))
-        coeff, cleanterms = prefactorscalings(terms)
-        coeff * SMulOperator(cleanterms)
+        if any(x->!(samebases(basis(x),basis(first(xs)))),xs)
+            throw(IncompatibleBases())
+        else
+            terms = flattenop(*, collect(xs))
+            coeff, cleanterms = prefactorscalings(terms)
+            coeff * SMulOperator(cleanterms)
+        end
     else
         SZeroOperator()
     end
@@ -216,8 +220,12 @@ operation(x::SCommutator) = commutator
 head(x::SCommutator) = :commutator
 children(x::SCommutator) = [:commutator, x.op1, x.op2]
 function commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
-    coeff, cleanterms = prefactorscalings([o1 o2])
-    cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)   
+    if !(samebases(basis(o1),basis(o2)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)  
+    end 
 end
 commutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
 commutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
@@ -245,8 +253,12 @@ operation(x::SAnticommutator) = anticommutator
 head(x::SAnticommutator) = :anticommutator
 children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
 function anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
-    coeff, cleanterms = prefactorscalings([o1 o2])
-    coeff * SAnticommutator(cleanterms...)
+    if !(samebases(basis(o1),basis(o2)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff * SAnticommutator(cleanterms...)
+    end
 end
 anticommutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
 anticommutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()

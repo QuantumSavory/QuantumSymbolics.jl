@@ -45,7 +45,7 @@ noisy_pair_fromdm = (noiseop ⊗ noiseop) * pure_pair_dm
 @test express(noisy_pair) ≈ express(noisy_pair_fromdm)
 
 @op A; @op B; @op C; @op O; @ket k;
-@superop S; K = kraus(S, A, B, C);
+@superop S; K = kraus(A, B, C);
 
 
 

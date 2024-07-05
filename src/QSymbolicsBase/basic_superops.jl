@@ -5,11 +5,10 @@
 """Kraus representation of a quantum channel
 
 ```jldoctest
-julia> @superop ℰ;
-
 julia> @op A₁; @op A₂; @op A₃;
 
-julia> K = kraus(ℰ, A₁, A₂, A₃);
+julia> K = kraus(A₁, A₂, A₃)
+𝒦(A₁,A₂,A₃)
 
 julia> @op ρ;
 
@@ -18,19 +17,17 @@ julia> K*ρ
 ```
 """
 @withmetadata struct KrausRepr <: Symbolic{AbstractSuperOperator}
-    sop
     krausops
 end
 isexpr(::KrausRepr) = true
 iscall(::KrausRepr) = true
-arguments(x::KrausRepr) = [x.sop, x.krausops]
+arguments(x::KrausRepr) = x.krausops
 operation(x::KrausRepr) = kraus
 head(x::KrausRepr) = :kraus
-children(x::KrausRepr) = [:kraus, x.sop, x.krausops]
-kraus(s::Symbolic{AbstractSuperOperator}, xs::Symbolic{AbstractOperator}...) = KrausRepr(s,collect(xs))
-symbollabel(x::KrausRepr) = symbollabel(x.sop)
-basis(x::KrausRepr) = basis(x.sop)
-Base.show(io::IO, x::KrausRepr) = print(io, symbollabel(x))
+children(x::KrausRepr) = [:kraus; x.krausops]
+kraus(xs::Symbolic{AbstractOperator}...) = KrausRepr(collect(xs))
+basis(x::KrausRepr) = basis(first(x.krausops))
+Base.show(io::IO, x::KrausRepr) = print(io, "𝒦("*join([symbollabel(i) for i in x.krausops], ",")*")")
 
 ##
 # Superoperator operations

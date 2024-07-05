@@ -26,9 +26,6 @@ using Test
     @test isequal(qexpand((B+C+D)*A), B*A + C*A + D*A)
     @test isequal(qexpand(commutator(A, B) * C), A*B*C - B*A*C)
 
-    @test isequal(qexpand(A*(B⊗C⊗D)), (A*B)⊗(A*C)⊗(A*D))
-    @test isequal(qexpand((B⊗C⊗D)*A), (B*A)⊗(C*A)⊗(D*A))
-
     @test isequal(qexpand((A⊗B)*(C⊗D)), (A*C)⊗(B*D))
     @test isequal(qexpand((b₁⊗b₂)*(k₁⊗k₂)), (b₁*k₁)*(b₂*k₂))
 end

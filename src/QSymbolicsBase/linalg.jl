@@ -184,6 +184,8 @@ function ptrace(x::Symbolic{AbstractOperator}, s)
     if isa(ex, typeof(x))
         if isa(basis(x), CompositeBasis)
             SPartialTrace(x, s)
+        elseif s==1
+            tr(x)
         else
             throw(ArgumentError("cannot take partial trace of a single quantum system"))
         end
@@ -192,19 +194,37 @@ function ptrace(x::Symbolic{AbstractOperator}, s)
     end
 end
 function ptrace(x::SAddOperator, s)
-    terms = arguments(x)
     add_terms = []
-    for i in terms
-        if isexpr(i) && operation(i) === ⊗
-            isa(i, SScaledOperator) ? prod_terms = arguments(i.obj) : prod_terms = arguments(i)
-            sys_op = prod_terms[s]
-            new_terms = deleteat!(copy(prod_terms), s)
-            isone(length(new_terms)) ? push!(add_terms, tr(sys_op)*first(new_terms)) : push!(add_terms, tr(sys_op)*STensorOperator(new_terms))
-        else
-            throw(ArgumentError("cannot take partial trace of a single quantum system"))
+    if isa(basis(x), CompositeBasis)
+        for i in arguments(x)
+            if isexpr(i)
+                if isa(i, SScaledOperator) && operation(i.obj) === ⊗
+                    prod_terms = arguments(i.obj)
+                    coeff = i.coeff
+                elseif operation(i) === ⊗
+                    prod_terms = arguments(i)
+                    coeff = 1
+                else
+                    return SPartialTrace(x,s)
+                end
+            else
+                return SPartialTrace(x,s)
+            end
+            if any(j -> isa(basis(j), CompositeBasis), prod_terms)
+                return SPartialTrace(x,s)
+            else
+                sys_op = coeff*prod_terms[s]
+                new_terms = deleteat!(copy(prod_terms), s)
+                trace = tr(sys_op)
+                isone(length(new_terms)) ? push!(add_terms, trace*first(new_terms)) : push!(add_terms, trace*(⊗)(new_terms...))
+            end  
         end
+        (+)(add_terms...)
+    elseif s==1
+        tr(x)
+    else
+        throw(ArgumentError("cannot take partial trace of a single quantum system"))
     end
-    (+)(add_terms...)
 end
 function ptrace(x::STensorOperator, s)
     ex = qexpand(x)
@@ -213,8 +233,8 @@ function ptrace(x::STensorOperator, s)
     else
         terms = arguments(ex)
         newterms = []
-        if isa(basis(terms[s]), CompositeBasis)
-            SPartial(ex, s)
+        if any(i -> isa(basis(i), CompositeBasis), terms)
+            SPartialTrace(ex, s)
         else 
             sys_op = terms[s]
             new_terms = deleteat!(copy(terms), s)
