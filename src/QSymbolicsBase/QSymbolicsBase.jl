@@ -6,7 +6,7 @@ using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs,ishermitian,inv
+import LinearAlgebra: eigvecs,ishermitian,conj,transpose,inv,exp,vec
 
 import QuantumInterface:
     apply!,
@@ -28,14 +28,15 @@ export SymQObj,QObj,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
-       N,n̂,Create,âꜛ,Destroy,â,SpinBasis,FockBasis,
+       N,n̂,Create,âꜛ,Destroy,â,basis,SpinBasis,FockBasis,
        SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
        @ket,@bra,@op,
        SAdd,SAddBra,SAddKet,SAddOperator,
        SScaled,SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
        SZeroBra,SZeroKet,SZeroOperator,
-       SProjector,MixedState,IdentityOp,SInvOperator,
+       SConjugate,STranspose,SProjector,SInvOperator,SExpOperator,SVec,
+       MixedState,IdentityOp,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
        XBasisState,YBasisState,ZBasisState,
