@@ -3,7 +3,7 @@
 # that are homogeneous in their arguments.
 ##
 
-"""Scaling of a quantum object (ket, operator, or bra) by a number. 
+"""Scaling of a quantum object (ket, operator, or bra) by a number.
 
 ```jldoctest
 julia> @ket k
