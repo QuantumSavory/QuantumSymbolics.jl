@@ -157,19 +157,19 @@ B†A†
 ```
 Below, we state all of the supported linear algebra operations on quantum objects:
 
-- commutator of two operators: [`commutator`](@ref),
-- anticommutator of two operators: [`anticommutator`](@ref),
-- complex conjugate: [`conj`](@ref),
-- transpose: [`transpose`](@ref),
-- projection of a ket: [`projector`](@ref),
-- adjoint or dagger: [`dagger`](@ref),
-- inverse of an operator: [`inv`](@ref),
-- exponential of an operator: [`exp`](@ref),
-- vectorization of an operator: [`vec`](@ref).
+- commutator of two operators: `commutator`,
+- anticommutator of two operators: `anticommutator`,
+- complex conjugate: `conj`,
+- transpose: `transpose`,
+- projection of a ket: `projector`,
+- adjoint or dagger: `dagger`,
+- inverse of an operator: `inv`,
+- exponential of an operator: `exp`,
+- vectorization of an operator: `vec`.
 
 ## Simplifying Expressions
 
-For predefined objects such as the Pauli operators [`X`](@ref), [`Y`](@ref), and [`Z`](@ref), manual simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:
+For predefined objects such as the Pauli operators `X`, `Y`, and `Z`, manual simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:
 
 ```jldoctest
 julia> qsimplify(X*Z)
