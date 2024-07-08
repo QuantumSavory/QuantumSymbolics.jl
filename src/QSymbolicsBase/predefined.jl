@@ -25,11 +25,11 @@ symbollabel(x::YBasisState) = "Y$(num_to_sub(x.idx))"
 end
 symbollabel(x::ZBasisState) = "Z$(num_to_sub(x.idx))"
 
-@withmetadata struct FockBasisState <: SpecialKet
+@withmetadata struct FockState <: SpecialKet
     idx::Int
     basis::Basis
 end
-symbollabel(x::FockBasisState) = "$(x.idx)"
+symbollabel(x::FockState) = "$(x.idx)"
 
 @withmetadata struct DiscreteCoherentState <: SpecialKet
     alpha::Number # TODO parameterize
@@ -71,10 +71,9 @@ const Z2 = const Z₂ = const L1 = const L₁ = ZBasisState(2, qubit_basis)
 
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
-const vac = const F₀ = const F0 = FockBasisState(0,inf_fock_basis)
+const vac = const F₀ = const F0 = FockState(0,inf_fock_basis)
 """Single photon basis state of n"""
-const F₁ = const F1 = FockBasisState(1,inf_fock_basis)
-
+const F₁ = const F1 = FockState(1,inf_fock_basis)
 
 ##
 # Gates and Operators on qubits
@@ -182,19 +181,25 @@ abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe 
 isexpr(::AbstractSingleBosonGate) = false
 basis(::AbstractSingleBosonGate) = inf_fock_basis
 
-@withmetadata struct NumberOp <: AbstractSingleBosonOp end
+@withmetadata struct NumberOp <: AbstractSingleBosonOp
+    basis::Basis
+end
 symbollabel(::NumberOp) = "n"
-@withmetadata struct CreateOp <: AbstractSingleBosonOp end
+@withmetadata struct CreateOp <: AbstractSingleBosonOp
+    basis::Basis
+end
 symbollabel(::CreateOp) = "a†"
-@withmetadata struct DestroyOp <: AbstractSingleBosonOp end
+@withmetadata struct DestroyOp <: AbstractSingleBosonOp
+    basis::Basis
+end
 symbollabel(::DestroyOp) = "a"
 
 """Number operator, also available as the constant `n̂`"""
-const N = const n̂ = NumberOp()
+const N = const n̂ = NumberOp(inf_fock_basis)
 """Creation operator, also available as the constant `âꜛ` - there is no unicode dagger superscript, so we use the uparrow"""
-const Create = const âꜛ = CreateOp()
+const Create = const âꜛ = CreateOp(inf_fock_basis)
 """Annihilation operator, also available as the constant `â`"""
-const Destroy = const â = DestroyOp()
+const Destroy = const â = DestroyOp(inf_fock_basis)
 
 ##
 # Other special or useful objects

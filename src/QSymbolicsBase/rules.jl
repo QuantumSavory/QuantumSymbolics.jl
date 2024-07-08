@@ -53,10 +53,23 @@ RULES_ANTICOMMUTATOR = [
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(XGate)) => 0),
     @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(XGate)) => 0),
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(YGate)) => 0),
-    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0)
+    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0),
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(CreateOp)) => IdentityOp(inf_fock_basis)),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(DestroyOp)) => -IdentityOp(inf_fock_basis)),
+    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(DestroyOp)) => -Destroy),
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(NumberOp)) => Destroy),
+    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(CreateOp)) => Create),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(NumberOp)) => -Create)
 ]
 
-RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR]
+RULES_FOCK = [
+    @rule(~o::_isa(DestroyOp) * ~f::(x->isequal(x, vac)) => SZeroKet()),
+    @rule(~o::_isa(CreateOp) * ~f::_isa(FockState) => sqrt((~f).idx+1)*FockState((~f).idx+1, inf_fock_basis)),
+    @rule(~o::_isa(DestroyOp) * ~f::_isa(FockState) => sqrt((~f).idx)*FockState((~f).idx-1, inf_fock_basis)),
+    @rule(~o::_isa(NumberOp) * ~f::_isa(FockState) => (~f).idx*(~f))
+]
+
+RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
 
 ##
 # Simplification rewriters
