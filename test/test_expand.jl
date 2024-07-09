@@ -6,6 +6,10 @@ using Test
 
 @op A; @op B; @op C; @op D;
 
+@testset "expand errors" begin
+    @test_throws ErrorException qexpand(X)
+end
+
 @testset "expand rules" begin
     @test isequal(qexpand(commutator(A, B)), A*B - B*A)
     @test isequal(qexpand(anticommutator(A, B)), A*B + B*A)
