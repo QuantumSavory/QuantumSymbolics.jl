@@ -1,5 +1,9 @@
 # News
 
+## v0.3.3 - dev
+
+- Add single qubit simplification rules.
+
 ## v0.3.2 - 2024-07-02
 
 - Added documentation for `express`.
