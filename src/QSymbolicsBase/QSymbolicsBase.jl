@@ -145,7 +145,7 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
-propsequal(x,y) = all(n->isequal(getproperty(x,n),getproperty(y,n)), propertynames(x))
+propsequal(x,y) = all(n->(n!=:metadata && isequal(getproperty(x,n),getproperty(y,n))), propertynames(x))
 
 
 ##
