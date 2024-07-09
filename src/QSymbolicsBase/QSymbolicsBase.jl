@@ -39,9 +39,9 @@ export SymQObj,QObj,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
        XBasisState,YBasisState,ZBasisState,FockState,
-       NumberOp,CreateOp,DestroyOp,
+       NumberOp,CreateOp,DestroyOp,PhaseShiftOp,DisplacementOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
-       qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,
+       qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,qsimplify_fock,
        qexpand,
        isunitary
 
@@ -141,7 +141,7 @@ function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
 end
 Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
 Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
-
+Base.isequal(x::Metadata, y::Metadata) = isequal(x.express_cache,y.express_cache)
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case

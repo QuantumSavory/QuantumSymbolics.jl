@@ -193,6 +193,16 @@ symbollabel(::CreateOp) = "a†"
     basis::Basis
 end
 symbollabel(::DestroyOp) = "a"
+@withmetadata struct PhaseShiftOp <: AbstractSingleBosonOp
+    phase::Number
+    basis::Basis
+end
+symbollabel(x::PhaseShiftOp) = "Û($(x.phase))"
+@withmetadata struct DisplacementOp <: AbstractSingleBosonOp
+    alpha::Number
+    basis::Basis
+end
+symbollabel(x::DisplacementOp) = "D̂($(x.alpha))"
 
 """Number operator, also available as the constant `n̂`"""
 const N = const n̂ = NumberOp(inf_fock_basis)

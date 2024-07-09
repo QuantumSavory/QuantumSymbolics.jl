@@ -54,19 +54,26 @@ RULES_ANTICOMMUTATOR = [
     @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(XGate)) => 0),
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(YGate)) => 0),
     @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0),
-    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(CreateOp)) => IdentityOp(inf_fock_basis)),
-    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(DestroyOp)) => -IdentityOp(inf_fock_basis)),
-    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(DestroyOp)) => -Destroy),
-    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(NumberOp)) => Destroy),
-    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(CreateOp)) => Create),
-    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(NumberOp)) => -Create)
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(CreateOp)) => IdentityOp((~o1).basis)),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(DestroyOp)) => -IdentityOp((~o1).basis)),
+    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(DestroyOp)) => -(~o2)),
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(NumberOp)) => (~o1)),
+    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(CreateOp)) => (~o2)),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(NumberOp)) => -(~o1))
 ]
 
 RULES_FOCK = [
-    @rule(~o::_isa(DestroyOp) * ~f::(x->isequal(x, vac)) => SZeroKet()),
-    @rule(~o::_isa(CreateOp) * ~f::_isa(FockState) => sqrt((~f).idx+1)*FockState((~f).idx+1, inf_fock_basis)),
-    @rule(~o::_isa(DestroyOp) * ~f::_isa(FockState) => sqrt((~f).idx)*FockState((~f).idx-1, inf_fock_basis)),
-    @rule(~o::_isa(NumberOp) * ~f::_isa(FockState) => (~f).idx*(~f))
+    @rule(~o::_isa(DestroyOp) * ~k::(x->isequal(x, vac)) => SZeroKet()),
+    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => sqrt((~k).idx+1)*FockState((~k).idx+1, (~k).basis)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => sqrt((~k).idx)*FockState((~k).idx-1, (~k).basis)),
+    @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(ContinuousCoherentState) => (~k).idx*(~k)),
+    @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(ContinuousCoherentState) => ContinuousCoherentState((~k).alpha * exp(-im*((~o).phase)), (~k).basis)),
+    @rule(dagger(~o1::_isa(PhaseShiftOp)) * ~o2::_isa(DestroyOp) * ~o1 => ~o2*exp(-im*((~o1).phase))),
+    @rule(~o1::_isa(PhaseShiftOp) * ~o2::_isa(DestroyOp) * dagger(~o1) => ~o2*exp(-im*((~o1).phase))),
+    @rule(dagger(~o1::_isa(DisplacementOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp((~o2).basis)),
+    @rule(dagger(~o1::_isa(DisplacementOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp((~o2).basis)),
+    @rule(~o::_isa(DisplacementOp) * ~k::(x->isequal(x, vac)) => ContinuousCoherentState((~o).alpha, (~k).basis))
 ]
 
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
@@ -78,6 +85,7 @@ RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOC
 qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 qsimplify_pauli = Chain(RULES_PAULI)
 qsimplify_commutator = Chain(RULES_COMMUTATOR)
+qsimplify_fock = Chain(RULES_FOCK)
 
 """Manually simplify a symbolic expression of quantum objects. 
 

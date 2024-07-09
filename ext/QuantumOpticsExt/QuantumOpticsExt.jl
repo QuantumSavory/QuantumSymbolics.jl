@@ -7,7 +7,7 @@ using QuantumSymbolics:
     XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
     XBasisState, YBasisState, ZBasisState,
     NumberOp, CreateOp, DestroyOp,
-    FockBasisState,
+    FockState,
     MixedState, IdentityOp,
     qubit_basis, inf_fock_basis
 import QuantumSymbolics: express, express_nolookup
@@ -70,7 +70,7 @@ express_nolookup(s::XBasisState, ::QuantumOpticsRepr) = (_s₊,_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::QuantumOpticsRepr) = (_i₊,_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::QuantumOpticsRepr) = (_l0,_l1)[s.idx]
 
-function express_nolookup(o::FockBasisState, r::QuantumOpticsRepr)
+function express_nolookup(o::FockState, r::QuantumOpticsRepr)
     @warn "Fock space cutoff is not specified so we default to 2"
     @assert o.idx<2 "without a specified cutoff you can not create states higher than 1 photon"
     return (_f0₂,_f1₂)[o.idx+1]
