@@ -1,6 +1,10 @@
 using QuantumSymbolics
 using Test
 
+@testset "simplify errors" begin
+    @test_throws ErrorException qsimplify(X)
+end
+
 @testset "MulOperator tests" begin
     @test isequal(qsimplify(X*X,rewriter=qsimplify_pauli), I)
     @test isequal(qsimplify(Y*Y,rewriter=qsimplify_pauli), I)
