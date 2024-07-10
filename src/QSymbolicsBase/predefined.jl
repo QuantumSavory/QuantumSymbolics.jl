@@ -179,6 +179,7 @@ const CPHASE = CPHASEGate()
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
 isexpr(::AbstractSingleBosonGate) = false
+basis(x::AbstractSingleBosonOp) = x.basis
 basis(::AbstractSingleBosonGate) = inf_fock_basis
 
 @withmetadata struct NumberOp <: AbstractSingleBosonOp
@@ -197,12 +198,12 @@ symbollabel(::DestroyOp) = "a"
     phase::Number
     basis::Basis
 end
-symbollabel(x::PhaseShiftOp) = "Û($(x.phase))"
+symbollabel(x::PhaseShiftOp) = "U($(x.phase))"
 @withmetadata struct DisplacementOp <: AbstractSingleBosonOp
     alpha::Number
     basis::Basis
 end
-symbollabel(x::DisplacementOp) = "D̂($(x.alpha))"
+symbollabel(x::DisplacementOp) = "D($(x.alpha))"
 
 """Number operator, also available as the constant `n̂`"""
 const N = const n̂ = NumberOp(inf_fock_basis)

@@ -95,17 +95,17 @@ RULES_ANTICOMMUTATOR = [
 ]
 
 RULES_FOCK = [
-    @rule(~o::_isa(DestroyOp) * ~k::(x->isequal(x, vac)) => SZeroKet()),
+    @rule(~o::_isa(DestroyOp) * ~k::_isequal(vac) => SZeroKet()),
     @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => sqrt((~k).idx+1)*FockState((~k).idx+1, (~k).basis)),
     @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => sqrt((~k).idx)*FockState((~k).idx-1, (~k).basis)),
     @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
-    @rule(~o::_isa(DestroyOp) * ~k::_isa(ContinuousCoherentState) => (~k).idx*(~k)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(ContinuousCoherentState) => (~k).alpha*(~k)),
     @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(ContinuousCoherentState) => ContinuousCoherentState((~k).alpha * exp(-im*((~o).phase)), (~k).basis)),
     @rule(dagger(~o1::_isa(PhaseShiftOp)) * ~o2::_isa(DestroyOp) * ~o1 => ~o2*exp(-im*((~o1).phase))),
-    @rule(~o1::_isa(PhaseShiftOp) * ~o2::_isa(DestroyOp) * dagger(~o1) => ~o2*exp(-im*((~o1).phase))),
+    @rule(~o1::_isa(PhaseShiftOp) * ~o2::_isa(DestroyOp) * dagger(~o1) => ~o2*exp(im*((~o1).phase))),
     @rule(dagger(~o1::_isa(DisplacementOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp((~o2).basis)),
     @rule(dagger(~o1::_isa(DisplacementOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp((~o2).basis)),
-    @rule(~o::_isa(DisplacementOp) * ~k::(x->isequal(x, vac)) => ContinuousCoherentState((~o).alpha, (~k).basis))
+    @rule(~o::_isa(DisplacementOp) * ~k::_isequal(vac) => ContinuousCoherentState((~o).alpha, (~k).basis))
 ]
 
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
