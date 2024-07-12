@@ -1,6 +1,7 @@
 module QuantumOpticsExt
 
 using QuantumInterface, QuantumOpticsBase
+using QuantumInterface: samebases
 using QuantumSymbolics
 using QuantumSymbolics:
     HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
@@ -70,16 +71,67 @@ express_nolookup(s::XBasisState, ::QuantumOpticsRepr) = (_s₊,_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::QuantumOpticsRepr) = (_i₊,_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::QuantumOpticsRepr) = (_l0,_l1)[s.idx]
 
-express_nolookup(o::FockState, r::QuantumOpticsRepr) = fockstate(o.basis, o.idx)
-express_nolookup(o::ContinuousCoherentState, r::QuantumOpticsRepr) = coherentstate(o.basis, o.alpha)
-express_nolookup(o::NumberOp, r::QuantumOpticsRepr) = number(o.basis)
-express_nolookup(o::CreateOp, r::QuantumOpticsRepr) = create(o.basis)
-express_nolookup(o::DestroyOp, r::QuantumOpticsRepr) = destroy(o.basis)
-express_nolookup(o::DisplacementOp, r::QuantumOpticsRepr) = displace(o.basis, o.alpha)
+function express_nolookup(s::FockState, r::QuantumOpticsRepr)
+    b = basis(s)
+    i = s.idx
+    if !samebases(b, inf_fock_basis)
+        fockstate(b, i)
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return fockstate(_bf2, i)
+    end
+end
+function express_nolookup(s::CoherentState, r::QuantumOpticsRepr)
+    b = basis(s)
+    alpha = s.alpha
+    if !samebases(b, inf_fock_basis)
+        coherentstate(b, alpha)
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return coherentstate(_bf2, alpha)
+    end
+end
+function express_nolookup(o::NumberOp, r::QuantumOpticsRepr)
+    b = basis(o)
+    if !samebases(b, inf_fock_basis)
+        number(b)
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return number(_bf2)
+    end
+end
+function express_nolookup(o::CreateOp, r::QuantumOpticsRepr)
+    b = basis(o)
+    if !samebases(b, inf_fock_basis)
+        create(b)
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return create(_bf2)
+    end
+end
+function express_nolookup(o::DestroyOp, r::QuantumOpticsRepr)
+    b = basis(o)
+    if !samebases(b, inf_fock_basis)
+        destroy(b)
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return destroy(_bf2)
+    end
+end
+function express_nolookup(o::DisplaceOp, r::QuantumOpticsRepr)
+    b = basis(o)
+    alpha = o.alpha
+    if !samebases(b, inf_fock_basis)
+        displace(b, alpha)
+    else
+        @warn "Fock space cutoff is not specified so we default to 2"
+        return displace(_bf2, alpha)
+    end
+end
 express_nolookup(x::MixedState, ::QuantumOpticsRepr) = identityoperator(basis(x))/length(basis(x)) # TODO there is probably a more efficient way to represent it
 function express_nolookup(x::IdentityOp, ::QuantumOpticsRepr)
     b = basis(x)
-    if b!=inf_fock_basis
+    if !samebases(b, inf_fock_basis)
         return identityoperator(basis(x)) # TODO there is probably a more efficient way to represent it
     else
         @warn "Fock space cutoff is not specified so we default to 2"

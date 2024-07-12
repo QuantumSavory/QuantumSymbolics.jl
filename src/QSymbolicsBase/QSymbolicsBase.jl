@@ -38,8 +38,8 @@ export SymQObj,QObj,
        SProjector,MixedState,IdentityOp,SInvOperator,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
-       XBasisState,YBasisState,ZBasisState,FockState,ContinuousCoherentState,DiscreteCoherentState,
-       NumberOp,CreateOp,DestroyOp,PhaseShiftOp,DisplacementOp,
+       XBasisState,YBasisState,ZBasisState,FockState,CoherentState,
+       NumberOp,CreateOp,DestroyOp,PhaseShiftOp,DisplaceOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
        qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,qsimplify_fock,
        qexpand,
@@ -164,6 +164,7 @@ include("basic_ops_inhomogeneous.jl")
 include("linalg.jl")
 include("predefined.jl")
 include("predefined_CPTP.jl")
+include("predefined_fock.jl")
 
 ##
 # Symbolic and simplification rules

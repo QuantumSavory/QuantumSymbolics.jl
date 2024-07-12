@@ -23,13 +23,13 @@ Both vacuum (ground) and single-photon states in an infinite-dimension Fock basi
 - `vac = F₀ = F0` $=|0\rangle$ in the number state representation,
 - `F₁ = F1` $=|1\rangle$ in the number state representation.
 
-To create quantum analogues of a classical harmonic oscillator, or monochromatic electromagnetic waves, we can define a coherent state $|\alpha\rangle$, where $\alpha$ is a complex amplitude, with `ContinuousCoherentState(α::Number, basis::Basis)`:
+To create quantum analogues of a classical harmonic oscillator, or monochromatic electromagnetic waves, we can define a coherent state $|\alpha\rangle$, where $\alpha$ is a complex amplitude, with `CoherentState(α::Number, basis::Basis)`:
 
 ```jldoctest
 julia> b = FockBasis(Inf, 0.0);
 
-julia> c = ContinuousCoherentState(im, b)
-|0 + im⟩
+julia> c = CoherentState(im, b)
+|im⟩
 ```
 
 ## Operators
@@ -63,7 +63,7 @@ julia> f = FockState(3, b);
 julia> num = N*f
 n|3⟩
 
-julia> qsimplify(num, rewirter=qsimplify_fock)
+julia> qsimplify(num, rewriter=qsimplify_fock)
 3|3⟩
 ```
 
@@ -80,10 +80,10 @@ can be defined. Consider the following example:
 ```jldoctest
 julia> b = FockBasis(Inf, 0.0);
 
-julia> displace = DisplacementOp(im, b)
+julia> displace = DisplaceOp(im, b)
 D(im)
 
-julia> c = qsimplify(displace*v, rewriter=qsimplify_fock)
+julia> c = qsimplify(displace*vac, rewriter=qsimplify_fock)
 |im⟩
 
 julia> phase = PhaseShiftOp(pi, b)
@@ -92,7 +92,7 @@ U(π)
 julia> qsimplify(phase*c, rewriter=qsimplify_fock)
 |1.2246467991473532e-16 - 1.0im⟩
 ```
-Here, we generated a coherent state $|i\rangle$ from the vacuum state $|0\rangle$ by applying the displacement operator defined by `DisplacementOp`. Then, we shifted its phase by $\pi$ with the phase shift operator (which is called with `PhaseShiftOp`) to get the result $|-i\rangle$.
+Here, we generated a coherent state $|i\rangle$ from the vacuum state $|0\rangle$ by applying the displacement operator defined by `DisplaceOp`. Then, we shifted its phase by $\pi$ with the phase shift operator (which is called with `PhaseShiftOp`) to get the result $|-i\rangle$.
 
 Summarized below are supported operators, which can be defined in any Fock basis.
 
@@ -100,7 +100,7 @@ Summarized below are supported operators, which can be defined in any Fock basis
 - Creation operator: `CreateOp(basis::Basis)`,
 - Annihilation operator: `DestroyOp(basis::Basis)`,
 - Phase-shift operator: `PhaseShiftOp(phase::Number, basis:Basis)`,
-- Displacement operator: `DisplacementOp(alpha::Number, basis::Basis)`.
+- Displacement operator: `DisplaceOp(alpha::Number, basis::Basis)`.
 
 ## Numerical Conversions to QuantumOptics.jl
 
@@ -121,7 +121,7 @@ Ket(dim=4)
  0.0 + 0.0im
  0.0 + 0.0im
 
-julia> julia> express(CreateOp(b)) |> dense
+julia> express(CreateOp(b)) |> dense
 Operator(dim=4x4)
   basis: Fock(cutoff=3)
  0.0+0.0im      0.0+0.0im      0.0+0.0im  0.0+0.0im
