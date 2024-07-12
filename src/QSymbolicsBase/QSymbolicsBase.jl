@@ -141,7 +141,6 @@ function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
 end
 Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
 Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
-Base.isequal(x::Metadata, y::Metadata) = isequal(x.express_cache,y.express_cache)
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
