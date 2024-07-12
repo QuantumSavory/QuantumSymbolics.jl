@@ -11,6 +11,7 @@ function hasscalings(xs)
     end
 end
 _isa(T) = x->isa(x,T)
+_isequal(obj) = x->(x==obj)
 _vecisa(T) = x->all(_isa(T), x)
 
 ##
@@ -30,7 +31,38 @@ RULES_PAULI = [
     @rule(~o1::_isa(XGate)*~o2::_isa(ZGate) => -im*Y),
     @rule(~o1::_isa(HGate)*~o2::_isa(XGate)*~o3::_isa(HGate) => Z),
     @rule(~o1::_isa(HGate)*~o2::_isa(YGate)*~o3::_isa(HGate) => -Y),
-    @rule(~o1::_isa(HGate)*~o2::_isa(ZGate)*~o3::_isa(HGate) => X)
+    @rule(~o1::_isa(HGate)*~o2::_isa(ZGate)*~o3::_isa(HGate) => X),
+
+    @rule(~o::_isa(XGate)*~k::_isequal(X1) => X1),
+    @rule(~o::_isa(YGate)*~k::_isequal(X1) => -im*X2),
+    @rule(~o::_isa(ZGate)*~k::_isequal(X1) => X2),
+
+    @rule(~o::_isa(XGate)*~k::_isequal(X2) => -X2),
+    @rule(~o::_isa(YGate)*~k::_isequal(X2) => im*X1),
+    @rule(~o::_isa(ZGate)*~k::_isequal(X2) => X1),
+
+    @rule(~o::_isa(XGate)*~k::_isequal(Y1) => im*Y2),
+    @rule(~o::_isa(YGate)*~k::_isequal(Y1) => Y1),
+    @rule(~o::_isa(ZGate)*~k::_isequal(Y1) => Y2),
+
+    @rule(~o::_isa(XGate)*~k::_isequal(Y2) => -im*Y1),
+    @rule(~o::_isa(YGate)*~k::_isequal(Y2) => -Y2),
+    @rule(~o::_isa(ZGate)*~k::_isequal(Y2) => Y1),
+
+    @rule(~o::_isa(XGate)*~k::_isequal(Z1) => Z2),
+    @rule(~o::_isa(YGate)*~k::_isequal(Z1) => im*Z2),
+    @rule(~o::_isa(ZGate)*~k::_isequal(Z1) => Z1),
+
+    @rule(~o::_isa(XGate)*~k::_isequal(Z2) => Z1),
+    @rule(~o::_isa(YGate)*~k::_isequal(Z2) => -im*Z1),
+    @rule(~o::_isa(ZGate)*~k::_isequal(Z2) => -Z2),
+
+    @rule(~o::_isa(HGate)*~k::_isequal(X1) => Z1),
+    @rule(~o::_isa(HGate)*~k::_isequal(X2) => Z2),
+    @rule(~o::_isa(HGate)*~k::_isequal(Y1) => (X1+im*X2)/sqrt(2)),
+    @rule(~o::_isa(HGate)*~k::_isequal(Y2) => (X1-im*X2)/sqrt(2)),
+    @rule(~o::_isa(HGate)*~k::_isequal(Z1) => X1),
+    @rule(~o::_isa(HGate)*~k::_isequal(Z2) => X2)
 ]
 
 # Commutator identities
