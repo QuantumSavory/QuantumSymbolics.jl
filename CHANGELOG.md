@@ -1,8 +1,9 @@
 # News
 
-## v0.3.3 - dev
+## v0.3.3 - 2024-07-12
 
-- Add single qubit simplification rules.
+- Added single qubit simplification rules.
+- Removed evaluation of metadata equality in `Base.isequal`.
 
 ## v0.3.2 - 2024-07-02
 
