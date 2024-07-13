@@ -4,6 +4,7 @@ using SymbolicUtils
 import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk
 using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
+import MacroTools: namify, @capture
 
 using LinearAlgebra
 import LinearAlgebra: eigvecs,ishermitian,inv
@@ -64,52 +65,26 @@ Metadata() = Metadata(CacheType())
 
 """Decorate a struct definition in order to add a metadata dict which would be storing cached `express` results."""
 macro withmetadata(strct)
-    withmetadata(strct)
-end
-function withmetadata(strct) # TODO this should really use MacroTools instead of this mess
-    struct_name = strct.args[2]
-    constructor = :($struct_name() = new())
-    if struct_name isa Expr # if Struct{T<:QObj} <: Symbolic{T}
-        struct_name = struct_name.args[1]
-        constructor = :($struct_name() = new())
-        if struct_name isa Expr # if Struct{T<:QObj}
-            struct_name = struct_name.args[1] # now it is just Struct
-            constructor = :($struct_name{S}() where S = new{S}())
-        end
+    ex = quote $strct end
+    if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{p1__} <: A_{p2__} fields__ end) | (struct T_{p1__} <: A_{p2__} where {p3__} fields__ end))
+        struct_name = namify(T)
+        args = (namify(i) for i in fields)
+        constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
+    elseif @capture(ex, struct T_ fields__ end)
+        struct_name = namify(T)
+        args = (namify(i) for i in fields)
+        constructor = :($struct_name($(args...)) = new($((args..., :(Metadata()))...)))
+    else @capture(ex, struct T_ end)
+        struct_name = namify(T)
+        constructor = :($struct_name() = new($:(Metadata())))
     end
     struct_args = strct.args[end].args
-    if all(x->x isa Symbol || x isa LineNumberNode || x isa String || x.head==:(::), struct_args)
-        # add constructor
-        args = [x for x in struct_args if x isa Symbol || x isa Expr] # the arguments required for the constructor
-        args = [a isa Symbol ? a : (a.head==:(::) ? a.args[1] : a) for a in args] # drop typeasserts
-        declaring_line = constructor.args[1] # :(Constructor{}()) or :(Constructor{}() where {})
-        if declaring_line.head == :where
-            declaring_line = declaring_line.args[1]
-        end
-        append!(declaring_line.args, args) # Adding them to the line declaring the constructor, i.e. adding them at the location of ? in `Constructor(?) = new(...)`
-        new_call_args = constructor.args[end].args[end].args # The ? in `new(?)`
-        append!(new_call_args, args) # Adding them to the `new` call
-        push!(new_call_args, :(Metadata()))
-        push!(struct_args, constructor)
-    else
-        # modify constructor
-        newwithmetadata.(struct_args)
-    end
-    # add metadata slot
-    push!(struct_args, :(metadata::Metadata))
+    push!(struct_args, constructor, :(metadata::Metadata))
     esc(quote
-        Base.@__doc__ $strct
-        metadata(x::$struct_name)=x.metadata
+    Base.@__doc__ $strct
+    metadata(x::$struct_name)=x.metadata
     end)
 end
-function newwithmetadata(expr::Expr)
-    if expr.head==:call && (expr.args[1]==:new || expr.args[1]==:(new{S}))
-        push!(expr.args, :(Metadata()))
-    else
-        newwithmetadata.(expr.args)
-    end
-end
-newwithmetadata(x) = x
 
 ##
 # Basic Types
