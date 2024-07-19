@@ -134,9 +134,8 @@ RULES_EXPAND = [
     @rule(+(~~ops) ⊗ ~o1 => +(map(op -> op ⊗ ~o1, ~~ops)...)),
     @rule(~o1 * +(~~ops) => +(map(op -> ~o1 * op, ~~ops)...)),
     @rule(+(~~ops) * ~o1 => +(map(op -> op * ~o1, ~~ops)...)),
-    @rule(+(~~ops) * ~o1 => +(map(op -> op * ~o1, ~~ops)...)),
+    @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractBra})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractKet})) => *(map(*, ~~ops1, ~~ops2)...)),
     @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractOperator})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractOperator})) => ⊗(map(*, ~~ops1, ~~ops2)...)),
-    @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractBra})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractKet})) => *(map(*, ~~ops1, ~~ops2)...))
 ]
 
 # 

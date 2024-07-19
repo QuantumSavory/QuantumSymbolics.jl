@@ -1,7 +1,7 @@
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk
+import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
 using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
 
@@ -11,9 +11,9 @@ import LinearAlgebra: eigvecs,ishermitian,inv
 import QuantumInterface:
     apply!,
     tensor, ⊗,
-    basis,Basis,SpinBasis,FockBasis,
+    basis,Basis,samebases,IncompatibleBases,SpinBasis,FockBasis,CompositeBasis,
     nqubits,
-    projector,dagger,
+    projector,dagger,tr,ptrace,
     AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator
 
 export SymQObj,QObj,
@@ -23,28 +23,30 @@ export SymQObj,QObj,
        apply!,
        express,
        tensor,⊗,
-       dagger,projector,commutator,anticommutator,
+       dagger,projector,commutator,anticommutator,tr,ptrace,
        I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
        vac,F₀,F0,F₁,F1,
-       N,n̂,Create,âꜛ,Destroy,â,SpinBasis,FockBasis,
-       SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,
-       @ket,@bra,@op,
+       N,n̂,Create,âꜛ,Destroy,â,basis,SpinBasis,FockBasis,
+       SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator,
+       @ket,@bra,@op,@superop,
        SAdd,SAddBra,SAddKet,SAddOperator,
        SScaled,SScaledBra,SScaledOperator,SScaledKet,
        STensorBra,STensorKet,STensorOperator,
        SZeroBra,SZeroKet,SZeroOperator,
-       SProjector,MixedState,IdentityOp,SInvOperator,
-       SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SDagger,SBraKet,SOuterKetBra,
+       MixedState,IdentityOp,
+       SProjector,SDagger,STrace,SPartialTrace,SInvOperator,
+       SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
        XBasisState,YBasisState,ZBasisState,
        NumberOp,CreateOp,DestroyOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
        qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,
        qexpand,
-       isunitary
-
+       isunitary,
+       KrausRepr,kraus
+       
 ##
 # Metadata cache helpers
 ##
@@ -161,6 +163,7 @@ include("utils.jl")
 include("literal_objects.jl")
 include("basic_ops_homogeneous.jl")
 include("basic_ops_inhomogeneous.jl")
+include("basic_superops.jl")
 include("linalg.jl")
 include("predefined.jl")
 include("predefined_CPTP.jl")
