@@ -38,6 +38,7 @@ println("Starting tests with $(Threads.nthreads()) threads out of `Sys.CPU_THREA
 @doset "trace"
 @doset "expand"
 @doset "throws"
+@doset "pauli"
 
 VERSION >= v"1.9" && @doset "doctests"
 get(ENV,"JET_TEST","")=="true" && @doset "jet"
