@@ -144,13 +144,13 @@ julia> ptrace(A⊗B, 1)
 
 julia> @ket k; @bra b;
 
-julia> pure_state = A ⊗ (k*b)
+julia> factorizable = A ⊗ (k*b)
 (A⊗|k⟩⟨b|)
 
-julia> ptrace(pure_state, 1)
+julia> ptrace(factorizable, 1)
 (tr(A))|k⟩⟨b|
 
-julia> ptrace(pure_state, 2)
+julia> ptrace(factorizable, 2)
 (⟨b||k⟩)A
 
 julia> mixed_state = (A⊗(k*b)) + ((k*b)⊗B)
@@ -198,21 +198,21 @@ function ptrace(x::SAddOperator, s)
     if isa(basis(x), CompositeBasis)
         for i in arguments(x)
             if isexpr(i)
-                if isa(i, SScaledOperator) && operation(i.obj) === ⊗
+                if isa(i, SScaledOperator) && operation(i.obj) === ⊗  # scaled tensor product
                     prod_terms = arguments(i.obj)
                     coeff = i.coeff
-                elseif operation(i) === ⊗
+                elseif operation(i) === ⊗  # tensor product
                     prod_terms = arguments(i)
                     coeff = 1
-                else
+                else  # multiplication of operators with composite basis
                     return SPartialTrace(x,s)
                 end
-            else
-                return SPartialTrace(x,s)
+            else  # operator with composite basis
+                return SPartialTrace(x,s)  
             end
-            if any(j -> isa(basis(j), CompositeBasis), prod_terms)
+            if any(j -> isa(basis(j), CompositeBasis), prod_terms)  # tensor product of operators with composite bases
                 return SPartialTrace(x,s)
-            else
+            else  # tensor product without composite basis
                 sys_op = coeff*prod_terms[s]
                 new_terms = deleteat!(copy(prod_terms), s)
                 trace = tr(sys_op)
@@ -220,7 +220,7 @@ function ptrace(x::SAddOperator, s)
             end  
         end
         (+)(add_terms...)
-    elseif s==1
+    elseif s==1 # partial trace must be over the first system if sum does not have a composite basis
         tr(x)
     else
         throw(ArgumentError("cannot take partial trace of a single quantum system"))

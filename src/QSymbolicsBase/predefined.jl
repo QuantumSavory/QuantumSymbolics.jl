@@ -180,28 +180,21 @@ const CPHASE = CPHASEGate()
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
 isexpr(::AbstractSingleBosonGate) = false
-basis(x::AbstractSingleBosonOp) = x.basis
-basis(::AbstractSingleBosonGate) = inf_fock_basis
+basis(x::AbstractSingleBosonOp) = inf_fock_basis
 
-@withmetadata struct NumberOp <: AbstractSingleBosonOp
-    basis::Basis
-end
+@withmetadata struct NumberOp <: AbstractSingleBosonOp end
 symbollabel(::NumberOp) = "n"
-@withmetadata struct CreateOp <: AbstractSingleBosonOp
-    basis::Basis
-end
+@withmetadata struct CreateOp <: AbstractSingleBosonOp end
 symbollabel(::CreateOp) = "a†"
-@withmetadata struct DestroyOp <: AbstractSingleBosonOp
-    basis::Basis
-end
+@withmetadata struct DestroyOp <: AbstractSingleBosonOp end
 symbollabel(::DestroyOp) = "a"
 
 """Number operator, also available as the constant `n̂`"""
-const N = const n̂ = NumberOp(inf_fock_basis)
+const N = const n̂ = NumberOp()
 """Creation operator, also available as the constant `âꜛ` - there is no unicode dagger superscript, so we use the uparrow"""
-const Create = const âꜛ = CreateOp(inf_fock_basis)
+const Create = const âꜛ = CreateOp()
 """Annihilation operator, also available as the constant `â`"""
-const Destroy = const â = DestroyOp(inf_fock_basis)
+const Destroy = const â = DestroyOp()
 
 ##
 # Other special or useful objects

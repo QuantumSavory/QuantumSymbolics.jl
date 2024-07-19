@@ -47,9 +47,9 @@ noisy_pair_fromdm = (noiseop ⊗ noiseop) * pure_pair_dm
 @op A; @op B; @op C; @op O; @ket k;
 @superop S; K = kraus(A, B, C);
 
-
-
 @testset "symbolic superoperator tests" begin
+    @test ishermitian(S) == false
+    @test isunitary(S) == false
     @test isequal(S*SZeroOperator(), SZeroOperator())
     @test isequal(S*SZeroKet(), SZeroOperator())
     @test isequal(S*k, S*projector(k))

@@ -40,6 +40,7 @@ julia> @op A; @superop S;
 
 julia> S*A
 S[A]
+```
 """
 @withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
     sop
