@@ -169,7 +169,7 @@ Below, we state all of the supported linear algebra operations on quantum object
 
 ## Simplifying Expressions
 
-For predefined objects such as the Pauli operators `X`, `Y`, and `Z`, manual simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:
+For predefined objects such as the Pauli operators `X`, `Y`, and `Z`, additional simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:
 
 ```jldoctest
 julia> qsimplify(X*Z)
