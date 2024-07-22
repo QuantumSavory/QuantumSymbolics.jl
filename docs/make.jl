@@ -4,8 +4,7 @@ push!(LOAD_PATH,"../src/")
 using Documenter
 using DocumenterCitations
 using QuantumSymbolics
-using QuantumOptics
-using QuantumClifford
+using QuantumInterface
 
 DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
 
@@ -20,7 +19,7 @@ function main()
     format = Documenter.HTML(
         assets=["assets/init.js"]
     ),
-    modules = [QuantumSymbolics],
+    modules = [QuantumSymbolics, QuantumInterface],
     warnonly = [:missing_docs],
     authors = "Stefan Krastanov",
     pages = [

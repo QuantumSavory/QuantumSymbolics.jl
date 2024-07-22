@@ -12,14 +12,14 @@ QuantumSymbolics is designed for manipulation and numerical translation of symbo
 
 QuantumSymbolics.jl can be installed through the Julia package system in the standard way:
 
-```@example 1
+```
 using Pkg
 Pkg.add("QuantumSymbolics")
 ```
 
 ## Literal Symbolic Quantum Objects
 
-Basic objects of type `SBra`, `SKet`, and `SOperator` represent symbolic quantum objects with `name` and `basis` properties. Each type can be generated with a straightforward macro:
+Basic objects of type [`SBra`](@ref), [`SKet`](@ref), and [`SOperator`](@ref) represent symbolic quantum objects with `name` and `basis` properties. Each type can be generated with a straightforward macro:
 
 ```jldoctest
 julia> using QuantumSymbolics
@@ -50,7 +50,6 @@ julia> basis(C)
 [Spin(1/2) ⊗ Spin(5/2)]
 ```
 Here, we extracted the basis of the defined symbolic operators using the `basis` function.
-
 
 Symbolic quantum objects with additional properties can be defined, such as a Hermitian operator, or the zero ket (i.e., a symbolic ket equivalent to the zero vector $\bm{0}$).
 
@@ -157,15 +156,17 @@ B†A†
 ```
 Below, we state all of the supported linear algebra operations on quantum objects:
 
-- commutator of two operators: `commutator`,
-- anticommutator of two operators: `anticommutator`,
-- complex conjugate: `conj`,
-- transpose: `transpose`,
-- projection of a ket: `projector`,
-- adjoint or dagger: `dagger`,
-- inverse of an operator: `inv`,
-- exponential of an operator: `exp`,
-- vectorization of an operator: `vec`.
+- commutator of two operators: [`commutator`](@ref),
+- anticommutator of two operators: [`anticommutator`](@ref),
+- complex conjugate: [`conj`](@ref),
+- transpose: [`transpose`](@ref),
+- projection of a ket: [`projector`](@ref),
+- adjoint or dagger: [`dagger`](@ref),
+- trace: [`tr`](@ref),
+- partial trace: [`ptrace`](@ref),
+- inverse of an operator: [`inv`](@ref),
+- exponential of an operator: [`exp`](@ref),
+- vectorization of an operator: [`vec`](@ref).
 
 ## Simplifying Expressions
 
