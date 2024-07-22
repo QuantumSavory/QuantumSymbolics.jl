@@ -19,7 +19,7 @@ function main()
     format = Documenter.HTML(
         assets=["assets/init.js"]
     ),
-    modules = [QuantumSymbolics, QuantumInterface],
+    modules = [QuantumSymbolics],
     warnonly = [:missing_docs],
     authors = "Stefan Krastanov",
     pages = [

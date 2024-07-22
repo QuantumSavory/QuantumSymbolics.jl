@@ -26,8 +26,12 @@ julia> commutator(A, A)
 ```
 """
 function commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
-    coeff, cleanterms = prefactorscalings([o1 o2])
-    cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)   
+    if !(samebases(basis(o1),basis(o2)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)  
+    end 
 end
 commutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
 commutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
@@ -57,8 +61,12 @@ julia> anticommutator(A, B)
 ```
 """
 function anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
-    coeff, cleanterms = prefactorscalings([o1 o2])
-    coeff * SAnticommutator(cleanterms...)
+    if !(samebases(basis(o1),basis(o2)))
+        throw(IncompatibleBases())
+    else
+        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff * SAnticommutator(cleanterms...)
+    end
 end
 anticommutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
 anticommutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()

@@ -19,7 +19,7 @@ Pkg.add("QuantumSymbolics")
 
 ## Literal Symbolic Quantum Objects
 
-Basic objects of type [`SBra`](@ref), [`SKet`](@ref), and [`SOperator`](@ref) represent symbolic quantum objects with `name` and `basis` properties. Each type can be generated with a straightforward macro:
+Basic objects of type [`SBra`](@ref), [`SKet`](@ref), [`SOperator`](@ref), and [`SSuperOperator`](@ref) represent symbolic quantum objects with `name` and `basis` properties. Each type can be generated with a straightforward macro:
 
 ```jldoctest
 julia> using QuantumSymbolics
@@ -32,16 +32,19 @@ julia> @ket k # object of type SKet
 
 julia> @op A # object of type SOperator
 A
+
+julia> @superop S # object of type SSuperOperator
+S
 ```
 
 By default, each of the above macros defines a symbolic quantum object in the spin-1/2 basis. One can simply choose a different basis, such as the Fock basis or a tensor product of several bases, by passing an object of type `Basis` to the second argument in the macro call:
 
 ```jldoctest
-julia> @op B FockBasis(5)
+julia> @op B FockBasis(Inf, 0.0)
 B
 
 julia> basis(B)
-Fock(cutoff=5)
+Fock(cutoff=Inf)
 
 julia> @op C SpinBasis(1//2)⊗SpinBasis(5//2)
 C
@@ -122,7 +125,7 @@ julia> A⊗(k*b + B)
 julia> A-A
 𝟎
 ```
-In the last example, a zero operator, denoted `𝟎`, was returned by subtracting a symbolic operator from itself. Such an object is of the type `SZeroOperator`, and similar objects `SZeroBra` and `SZeroKet` correspond to zero bras and zero kets, respectively.
+In the last example, a zero operator, denoted `𝟎`, was returned by subtracting a symbolic operator from itself. Such an object is of the type [`SZeroOperator`](@ref), and similar objects [`SZeroBra`](@ref) and [`SZeroKet`](@ref) correspond to zero bras and zero kets, respectively.
 
 ## Linear Algebra on Bras, Kets, and Operators
 
@@ -140,7 +143,7 @@ julia> anticommutator(A, B)
 julia> commutator(A, A)
 𝟎
 ```
-Or, one can take the dagger of a quantum object with the `dagger` function:
+Or, one can take the dagger of a quantum object with the [`dagger`](@ref) function:
 
 ```jldoctest
 julia> @ket k; @op A; @op B;
@@ -170,18 +173,18 @@ Below, we state all of the supported linear algebra operations on quantum object
 
 ## Simplifying Expressions
 
-For predefined objects such as the Pauli operators `X`, `Y`, and `Z`, manual simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:
+For predefined objects such as the Pauli operators [`X`](@ref), [`Y`](@ref), and [`Z`](@ref), manual simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:
 
 ```jldoctest
 julia> qsimplify(X*Z)
 (0 - 1im)Y
 ```
 
-Here, we have the relation $XZ = -iY$, so calling `qsimplify` on the expression `X*Z` will rewrite the expression as `-im*Y`.
+Here, we have the relation $XZ = -iY$, so calling [`qsimplify`](@ref) on the expression `X*Z` will rewrite the expression as `-im*Y`.
 
-Note that simplification rewriters used in QuantumSymbolics are built from the interface of [`SymbolicUtils.jl`](https://github.com/JuliaSymbolics/SymbolicUtils.jl). By default, when called on an expression, `qsimplify` will iterate through every defined simplification rule in the QuantumSymbolics package until the expression can no longer be simplified. 
+Note that simplification rewriters used in QuantumSymbolics are built from the interface of [`SymbolicUtils.jl`](https://github.com/JuliaSymbolics/SymbolicUtils.jl). By default, when called on an expression, [`qsimplify`](@ref) will iterate through every defined simplification rule in the QuantumSymbolics package until the expression can no longer be simplified. 
 
-Now, suppose we only want to use a specific subset of rules. For instance, say we wish to simplify commutators, but not anticommutators. Then, we can pass the keyword argument `rewriter=qsimplify_commutator` to `qsimplify`, as done in the following example:
+Now, suppose we only want to use a specific subset of rules. For instance, say we wish to simplify commutators, but not anticommutators. Then, we can pass the keyword argument `rewriter=qsimplify_commutator` to [`qsimplify`](@ref), as done in the following example:
 
 ```jldoctest
 julia> qsimplify(commutator(X, Y), rewriter=qsimplify_commutator)
@@ -190,9 +193,9 @@ julia> qsimplify(commutator(X, Y), rewriter=qsimplify_commutator)
 julia> qsimplify(anticommutator(X, Y), rewriter=qsimplify_commutator)
 {X,Y}
 ```
-As shown above, we apply `qsimplify` to two expressions: `commutator(X, Y)` and `anticommutator(X, Y)`. We specify that only commutator rules will be applied, thus the first expression is rewritten to `(0 + 2im)Z` while the second expression is simply returned. This feature can greatly reduce the time it takes for an expression to be simplified.
+As shown above, we apply [`qsimplify`](@ref) to two expressions: `commutator(X, Y)` and `anticommutator(X, Y)`. We specify that only commutator rules will be applied, thus the first expression is rewritten to `(0 + 2im)Z` while the second expression is simply returned. This feature can greatly reduce the time it takes for an expression to be simplified.
 
-Below, we state all of the simplification rule subsets that can be passed to `qsimplify`:
+Below, we state all of the simplification rule subsets that can be passed to [`qsimplify`](@ref):
 
 - `qsimplify_pauli` for Pauli multiplication,
 - `qsimplify_commutator` for commutators of Pauli operators,
@@ -224,7 +227,7 @@ julia> qexpand((A*B)*(k₁+k₂))
 
 Symbolic expressions containing predefined objects can be converted to numerical representations with [`express`](@ref). Numerics packages supported by this translation capability are [`QuantumOptics.jl`](https://github.com/qojulia/QuantumOptics.jl) and [`QuantumClifford.jl`](https://github.com/QuantumSavory/QuantumClifford.jl/).
 
-By default, `express` converts an object to the quantum optics state vector representation. For instance, we can represent the exponential of the Pauli operator `X` numerically as follows:
+By default, [`express`](@ref) converts an object to the quantum optics state vector representation. For instance, we can represent the exponential of the Pauli operator [`X`](@ref) numerically as follows:
 
 ```jldoctest
 julia> using QuantumOptics
@@ -234,7 +237,7 @@ Operator(dim=2x2)
   basis: Spin(1/2)sparse([1, 2, 1, 2], [1, 1, 2, 2], ComplexF64[1.5430806327160496 + 0.0im, 1.1752011684303352 + 0.0im, 1.1752011684303352 + 0.0im, 1.5430806327160496 + 0.0im], 2, 2)
 ```
 
-To convert to the Clifford representation, an instance of `CliffordRepr` must be passed to `express`. For instance, we can represent the projection of the basis state [`X1`](@ref) of the Pauli operator `X` as follows:
+To convert to the Clifford representation, an instance of `CliffordRepr` must be passed to [`express`](@ref). For instance, we can represent the projection of the basis state [`X1`](@ref) of the Pauli operator [`X`](@ref) as follows:
 
 ```jldoctest
 julia> using QuantumClifford

@@ -115,6 +115,7 @@ SHermitianUnitaryOperator(name) = SHermitianUnitaryOperator(name, qubit_basis)
 ishermitian(::SHermitianUnitaryOperator) = true
 isunitary(::SHermitianUnitaryOperator) = true
 
+"""Symbolic superoperator"""
 struct SSuperOperator <: Symbolic{AbstractSuperOperator}
     name::Symbol
     basis::Basis

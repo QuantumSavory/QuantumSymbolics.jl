@@ -103,24 +103,6 @@ Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
 maketerm(::Type{SBraKet}, f, a, t, m) = f(a...)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
-"""Symbolic application of a superoperator on an operator."""
-@withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
-    sop
-    op
-end
-isexpr(::SSuperOpApply) = true
-iscall(::SSuperOpApply) = true
-arguments(x::SSuperOpApply) = [x.sop,x.op]
-operation(x::SSuperOpApply) = *
-head(x::SSuperOpApply) = :*
-children(x::SSuperOpApply) = [:*,x.sop,x.op]
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::Symbolic{AbstractOperator}) = SSuperOpApply(sop,op)
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, op::SZeroOperator) = SZeroOperator()
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::Symbolic{AbstractKet}) = SSuperOpApply(sop,SProjector(k))
-Base.:(*)(sop::Symbolic{AbstractSuperOperator}, k::SZeroKet) = SZeroKet()
-Base.show(io::IO, x::SSuperOpApply) = begin print(io, x.sop); print(io, x.op) end
-basis(x::SSuperOpApply) = basis(x.op)
-
 """Symbolic outer product of a ket and a bra.
 
 ```jldoctest 
