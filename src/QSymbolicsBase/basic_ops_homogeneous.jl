@@ -139,15 +139,19 @@ children(x::SMulOperator) = [:*;x.terms]
 function Base.:(*)(xs::Symbolic{AbstractOperator}...) 
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
-        terms = flattenop(*, collect(xs))
-        coeff, cleanterms = prefactorscalings(terms)
-        coeff * SMulOperator(cleanterms)
+        if any(x->!(samebases(basis(x),basis(first(xs)))),xs)
+            throw(IncompatibleBases())
+        else
+            terms = flattenop(*, collect(xs))
+            coeff, cleanterms = prefactorscalings(terms)
+            coeff * SMulOperator(cleanterms)
+        end
     else
         SZeroOperator()
     end
 end
 Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
-basis(x::SMulOperator) = basis(x.terms)
+basis(x::SMulOperator) = basis(first(x.terms))
 
 """Tensor product of quantum objects (kets, operators, or bras).
 

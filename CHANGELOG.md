@@ -1,5 +1,10 @@
 # News
 
+## v0.3.4 - dev
+
+- Added `tr` and `ptrace` functionalities.
+- New symbolic superoperator representations.
+  
 ## v0.3.3 - 2024-07-12
 
 - Added single qubit simplification rules.
