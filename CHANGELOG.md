@@ -1,9 +1,11 @@
 # News
 
-## v0.3.4 - dev
+## v0.3.4 - 2024-07-22
 
 - Added `tr` and `ptrace` functionalities.
 - New symbolic superoperator representations.
+- Added linear algebra operations `exp`, `vec`, `conj`, `transpose`.
+- Created a getting-started guide in docs.
   
 ## v0.3.3 - 2024-07-12
 
