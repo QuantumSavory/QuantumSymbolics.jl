@@ -3,7 +3,7 @@
 # that are homogeneous in their arguments.
 ##
 
-"""Scaling of a quantum object (ket, operator, or bra) by a number
+"""Scaling of a quantum object (ket, operator, or bra) by a number.
 
 ```jldoctest
 julia> @ket k
@@ -69,7 +69,7 @@ function Base.show(io::IO, x::SScaledBra)
     end
 end
 
-"""Addition of quantum objects (kets, operators, or bras)
+"""Addition of quantum objects (kets, operators, or bras).
 
 ```jldoctest
 julia> @ket k₁; @ket k₂;
@@ -118,7 +118,7 @@ function Base.show(io::IO, x::SAddOperator)
     print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
 
-"""Symbolic application of operator on operator
+"""Symbolic application of operator on operator.
 
 ```jldoctest
 julia> @op A; @op B;
@@ -139,17 +139,21 @@ children(x::SMulOperator) = [:*;x.terms]
 function Base.:(*)(xs::Symbolic{AbstractOperator}...) 
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
-        terms = flattenop(*, collect(xs))
-        coeff, cleanterms = prefactorscalings(terms)
-        coeff * SMulOperator(cleanterms)
+        if any(x->!(samebases(basis(x),basis(first(xs)))),xs)
+            throw(IncompatibleBases())
+        else
+            terms = flattenop(*, collect(xs))
+            coeff, cleanterms = prefactorscalings(terms)
+            coeff * SMulOperator(cleanterms)
+        end
     else
         SZeroOperator()
     end
 end
 Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
-basis(x::SMulOperator) = basis(x.terms)
+basis(x::SMulOperator) = basis(first(x.terms))
 
-"""Tensor product of quantum objects (kets, operators, or bras)
+"""Tensor product of quantum objects (kets, operators, or bras).
 
 ```jldoctest
 julia> @ket k₁; @ket k₂;
@@ -192,64 +196,3 @@ const STensorOperator = STensor{AbstractOperator}
 Base.show(io::IO, x::STensorOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
 const STensorSuperOperator = STensor{AbstractSuperOperator}
 Base.show(io::IO, x::STensorSuperOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
-
-"""Symbolic commutator of two operators
-
-```jldoctest
-julia> @op A; @op B;
-
-julia> commutator(A, B)
-[A,B]
-
-julia> commutator(A, A)
-𝟎
-```
-"""
-@withmetadata struct SCommutator <: Symbolic{AbstractOperator}
-    op1
-    op2
-end
-isexpr(::SCommutator) = true
-iscall(::SCommutator) = true
-arguments(x::SCommutator) = [x.op1, x.op2]
-operation(x::SCommutator) = commutator
-head(x::SCommutator) = :commutator
-children(x::SCommutator) = [:commutator, x.op1, x.op2]
-function commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
-    coeff, cleanterms = prefactorscalings([o1 o2])
-    cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)   
-end
-commutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
-commutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
-commutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
-Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
-basis(x::SCommutator) = basis(x.op1)
-
-"""Symbolic anticommutator of two operators
-
-```jldoctest
-julia> @op A; @op B;
-
-julia> anticommutator(A, B)
-{A,B}
-```
-"""
-@withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
-    op1
-    op2
-end
-isexpr(::SAnticommutator) = true
-iscall(::SAnticommutator) = true
-arguments(x::SAnticommutator) = [x.op1, x.op2]
-operation(x::SAnticommutator) = anticommutator
-head(x::SAnticommutator) = :anticommutator
-children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
-function anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
-    coeff, cleanterms = prefactorscalings([o1 o2])
-    coeff * SAnticommutator(cleanterms...)
-end
-anticommutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
-anticommutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
-anticommutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
-Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
-basis(x::SAnticommutator) = basis(x.op1)

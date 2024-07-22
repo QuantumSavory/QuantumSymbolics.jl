@@ -4,8 +4,7 @@ push!(LOAD_PATH,"../src/")
 using Documenter
 using DocumenterCitations
 using QuantumSymbolics
-using QuantumOptics
-using QuantumClifford
+using QuantumInterface
 
 DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
 
@@ -25,8 +24,9 @@ function main()
     authors = "Stefan Krastanov",
     pages = [
         "QuantumSymbolics.jl" => "index.md",
-        "Qubit Basis Choice" => "qubit_basis.md",
+        "Getting Started with QuantumSymbolics.jl" => "introduction.md",
         "Express Functionality" => "express.md",
+        "Qubit Basis Choice" => "qubit_basis.md",
         "API" => "API.md",
     ]
     )

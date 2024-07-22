@@ -1,8 +1,16 @@
 # News
 
-## v0.3.3 - dev
+## v0.3.4 - 2024-07-22
 
-- Add single qubit simplification rules.
+- Added `tr` and `ptrace` functionalities.
+- New symbolic superoperator representations.
+- Added linear algebra operations `exp`, `vec`, `conj`, `transpose`.
+- Created a getting-started guide in docs.
+  
+## v0.3.3 - 2024-07-12
+
+- Added single qubit simplification rules.
+- Removed evaluation of metadata equality in `Base.isequal`.
 
 ## v0.3.2 - 2024-07-02
 

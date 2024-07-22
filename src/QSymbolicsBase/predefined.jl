@@ -180,7 +180,7 @@ const CPHASE = CPHASEGate()
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
 isexpr(::AbstractSingleBosonGate) = false
-basis(::AbstractSingleBosonGate) = inf_fock_basis
+basis(x::AbstractSingleBosonOp) = inf_fock_basis
 
 @withmetadata struct NumberOp <: AbstractSingleBosonOp end
 symbollabel(::NumberOp) = "n"
