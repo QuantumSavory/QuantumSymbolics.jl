@@ -2,7 +2,7 @@
 # This file defines the symbolic operations for quantum objects (kets, operators, and bras) that are inhomogeneous in their arguments.
 ##
 
-"""Symbolic application of an operator on a ket (from the left)
+"""Symbolic application of an operator on a ket (from the left).
 
 ```jldoctest
 julia> @ket k; @op A;
@@ -35,7 +35,7 @@ Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
 Base.show(io::IO, x::SApplyKet) = begin print(io, x.op); print(io, x.ket) end
 basis(x::SApplyKet) = basis(x.ket)
 
-"""Symbolic application of an operator on a bra (from the right)
+"""Symbolic application of an operator on a bra (from the right).
 
 ```jldoctest
 julia> @bra b; @op A;
@@ -68,7 +68,7 @@ Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
 Base.show(io::IO, x::SApplyBra) = begin print(io, x.bra); print(io, x.op) end
 basis(x::SApplyBra) = basis(x.bra)
 
-"""Symbolic inner product of a bra and a ket
+"""Symbolic inner product of a bra and a ket.
 
 ```jldoctest
 julia> @bra b; @ket k;
@@ -103,7 +103,8 @@ Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
 maketerm(::Type{SBraKet}, f, a, t, m) = f(a...)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
-"""Symbolic outer product of a ket and a bra
+"""Symbolic outer product of a ket and a bra.
+
 ```jldoctest 
 julia> @bra b; @ket k;
 

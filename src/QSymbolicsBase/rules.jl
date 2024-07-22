@@ -94,14 +94,21 @@ RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR]
 # Simplification rewriters
 ##
 
-qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 qsimplify_pauli = Chain(RULES_PAULI)
 qsimplify_commutator = Chain(RULES_COMMUTATOR)
+qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 
-"""Manually simplify a symbolic expression of quantum objects. 
+"""
+    qsimplify(s; rewriter=nothing)
+
+Manually simplify a symbolic expression of quantum objects. 
 
 If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression. 
 For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
+The defined rewriters for simplification are the following objects:
+    - `qsimplify_pauli`
+    - `qsimplify_commutator`
+    - `qsimplify_anticommutator`
 
 ```jldoctest
 julia> qsimplify(σʸ*commutator(σˣ*σᶻ, σᶻ))
@@ -144,7 +151,10 @@ RULES_EXPAND = [
 # Expansion rewriter
 ##
 
-"""Manually expand a symbolic expression of quantum objects. 
+"""
+    qexpand(s)
+
+Manually expand a symbolic expression of quantum objects. 
 
 ```jldoctest
 julia> @op A; @op B; @op C;

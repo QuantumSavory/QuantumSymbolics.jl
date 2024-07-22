@@ -9,6 +9,8 @@ export express, express_nolookup, consistent_representation
 import SymbolicUtils: Symbolic
 
 """
+    express(s, repr::AbstractRepresentation=QuantumOpticsRepr()[, use::AbstractUse])
+
 The main interface for expressing quantum objects in various representations.
 
 ```jldoctest

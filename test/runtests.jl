@@ -37,6 +37,7 @@ println("Starting tests with $(Threads.nthreads()) threads out of `Sys.CPU_THREA
 @doset "zero_obj"
 @doset "trace"
 @doset "expand"
+@doset "misc_linalg"
 @doset "throws"
 @doset "pauli"
 
