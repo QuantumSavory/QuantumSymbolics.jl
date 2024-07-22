@@ -68,7 +68,7 @@ Metadata() = Metadata(CacheType())
 """Decorate a struct definition in order to add a metadata dict which would be storing cached `express` results."""
 macro withmetadata(strct)
     ex = quote $strct end
-    if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{p1__} <: A_{p2__} fields__ end) | (struct T_{p1__} <: A_{p2__} where {p3__} fields__ end))
+    if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
         args = (namify(i) for i in fields)
         constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
