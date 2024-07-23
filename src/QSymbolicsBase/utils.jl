@@ -2,7 +2,7 @@ function prefactorscalings(xs)
     terms = []
     coeff = 1::Any
     for x in xs
-        if isa(x, SScaledOperator)
+        if isa(x, SScaled)
             coeff *= x.coeff
             push!(terms, x.obj)
         elseif isa(x, Union{Number, Symbolic{Number}})

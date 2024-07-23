@@ -114,15 +114,22 @@ RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOC
 # Simplification rewriters
 ##
 
-qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 qsimplify_pauli = Chain(RULES_PAULI)
 qsimplify_commutator = Chain(RULES_COMMUTATOR)
+qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 qsimplify_fock = Chain(RULES_FOCK)
 
-"""Manually simplify a symbolic expression of quantum objects. 
+"""
+    qsimplify(s; rewriter=nothing)
+
+Manually simplify a symbolic expression of quantum objects. 
 
 If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression. 
 For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
+The defined rewriters for simplification are the following objects:
+    - `qsimplify_pauli`
+    - `qsimplify_commutator`
+    - `qsimplify_anticommutator`
 
 ```jldoctest
 julia> qsimplify(σʸ*commutator(σˣ*σᶻ, σᶻ))
@@ -155,9 +162,8 @@ RULES_EXPAND = [
     @rule(+(~~ops) ⊗ ~o1 => +(map(op -> op ⊗ ~o1, ~~ops)...)),
     @rule(~o1 * +(~~ops) => +(map(op -> ~o1 * op, ~~ops)...)),
     @rule(+(~~ops) * ~o1 => +(map(op -> op * ~o1, ~~ops)...)),
-    @rule(+(~~ops) * ~o1 => +(map(op -> op * ~o1, ~~ops)...)),
+    @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractBra})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractKet})) => *(map(*, ~~ops1, ~~ops2)...)),
     @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractOperator})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractOperator})) => ⊗(map(*, ~~ops1, ~~ops2)...)),
-    @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractBra})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractKet})) => *(map(*, ~~ops1, ~~ops2)...))
 ]
 
 # 
@@ -166,7 +172,10 @@ RULES_EXPAND = [
 # Expansion rewriter
 ##
 
-"""Manually expand a symbolic expression of quantum objects. 
+"""
+    qexpand(s)
+
+Manually expand a symbolic expression of quantum objects. 
 
 ```jldoctest
 julia> @op A; @op B; @op C;
