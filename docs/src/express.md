@@ -6,7 +6,7 @@ DocTestSetup = quote
 end
 ```
 
-A principle feature of `QuantumSymbolics` is to numerically represent symbolic quantum expressions in various formalisms using [`express`](@ref). In particular, one can translate symbolic logic to back-end toolboxes such as `QuantumOptics.jl` or `QuantumClifford.jl` for simulating quantum systems with great flexibiity.
+A principle feature of `QuantumSymbolics` is to numerically represent symbolic quantum expressions in various formalisms using [`express`](@ref). In particular, one can translate symbolic logic to back-end toolboxes such as [`QuantumOptics.jl`](https://github.com/qojulia/QuantumOptics.jl) or [`QuantumClifford.jl`](https://github.com/QuantumSavory/QuantumClifford.jl) for simulating quantum systems with great flexibiity.
 
 As a straightforward example, consider the spin-up state $|\uparrow\rangle = |0\rangle$, the eigenstate of the Pauli operator $Z$, which can be expressed in `QuantumSymbolics` as follows:
 
@@ -14,7 +14,7 @@ As a straightforward example, consider the spin-up state $|\uparrow\rangle = |0\
 using QuantumSymbolics, QuantumClifford, QuantumOptics # hide
 ψ = Z1
 ```
-Using [`express`](@ref), we can translate this symbolic object into its numerical state vector form in `QuantumOptics.jl`.
+Using [`express`](@ref), we can translate this symbolic object into its numerical state vector form in [`QuantumOptics.jl`](https://github.com/qojulia/QuantumOptics.jl).
 
 ```@example 1
 express(ψ)
@@ -26,7 +26,7 @@ By default, [`express`](@ref) converts a quantum object with `QuantumOpticRepr`.
 ψ.metadata
 ```
 
-The caching feature of [`express`](@ref) prevents a specific representation for a symbolic quantum object from being computed more than once. This becomes handy for translations of more complex operations, which can become computationally expensive. We also have the ability to express $|Z_1\rangle$ in the Clifford formalism with `QuantumClifford.jl`:
+The caching feature of [`express`](@ref) prevents a specific representation for a symbolic quantum object from being computed more than once. This becomes handy for translations of more complex operations, which can become computationally expensive. We also have the ability to express $|Z_1\rangle$ in the Clifford formalism with [`QuantumClifford.jl`](https://github.com/QuantumSavory/QuantumClifford.jl):
 
 ```@example 1
 express(ψ, CliffordRepr())
@@ -56,4 +56,23 @@ julia> express(σʸ, CliffordRepr(), UseAsObservable())
 
 julia> express(σʸ, CliffordRepr(), UseAsOperation())
 sY
+```
+Another edge case is translations with `QuantumOpticsRepr`, where we can additionally define a finite cutoff for bosonic states and operators, as discussed in the [quantum harmonic oscillators page](@ref Quantum-Harmonic-Oscillators). The default cutoff for such objects is 2, however a different cutoff can be specified by passing an integer to `QuantumOpticsRepr` in an `express` call. Let us see an example with the number operator:
+
+```jldoctest
+julia> express(N) |> dense
+Operator(dim=3x3)
+  basis: Fock(cutoff=2)
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  1.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  2.0+0.0im
+
+julia> express(N, QuantumOpticsRepr(4)) |> dense
+Operator(dim=5x5)
+  basis: Fock(cutoff=4)
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  1.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  2.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```

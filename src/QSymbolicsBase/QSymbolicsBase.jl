@@ -1,5 +1,5 @@
 using Symbolics
-import Symbolics: simplify
+import Symbolics: simplify, Term
 using SymbolicUtils
 import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
 using TermInterface
@@ -27,7 +27,7 @@ export SymQObj,QObj,
        I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
-       vac,F₀,F0,F₁,F1,
+       vac,F₀,F0,F₁,F1,inf_fock_basis,
        N,n̂,Create,âꜛ,Destroy,â,basis,SpinBasis,FockBasis,
        SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator,
        @ket,@bra,@op,@superop,

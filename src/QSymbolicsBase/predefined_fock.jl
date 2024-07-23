@@ -7,6 +7,7 @@
     idx::Int
     basis::FockBasis
 end
+FockState(idx::Int) = FockState(idx, inf_fock_basis)
 symbollabel(x::FockState) = "$(x.idx)"
 
 """Coherent state in defined Fock basis."""
@@ -14,13 +15,14 @@ symbollabel(x::FockState) = "$(x.idx)"
     alpha::Number # TODO parameterize
     basis::FockBasis
 end
+CoherentState(alpha::Number) = CoherentState(alpha, inf_fock_basis)
 symbollabel(x::CoherentState) = "$(x.alpha)"
 
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
-const vac = const F₀ = const F0 = FockState(0,inf_fock_basis)
+const vac = const F₀ = const F0 = FockState(0)
 """Single photon basis state of n"""
-const F₁ = const F1 = FockState(1,inf_fock_basis)
+const F₁ = const F1 = FockState(1)
 
 ##
 # Gates and Operators on harmonic oscillators
@@ -29,70 +31,72 @@ const F₁ = const F1 = FockState(1,inf_fock_basis)
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
 isexpr(::AbstractSingleBosonGate) = false
-basis(x::AbstractSingleBosonOp) = x.basis
-basis(::AbstractSingleBosonGate) = inf_fock_basis
+basis(x::AbstractSingleBosonOp) = inf_fock_basis
 
-"""Number operator in defined Fock basis.
+"""Number operator.
 
 ```jldoctest
-julia> f = FockState(2, FockBasis(4))
+julia> f = FockState(2)
 |2⟩
 
-julia> num = NumberOp(FockBasis(4))
+julia> num = NumberOp()
 n
 
 julia> qsimplify(num*f, rewriter=qsimplify_fock)
 2|2⟩
 ```
 """
-@withmetadata struct NumberOp <: AbstractSingleBosonOp
+@withmetadata struct NumberOp <: AbstractSingleBosonOp 
     basis::FockBasis
 end
+NumberOp() = NumberOp(inf_fock_basis)
 symbollabel(::NumberOp) = "n"
 
-"""Creation (raising) operator in defined Fock basis.
+"""Creation (raising) operator.
 
 ```jldoctest
-julia> f = FockState(2, FockBasis(4))
+julia> f = FockState(2)
 |2⟩
 
-julia> create = CreateOp(FockBasis(4))
+julia> create = CreateOp()
 a†
 
 julia> qsimplify(create*f, rewriter=qsimplify_fock)
-1.7320508075688772|3⟩
+(sqrt(3))|3⟩
 ```
 """
 @withmetadata struct CreateOp <: AbstractSingleBosonOp
     basis::FockBasis
 end
+CreateOp() = CreateOp(inf_fock_basis)
 symbollabel(::CreateOp) = "a†"
 
 """Annihilation (lowering or destroy) operator in defined Fock basis.
 
 ```jldoctest
-julia> f = FockState(2, FockBasis(4))
+julia> f = FockState(2)
 |2⟩
 
-julia> destroy = DestroyOp(FockBasis(4))
+julia> destroy = DestroyOp()
 a
 
 julia> qsimplify(destroy*f, rewriter=qsimplify_fock)
-1.4142135623730951|1⟩
+(sqrt(2))|1⟩
 ```
 """
 @withmetadata struct DestroyOp <: AbstractSingleBosonOp
     basis::FockBasis
 end
+DestroyOp() = DestroyOp(inf_fock_basis)
 symbollabel(::DestroyOp) = "a"
 
 """Phase-shift operator in defined Fock basis.
 
 ```jldoctest
-julia> c = CoherentState(im, FockBasis(4))
+julia> c = CoherentState(im)
 |im⟩
 
-julia> phase = PhaseShiftOp(pi, FockBasis(4))
+julia> phase = PhaseShiftOp(pi)
 U(π)
 
 julia> qsimplify(phase*c, rewriter=qsimplify_fock)
@@ -103,15 +107,16 @@ julia> qsimplify(phase*c, rewriter=qsimplify_fock)
     phase::Number
     basis::FockBasis
 end
+PhaseShiftOp(phase::Number) = PhaseShiftOp(phase, inf_fock_basis)
 symbollabel(x::PhaseShiftOp) = "U($(x.phase))"
 
 """Displacement operator in defined Fock basis.
 
 ```jldoctest
-julia> f = FockState(0, FockBasis(4))
+julia> f = FockState(0)
 |0⟩
 
-julia> displace = DisplaceOp(im, FockBasis(4))
+julia> displace = DisplaceOp(im)
 D(im)
 
 julia> qsimplify(displace*f, rewriter=qsimplify_fock)
@@ -122,12 +127,13 @@ julia> qsimplify(displace*f, rewriter=qsimplify_fock)
     alpha::Number
     basis::FockBasis
 end
+DisplaceOp(alpha::Number) = DisplaceOp(alpha, inf_fock_basis)
 symbollabel(x::DisplaceOp) = "D($(x.alpha))"
 
 """Number operator, also available as the constant `n̂`, in an infinite dimension Fock basis."""
-const N = const n̂ = NumberOp(inf_fock_basis)
+const N = const n̂ = NumberOp()
 """Creation operator, also available as the constant `âꜛ`, in an infinite dimension Fock basis.
 There is no unicode dagger superscript, so we use the uparrow"""
-const Create = const âꜛ = CreateOp(inf_fock_basis)
+const Create = const âꜛ = CreateOp()
 """Annihilation operator, also available as the constant `â`, in an infinite dimension Fock basis."""
-const Destroy = const â = DestroyOp(inf_fock_basis)
+const Destroy = const â = DestroyOp()

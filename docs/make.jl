@@ -27,7 +27,7 @@ function main()
         "Getting Started with QuantumSymbolics.jl" => "introduction.md",
         "Express Functionality" => "express.md",
         "Qubit Basis Choice" => "qubit_basis.md",
-        "Fock States" => "fock.md",
+        "Quantum Harmonic Oscillators" => "QHO.md",
         "API" => "API.md",
     ]
     )
