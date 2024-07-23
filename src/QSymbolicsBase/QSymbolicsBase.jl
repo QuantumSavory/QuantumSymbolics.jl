@@ -1,5 +1,5 @@
 using Symbolics
-import Symbolics: simplify, Term
+import Symbolics: simplify,Term
 using SymbolicUtils
 import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
 using TermInterface
