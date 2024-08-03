@@ -64,6 +64,11 @@ express_nolookup(x, repr::AbstractRepresentation, ::UseAsState) = express_nolook
 # where the cache is a distribution over possible samples.
 express_from_cache(cache) = cache
 
+function consistent_representation(regs,idx,state)
+    reprs = Set([r.reprs[i] for (r,i) in zip(regs,idx)])
+    consistent_representation(reprs,state)
+end
+
 """Pick a representation that is consistent with given representations and appropriate for the given state."""
 function consistent_representation(reprs,state)
     reprs = Set(reprs)
