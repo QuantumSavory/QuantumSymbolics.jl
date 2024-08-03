@@ -1,4 +1,3 @@
-
 function prefactorscalings(xs)
     terms = []
     coeff = 1::Any
