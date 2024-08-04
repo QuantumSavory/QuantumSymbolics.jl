@@ -1,5 +1,9 @@
 # News
 
+## v0.3.5 - dev
+
+- Cleaned up metadata decoration of struct definitions.
+  
 ## v0.3.4 - 2024-07-22
 
 - Added `tr` and `ptrace` functionalities.
