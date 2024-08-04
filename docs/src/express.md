@@ -14,6 +14,7 @@ As a straightforward example, consider the spin-up state $|\uparrow\rangle = |0\
 using QuantumSymbolics, QuantumClifford, QuantumOptics # hide
 ψ = Z1
 ```
+
 Using [`express`](@ref), we can translate this symbolic object into its numerical state vector form in [`QuantumOptics.jl`](https://github.com/qojulia/QuantumOptics.jl).
 
 ```@example 1
@@ -57,6 +58,7 @@ julia> express(σʸ, CliffordRepr(), UseAsObservable())
 julia> express(σʸ, CliffordRepr(), UseAsOperation())
 sY
 ```
+
 Another edge case is translations with `QuantumOpticsRepr`, where we can additionally define a finite cutoff for bosonic states and operators, as discussed in the [quantum harmonic oscillators page](@ref Quantum-Harmonic-Oscillators). The default cutoff for such objects is 2, however a different cutoff can be specified by passing an integer to `QuantumOpticsRepr` in an `express` call. Let us see an example with the number operator:
 
 ```jldoctest
@@ -67,7 +69,7 @@ Operator(dim=3x3)
  0.0+0.0im  1.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  2.0+0.0im
 
-julia> express(N, QuantumOpticsRepr(4)) |> dense
+julia> express(N, QuantumOpticsRepr(cutoff=4)) |> dense
 Operator(dim=5x5)
   basis: Fock(cutoff=4)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im

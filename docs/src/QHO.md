@@ -10,7 +10,7 @@ In this section, we describe symbolic representations of bosonic systems in Quan
 
 ## States
 
-A Fock state is the number of excitation quanta of a single quantum harmonic oscillator. In the following example, we create a `FockState` with 3 quanta in an infinite-dimension Fock space:
+A Fock state is a state with well defined number of excitation quanta of a single quantum harmonic oscillator (an eigenstate of the number operator). In the following example, we create a `FockState` with 3 quanta in an infinite-dimension Fock space:
 
 ```jldoctest
 julia> f = FockState(3)
@@ -22,14 +22,14 @@ Both vacuum (ground) and single-photon states are defined as constants in both u
 - `vac = F₀ = F0` $=|0\rangle$ in the number state representation,
 - `F₁ = F1` $=|1\rangle$ in the number state representation.
 
-To create quantum analogues of a classical harmonic oscillator, or monochromatic electromagnetic waves, we can define a coherent state $|\alpha\rangle$, where $\alpha$ is a complex amplitude, with `CoherentState(α::Number)`:
+To create quantum analogues of a classical harmonic oscillator, or monochromatic electromagnetic waves, we can define a coherent (a.k.a. semi-classical) state $|\alpha\rangle$, where $\alpha$ is a complex amplitude, with `CoherentState(α::Number)`:
 
 ```jldoctest
 julia> c = CoherentState(im)
 |im⟩
 ```
-!!! tip "Naming convention for quantum harmonic oscillator bases"
-    The defined basis for arbitrary symbolic bosonic states is a `FockBasis` object, due to a shared naming interface for Quantum physics packages. For instance, the command `basis(CoherentState(im))` will output `Fock(cutoff=Inf)`. This may lead to confusion, as not all bosonic states are considered Fock states. However, this is simply a naming convention, and symbolic and numerical results are not affected by it.
+!!! note "Naming convention for quantum harmonic oscillator bases"
+    The defined basis for arbitrary symbolic bosonic states is a `FockBasis` object, due to a shared naming interface for Quantum physics packages. For instance, the command `basis(CoherentState(im))` will output `Fock(cutoff=Inf)`. This may lead to confusion, as not all bosonic states are Fock states. However, this is simply a naming convention for the basis, and symbolic and numerical results are not affected by it.
 
 ## Operators
 
@@ -132,14 +132,14 @@ Ket(dim=3)
 ```
 
 !!! warning "Cutoff specifications for numerical representations of quantum harmonic oscillators"
-    Symbolic bosonic states and operators are naturally represented in an infinite dimension basis. For numerical conversions of such quantum objects, a finite cutoff of the highest allowed state must be defined. By default, the basis dimension of numerical conversions is set to 3 (so the number representation cutoff is 2), as demonstrated above. To define a different cutoff, one must pass the argument `QuantumOpticsRepr(::Int)` to `express`.
+    Symbolic bosonic states and operators are naturally represented in an infinite dimension basis. For numerical conversions of such quantum objects, a finite cutoff of the highest allowed state must be defined. By default, the basis dimension of numerical conversions is set to 3 (so the number representation cutoff is 2), as demonstrated above. To define a different cutoff, one must customize the `QuantumOpticsRepr` instance, e.g. provide `QuantumOpticsRepr(cutoff=n::Int)` to `express`.
 
 If we wish to specify a different numerical cutoff, say 4, to the previous examples, then we rewrite them as follows:
 
 ```jldoctest
 julia> f = FockState(1);
 
-julia> express(f, QuantumOpticsRepr(4))
+julia> express(f, QuantumOpticsRepr(cutoff=4))
 Ket(dim=5)
   basis: Fock(cutoff=4)
  0.0 + 0.0im
