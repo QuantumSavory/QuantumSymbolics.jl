@@ -1,5 +1,6 @@
 @testitem "Superop" begin
     using LinearAlgebra
+    using QuantumOptics
 
     #
     # single qubit
