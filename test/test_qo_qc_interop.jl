@@ -1,4 +1,4 @@
-@testitem "QunatumOptics QuantumClifford Interop" begin
+@testitem "QuantumOptics QuantumClifford Interop" begin
     using QuantumClifford: @S_str, random_stabilizer
     using QuantumOpticsBase
     using LinearAlgebra
