@@ -1,4 +1,5 @@
-using QuantumSymbolics, JET
+@testitem "JET checks" tags=[:jet] begin
+using JET
 using QuantumOptics, QuantumClifford # to load the extensions
 
 using JET: ReportPass, BasicPass, InferenceErrorReport, UncaughtExceptionReport
@@ -30,3 +31,4 @@ rep = report_package("QuantumSymbolics";
 @show rep
 @test_broken length(JET.get_reports(rep)) == 0
 @test length(JET.get_reports(rep)) <= 7
+end
