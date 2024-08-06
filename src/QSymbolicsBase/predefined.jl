@@ -25,24 +25,6 @@ symbollabel(x::YBasisState) = "Y$(num_to_sub(x.idx))"
 end
 symbollabel(x::ZBasisState) = "Z$(num_to_sub(x.idx))"
 
-@withmetadata struct FockBasisState <: SpecialKet
-    idx::Int
-    basis::Basis
-end
-symbollabel(x::FockBasisState) = "$(x.idx)"
-
-@withmetadata struct DiscreteCoherentState <: SpecialKet
-    alpha::Number # TODO parameterize
-    basis::Basis
-end
-symbollabel(x::DiscreteCoherentState) = "$(x.alpha)"
-
-@withmetadata struct ContinuousCoherentState <: SpecialKet
-    alpha::Number # TODO parameterize
-    basis::Basis
-end
-symbollabel(x::ContinuousCoherentState) = "$(x.alpha)"
-
 @withmetadata struct MomentumEigenState <: SpecialKet
     p::Number # TODO parameterize
     basis::Basis
@@ -68,13 +50,6 @@ const Y2 = const Y₂ = const Lmi = const L₋ᵢ = YBasisState(2, qubit_basis)
 const Z1 = const Z₁ = const L0 = const L₀ = ZBasisState(1, qubit_basis)
 """Basis state of σᶻ"""
 const Z2 = const Z₂ = const L1 = const L₁ = ZBasisState(2, qubit_basis)
-
-const inf_fock_basis = FockBasis(Inf,0.)
-"""Vacuum basis state of n"""
-const vac = const F₀ = const F0 = FockBasisState(0,inf_fock_basis)
-"""Single photon basis state of n"""
-const F₁ = const F1 = FockBasisState(1,inf_fock_basis)
-
 
 ##
 # Gates and Operators on qubits
@@ -172,29 +147,6 @@ const H = HGate()
 const CNOT = CNOTGate()
 """CPHASE gate"""
 const CPHASE = CPHASEGate()
-
-##
-# Gates and Operators on harmonic oscillators
-##
-
-abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
-abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
-isexpr(::AbstractSingleBosonGate) = false
-basis(x::AbstractSingleBosonOp) = inf_fock_basis
-
-@withmetadata struct NumberOp <: AbstractSingleBosonOp end
-symbollabel(::NumberOp) = "n"
-@withmetadata struct CreateOp <: AbstractSingleBosonOp end
-symbollabel(::CreateOp) = "a†"
-@withmetadata struct DestroyOp <: AbstractSingleBosonOp end
-symbollabel(::DestroyOp) = "a"
-
-"""Number operator, also available as the constant `n̂`"""
-const N = const n̂ = NumberOp()
-"""Creation operator, also available as the constant `âꜛ` - there is no unicode dagger superscript, so we use the uparrow"""
-const Create = const âꜛ = CreateOp()
-"""Annihilation operator, also available as the constant `â`"""
-const Destroy = const â = DestroyOp()
 
 ##
 # Other special or useful objects

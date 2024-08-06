@@ -1,5 +1,5 @@
 using Symbolics
-import Symbolics: simplify
+import Symbolics: simplify,Term
 using SymbolicUtils
 import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
 using TermInterface
@@ -28,7 +28,7 @@ export SymQObj,QObj,
        I,X,Y,Z,σˣ,σʸ,σᶻ,Pm,Pp,σ₋,σ₊,
        H,CNOT,CPHASE,XCX,XCY,XCZ,YCX,YCY,YCZ,ZCX,ZCY,ZCZ,
        X1,X2,Y1,Y2,Z1,Z2,X₁,X₂,Y₁,Y₂,Z₁,Z₂,L0,L1,Lp,Lm,Lpi,Lmi,L₀,L₁,L₊,L₋,L₊ᵢ,L₋ᵢ,
-       vac,F₀,F0,F₁,F1,
+       vac,F₀,F0,F₁,F1,inf_fock_basis,
        N,n̂,Create,âꜛ,Destroy,â,basis,SpinBasis,FockBasis,
        SBra,SKet,SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator,
        @ket,@bra,@op,@superop,
@@ -40,10 +40,10 @@ export SymQObj,QObj,
        MixedState,IdentityOp,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
-       XBasisState,YBasisState,ZBasisState,
-       NumberOp,CreateOp,DestroyOp,
+       XBasisState,YBasisState,ZBasisState,FockState,CoherentState,
+       NumberOp,CreateOp,DestroyOp,PhaseShiftOp,DisplaceOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
-       qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,
+       qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,qsimplify_fock,
        qexpand,
        isunitary,
        KrausRepr,kraus
@@ -119,7 +119,6 @@ end
 Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
 Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 
-
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
 propsequal(x,y) = all(n->(n==:metadata || isequal(getproperty(x,n),getproperty(y,n))), propertynames(x))
@@ -142,6 +141,7 @@ include("basic_superops.jl")
 include("linalg.jl")
 include("predefined.jl")
 include("predefined_CPTP.jl")
+include("predefined_fock.jl")
 
 ##
 # Symbolic and simplification rules

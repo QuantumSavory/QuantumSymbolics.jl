@@ -85,10 +85,30 @@ RULES_ANTICOMMUTATOR = [
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(XGate)) => 0),
     @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(XGate)) => 0),
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(YGate)) => 0),
-    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0)
+    @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0),
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(CreateOp)) => IdentityOp((~o1).basis)),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(DestroyOp)) => -IdentityOp((~o1).basis)),
+    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(DestroyOp)) => -(~o2)),
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(NumberOp)) => (~o1)),
+    @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(CreateOp)) => (~o2)),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(NumberOp)) => -(~o1))
 ]
 
-RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR]
+RULES_FOCK = [
+    @rule(~o::_isa(DestroyOp) * ~k::_isequal(vac) => SZeroKet()),
+    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx+1])*FockState((~k).idx+1)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx])*FockState((~k).idx-1)),
+    @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(CoherentState) => (~k).alpha*(~k)),
+    @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(CoherentState) => CoherentState((~k).alpha * exp(-im*(~o).phase))),
+    @rule(dagger(~o1::_isa(PhaseShiftOp)) * ~o2::_isa(DestroyOp) * ~o1 => ~o2*exp(-im*((~o1).phase))),
+    @rule(~o1::_isa(PhaseShiftOp) * ~o2::_isa(DestroyOp) * dagger(~o1) => ~o2*exp(im*((~o1).phase))),
+    @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp((~o2).basis)),
+    @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp((~o2).basis)),
+    @rule(~o::_isa(DisplaceOp) * ~k::((x->(isa(x,FockState) && x.idx == 0))) => CoherentState((~o).alpha))
+]
+
+RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
 
 ##
 # Simplification rewriters
@@ -97,6 +117,7 @@ RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR]
 qsimplify_pauli = Chain(RULES_PAULI)
 qsimplify_commutator = Chain(RULES_COMMUTATOR)
 qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
+qsimplify_fock = Chain(RULES_FOCK)
 
 """
     qsimplify(s; rewriter=nothing)

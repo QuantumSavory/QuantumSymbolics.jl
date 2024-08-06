@@ -78,7 +78,9 @@ end
 ##
 
 """Representation using kets, bras, density matrices, and superoperators governed by `QuantumOptics.jl`."""
-struct QuantumOpticsRepr <: AbstractRepresentation end
+@kwdef struct QuantumOpticsRepr <: AbstractRepresentation 
+    cutoff::Int = 2
+end
 """Similar to `QuantumOpticsRepr`, but using trajectories instead of superoperators."""
 struct QuantumMCRepr <: AbstractRepresentation end
 """Representation using tableaux governed by `QuantumClifford.jl`"""

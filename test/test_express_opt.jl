@@ -35,4 +35,12 @@
     @test express(op*state) ≈ express(F1⊗Z2)
 
     state = (3im*(2*dagger(Z1)+dagger(Y1))) * (3im*(2*X1+X2))
+
+    cstate = CoherentState(im, inf_fock_basis)
+    displace = DisplaceOp(im,inf_fock_basis)
+    phase = PhaseShiftOp(im, inf_fock_basis)
+    @test express(N*F1) ≈ express(N)*express(F1)
+    @test express(Create*F1) ≈ express(Create)*express(F1)
+    @test express(Destroy*F1) ≈ express(Destroy)*express(F1)
+    @test express(displace*cstate) ≈ express(displace)*express(cstate)
 end
