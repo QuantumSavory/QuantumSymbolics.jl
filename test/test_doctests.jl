@@ -1,14 +1,8 @@
-using Documenter
-using QuantumSymbolics
-using QuantumOptics
-using QuantumClifford
-using Test
+@testitem "Doctests" tags=[:doctests] begin
+    using Documenter
+    using QuantumOptics
+    using QuantumClifford
 
-function doctests()
-    @testset "Doctests" begin
-        DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
-        doctest(QuantumSymbolics)
-    end
+    DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
+    doctest(QuantumSymbolics)
 end
-
-doctests()
