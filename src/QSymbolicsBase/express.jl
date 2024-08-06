@@ -78,17 +78,9 @@ end
 ##
 
 """Representation using kets, bras, density matrices, and superoperators governed by `QuantumOptics.jl`."""
-struct QuantumOpticsRepr <: AbstractRepresentation 
-    fock_cutoff::Union{Nothing, Int}
-    function QuantumOpticsRepr(fock_cutoff::Union{Nothing, Int})
-        if isnothing(fock_cutoff)
-            return new(2)
-        else
-            return new(fock_cutoff)
-        end
-    end
+@kwdef struct QuantumOpticsRepr <: AbstractRepresentation 
+    cutoff::Int = 2
 end
-QuantumOpticsRepr() = QuantumOpticsRepr(nothing)
 """Similar to `QuantumOpticsRepr`, but using trajectories instead of superoperators."""
 struct QuantumMCRepr <: AbstractRepresentation end
 """Representation using tableaux governed by `QuantumClifford.jl`"""

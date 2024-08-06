@@ -10,7 +10,7 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockState,
     MixedState, IdentityOp,
-    qubit_basis, inf_fock_basis
+    qubit_basis
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
@@ -71,14 +71,14 @@ express_nolookup(s::XBasisState, ::QuantumOpticsRepr) = (_s₊,_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::QuantumOpticsRepr) = (_i₊,_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::QuantumOpticsRepr) = (_l0,_l1)[s.idx]
 
-express_nolookup(s::FockState, r::QuantumOpticsRepr) = fockstate(FockBasis(r.fock_cutoff),s.idx)
-express_nolookup(s::CoherentState, r::QuantumOpticsRepr) = coherentstate(FockBasis(r.fock_cutoff),s.alpha)
-express_nolookup(o::NumberOp, r::QuantumOpticsRepr) = number(FockBasis(r.fock_cutoff))
-express_nolookup(o::CreateOp, r::QuantumOpticsRepr) = create(FockBasis(r.fock_cutoff))
-express_nolookup(o::DestroyOp, r::QuantumOpticsRepr) = destroy(FockBasis(r.fock_cutoff))
-express_nolookup(o::DisplaceOp, r::QuantumOpticsRepr) = displace(FockBasis(r.fock_cutoff), o.alpha)
+express_nolookup(s::FockState, r::QuantumOpticsRepr) = fockstate(FockBasis(r.cutoff),s.idx)
+express_nolookup(s::CoherentState, r::QuantumOpticsRepr) = coherentstate(FockBasis(r.cutoff),s.alpha)
+express_nolookup(o::NumberOp, r::QuantumOpticsRepr) = number(FockBasis(r.cutoff))
+express_nolookup(o::CreateOp, r::QuantumOpticsRepr) = create(FockBasis(r.cutoff))
+express_nolookup(o::DestroyOp, r::QuantumOpticsRepr) = destroy(FockBasis(r.cutoff))
+express_nolookup(o::DisplaceOp, r::QuantumOpticsRepr) = displace(FockBasis(r.cutoff), o.alpha)
 express_nolookup(x::MixedState, ::QuantumOpticsRepr) = identityoperator(basis(x))/length(basis(x)) # TODO there is probably a more efficient way to represent it
-express_nolookup(x::IdentityOp, r::QuantumOpticsRepr) = identityoperator(FockBasis(r.fock_cutoff))
+express_nolookup(x::IdentityOp, r::QuantumOpticsRepr) = identityoperator(FockBasis(r.cutoff))
 
 express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasis(1//2), [1-p.px-p.py-p.pz,p.px,p.py,p.pz],
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])

@@ -1,8 +1,12 @@
 # News
 
-## v0.3.5 - dev
+## v0.4.0 - 2024-08-03
 
 - Cleaned up metadata decoration of struct definitions.
+- Added documentation for quantum harmonic oscillators.
+- Added phase-shift and displacement operators `DisplaceOp` and `PhaseShiftOp`.
+- Simplification rules for Fock objects.
+- **(breaking)** `FockBasisState` was renamed to `FockState`.
   
 ## v0.3.4 - 2024-07-22
 
