@@ -4,6 +4,7 @@ using SymbolicUtils
 import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
 using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
+import MacroTools
 import MacroTools: namify, @capture
 
 using LinearAlgebra
@@ -70,11 +71,11 @@ macro withmetadata(strct)
     ex = quote $strct end
     if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
-        args = (namify(i) for i in fields)
+        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
         constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
     elseif @capture(ex, struct T_ fields__ end)
         struct_name = namify(T)
-        args = (namify(i) for i in fields)
+        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
         constructor = :($struct_name($(args...)) = new($((args..., :(Metadata()))...)))
     else @capture(ex, struct T_ end)
         struct_name = namify(T)
