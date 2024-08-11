@@ -233,12 +233,22 @@ head(x::SDagger) = :dagger
 children(x::SDagger) = [:dagger, x.obj]
 """
     dagger(x::Symbolic{AbstractKet})
+
+Symbolic transpose operation. See also [`SDagger`](@ref).
+"""
+dagger(x::Symbolic{AbstractKet})= SDagger{AbstractBra}(x)
+"""
     dagger(x::Symbolic{AbstractBra})
+
+Symbolic transpose operation. See also [`SDagger`](@ref).
+"""
+dagger(x::Symbolic{AbstractBra})= SDagger{AbstractKet}(x)
+"""
     dagger(x::Symbolic{AbstractOperator})
 
-Symbolic transpose operation. See also [`STranspose`](@ref).
+Symbolic transpose operation. See also [`SDagger`](@ref).
 """
-dagger(x::Symbolic{T}) where {T<:Union{AbstractKet,AbstractBra,AbstractOperator}} = SDagger{T}(x)
+dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
 dagger(x::SScaled) = conj(x.coeff)*dagger(x.obj)
 dagger(x::SAdd) = (+)((dagger(i) for i in arguments(x))...)
 dagger(x::SMulOperator) = (*)((dagger(i) for i in reverse(x.terms))...)
