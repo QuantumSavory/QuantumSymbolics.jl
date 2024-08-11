@@ -6,6 +6,8 @@ using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
 import MacroTools: namify, @capture
 
+using DocStringExtensions
+
 using LinearAlgebra
 import LinearAlgebra: eigvecs,ishermitian,conj,transpose,inv,exp,vec,tr
 
@@ -47,7 +49,7 @@ export SymQObj,QObj,
        qexpand,
        isunitary,
        KrausRepr,kraus
-       
+
 ##
 # Metadata cache helpers
 ##
@@ -96,7 +98,7 @@ const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperato
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
-Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) : 
+Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
 hash((typeof(x),symbollabel(x),basis(x)), h)
 maketerm(::Type{<:SymQObj}, f, a, t, m) = f(a...)
 

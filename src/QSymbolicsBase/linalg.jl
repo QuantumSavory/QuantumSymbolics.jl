@@ -2,6 +2,12 @@
 # Linear algebra operations on quantum objects.
 ##
 
+#TODO upstream to QuantumInterface
+"""The commutator of two operators."""
+function commutator end
+"""The anticommutator of two operators."""
+function anticommutator end
+
 """Symbolic commutator of two operators.
 
 ```jldoctest
@@ -94,6 +100,14 @@ arguments(x::SConjugate) = [x.obj]
 operation(x::SConjugate) = conj
 head(x::SConjugate) = :conj
 children(x::SConjugate) = [:conj, x.obj]
+"""
+    conj(x::Symbolic{AbstractKet})
+    conj(x::Symbolic{AbstractBra})
+    conj(x::Symbolic{AbstractOperator})
+    conj(x::Symbolic{AbstractSuperOperator})
+
+Symbolic transpose operation. See also [`SConjugate`](@ref).
+"""
 conj(x::Symbolic{T}) where {T<:QObj} = SConjugate{T}(x)
 conj(x::SZero) = x
 conj(x::SConjugate) = x.obj
@@ -126,6 +140,11 @@ arguments(x::SProjector) = [x.ket]
 operation(x::SProjector) = projector
 head(x::SProjector) = :projector
 children(x::SProjector) = [:projector,x.ket]
+"""
+    projector(x::Symbolic{AbstractKet})
+
+Symbolic projection operation. See also [`SProjector`](@ref).
+"""
 projector(x::Symbolic{AbstractKet}) = SProjector(x)
 projector(x::SZeroKet) = SZeroOperator()
 basis(x::SProjector) = basis(x.ket)
@@ -160,9 +179,14 @@ arguments(x::STranspose) = [x.obj]
 operation(x::STranspose) = transpose
 head(x::STranspose) = :transpose
 children(x::STranspose) = [:transpose, x.obj]
-transpose(x::Symbolic{AbstractOperator}) = STranspose{AbstractOperator}(x)
-transpose(x::Symbolic{AbstractKet}) = STranspose{AbstractBra}(x)
-transpose(x::Symbolic{AbstractBra}) = STranspose{AbstractKet}(x)
+"""
+    transpose(x::Symbolic{AbstractKet})
+    transpose(x::Symbolic{AbstractBra})
+    transpose(x::Symbolic{AbstractOperator})
+
+Symbolic transpose operation. See also [`STranspose`](@ref).
+"""
+transpose(x::Symbolic{T}) where {T<:Union{AbstractKet,AbstractBra,AbstractOperator}} = STranspose{T}(x)
 transpose(x::SScaled) = x.coeff*transpose(x.obj)
 transpose(x::SAdd) = (+)((transpose(i) for i in arguments(x))...)
 transpose(x::SMulOperator) = (*)((transpose(i) for i in reverse(x.terms))...)
@@ -207,9 +231,14 @@ arguments(x::SDagger) = [x.obj]
 operation(x::SDagger) = dagger
 head(x::SDagger) = :dagger
 children(x::SDagger) = [:dagger, x.obj]
-dagger(x::Symbolic{AbstractBra}) = SDagger{AbstractKet}(x)
-dagger(x::Symbolic{AbstractKet}) = SDagger{AbstractBra}(x)
-dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
+"""
+    dagger(x::Symbolic{AbstractKet})
+    dagger(x::Symbolic{AbstractBra})
+    dagger(x::Symbolic{AbstractOperator})
+
+Symbolic transpose operation. See also [`STranspose`](@ref).
+"""
+dagger(x::Symbolic{T}) where {T<:Union{AbstractKet,AbstractBra,AbstractOperator}} = SDagger{T}(x)
 dagger(x::SScaled) = conj(x.coeff)*dagger(x.obj)
 dagger(x::SAdd) = (+)((dagger(i) for i in arguments(x))...)
 dagger(x::SMulOperator) = (*)((dagger(i) for i in reverse(x.terms))...)
@@ -258,6 +287,11 @@ operation(x::STrace) = tr
 head(x::STrace) = :tr
 children(x::STrace) = [:tr, x.op]
 Base.show(io::IO, x::STrace) = print(io, "tr($(x.op))")
+"""
+    tr(x::Symbolic{AbstractOperator})
+
+Symbolic trace operation. See also [`STrace`](@ref).
+"""
 tr(x::Symbolic{AbstractOperator}) = STrace(x)
 tr(x::SScaled{AbstractOperator}) = x.coeff*tr(x.obj)
 tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
@@ -321,6 +355,11 @@ function basis(x::SPartialTrace)
     tensor(new_bases...)
 end
 Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
+"""
+    ptrace(x::Symbolic{AbstractOperator})
+
+Symbolic partial trace operation. See also [`SPartialTrace`](@ref).
+"""
 function ptrace(x::Symbolic{AbstractOperator}, s)
     ex = isexpr(x) ? qexpand(x) : x
     if isa(ex, typeof(x))
@@ -411,6 +450,11 @@ basis(x::SInvOperator) = basis(x.op)
 Base.show(io::IO, x::SInvOperator) = print(io, "$(x.op)⁻¹")
 Base.:(*)(invop::SInvOperator, op::SOperator) = isequal(invop.op, op) ? IdentityOp(basis(op)) : SMulOperator(invop, op)
 Base.:(*)(op::SOperator, invop::SInvOperator) = isequal(op, invop.op) ? IdentityOp(basis(op)) : SMulOperator(op, invop)
+"""
+    inv(x::Symbolic{AbstractOperator})
+
+Symbolic inverse of an operator. See also [`SInvOperator`](@ref).
+"""
 inv(x::Symbolic{AbstractOperator}) = SInvOperator(x)
 
 
@@ -434,6 +478,11 @@ head(x::SExpOperator) = :exp
 children(x::SExpOperator) = [:exp, x.op]
 basis(x::SExpOperator) = basis(x.op)
 Base.show(io::IO, x::SExpOperator) = print(io, "exp($(x.op))")
+"""
+    exp(x::Symbolic{AbstractOperator})
+
+Symbolic inverse of an operator. See also [`SExpOperator`](@ref).
+"""
 exp(x::Symbolic{AbstractOperator}) = SExpOperator(x)
 
 
@@ -460,6 +509,11 @@ head(x::SVec) = :vec
 children(x::SVec) = [:vec, x.op]
 basis(x::SVec) = (⊗)(fill(basis(x.op), length(basis(x.op)))...)
 Base.show(io::IO, x::SVec) = print(io, "|$(x.op)⟩⟩")
+"""
+    vec(x::Symbolic{AbstractOperator})
+
+Symbolic vector representation of an operator. See also [`SVec`](@ref).
+"""
 vec(x::Symbolic{AbstractOperator}) = SVec(x)
 vec(x::SScaled{AbstractOperator}) = x.coeff*vec(x.obj)
 vec(x::SAdd{AbstractOperator}) = (+)((vec(i) for i in arguments(x))...)
