@@ -1,5 +1,9 @@
 # News
 
+## v0.4.2 - 2024-08-11
+
+- `@withmetadata` now supports inline docstrings for struct fields
+
 ## v0.4.1 - 2024-08-11
 
 - Minor documentation improvements.
