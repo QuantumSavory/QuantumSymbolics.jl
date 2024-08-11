@@ -6,8 +6,6 @@ using TermInterface
 import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
 import MacroTools: namify, @capture
 
-using DocStringExtensions
-
 using LinearAlgebra
 import LinearAlgebra: eigvecs,ishermitian,conj,transpose,inv,exp,vec,tr
 
