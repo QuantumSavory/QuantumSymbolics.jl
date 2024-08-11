@@ -1,5 +1,9 @@
 # News
 
+## v0.4.1 - 2024-08-11
+
+- Minor documentation improvements.
+
 ## v0.4.0 - 2024-08-03
 
 - Cleaned up metadata decoration of struct definitions.

@@ -5,12 +5,13 @@ using Documenter
 using DocumenterCitations
 using QuantumSymbolics
 using QuantumInterface
+using LinearAlgebra
 
-DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford); recursive=true)
+DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford, QuantumInterface, LinearAlgebra); recursive=true)
 
 function main()
     bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"), style=:authoryear)
-    
+
     makedocs(
     plugins=[bib],
     doctest = false,
@@ -19,8 +20,9 @@ function main()
     format = Documenter.HTML(
         assets=["assets/init.js"]
     ),
-    modules = [QuantumSymbolics],
-    warnonly = [:missing_docs],
+    modules = [QuantumSymbolics, QuantumInterface],
+    checkdocs = :exports,
+    warnonly = false,
     authors = "Stefan Krastanov",
     pages = [
         "QuantumSymbolics.jl" => "index.md",

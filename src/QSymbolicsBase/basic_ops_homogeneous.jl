@@ -1,5 +1,5 @@
 ##
-# This file defines the symbolic operations for quantum objects (kets, operators, and bras) 
+# This file defines the symbolic operations for quantum objects (kets, operators, and bras)
 # that are homogeneous in their arguments.
 ##
 
@@ -13,7 +13,7 @@ julia> 2*k
 2|k⟩
 
 julia> @op A
-A 
+A
 
 julia> 2*A
 2A
@@ -29,18 +29,19 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c, x::Symbolic{T}) where {T<:QObj} 
+function Base.:(*)(c, x::Symbolic{T}) where {T<:QObj}
     if (isa(c, Number) && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)
         x
     elseif isa(x, SScaled)
         SScaled{T}(c*x.coeff, x.obj)
-    else 
-        SScaled{T}(c, x) 
+    else
+        SScaled{T}(c, x)
     end
 end
 Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c*x
+Base.:(*)(x::Symbolic{T}, y::Symbolic{S}) where {T<:QObj,S<:QObj} = throw(ArgumentError("multiplication between $(typeof(x)) and $(typeof(y)) is not defined; maybe you are looking for a tensor product `tensor`"))
 Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
 basis(x::SScaled) = basis(x.obj)
 
@@ -83,7 +84,7 @@ julia> k₁ + k₂
     _set_precomputed
     _arguments_precomputed
 end
-function SAdd{S}(d) where S 
+function SAdd{S}(d) where S
     terms = [c*obj for (obj,c) in d]
     length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
 end
@@ -93,7 +94,7 @@ arguments(x::SAdd) = x._arguments_precomputed
 operation(x::SAdd) = +
 head(x::SAdd) = :+
 children(x::SAdd) = [:+; x._arguments_precomputed]
-function Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N} 
+function Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N}
     xs = collect(xs)
     f = first(xs)
     nonzero_terms = filter!(x->!iszero(x),xs)
@@ -113,7 +114,7 @@ function Base.show(io::IO, x::SAddKet)
     print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
 const SAddOperator = SAdd{AbstractOperator}
-function Base.show(io::IO, x::SAddOperator) 
+function Base.show(io::IO, x::SAddOperator)
     ordered_terms = sort([repr(i) for i in arguments(x)])
     print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
 end
@@ -123,7 +124,7 @@ end
 ```jldoctest
 julia> @op A; @op B;
 
-julia> A*B 
+julia> A*B
 AB
 ```
 """
@@ -136,7 +137,7 @@ arguments(x::SMulOperator) = x.terms
 operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
-function Base.:(*)(xs::Symbolic{AbstractOperator}...) 
+function Base.:(*)(xs::Symbolic{AbstractOperator}...)
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
         if any(x->!(samebases(basis(x),basis(first(xs)))),xs)
@@ -163,7 +164,7 @@ julia> k₁ ⊗ k₂
 
 julia> @op A; @op B;
 
-julia> A ⊗ B 
+julia> A ⊗ B
 (A⊗B)
 ```
 """

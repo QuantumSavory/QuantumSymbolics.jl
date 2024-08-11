@@ -47,7 +47,7 @@ export SymQObj,QObj,
        qexpand,
        isunitary,
        KrausRepr,kraus
-       
+
 ##
 # Metadata cache helpers
 ##
@@ -96,7 +96,7 @@ const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperato
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
-Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) : 
+Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
 hash((typeof(x),symbollabel(x),basis(x)), h)
 maketerm(::Type{<:SymQObj}, f, a, t, m) = f(a...)
 
