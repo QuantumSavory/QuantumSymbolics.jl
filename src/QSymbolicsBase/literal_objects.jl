@@ -138,7 +138,7 @@ basis(x::SymQ) = x.basis
 
 Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
 Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
-Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator}) = print(io, "$(symbollabel(x))")
+Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator}) = print(io, "$(symbollabel(x))̂")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
 struct SZero{T<:QObj} <: Symbolic{T} end

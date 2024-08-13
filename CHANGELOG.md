@@ -1,5 +1,9 @@
 # News
 
+## v0.4.3 - 2024-08-13
+
+- Operators now print with hat
+
 ## v0.4.2 - 2024-08-11
 
 - `@withmetadata` now supports inline docstrings for struct fields
