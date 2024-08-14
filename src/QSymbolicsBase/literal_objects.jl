@@ -70,10 +70,10 @@ Define a symbolic ket of type `SOperator`. By default, the defined basis is the 
 
 ```jldoctest
 julia> @op A
-A
+Â
 
 julia> @op B FockBasis(2)
-B
+B̂
 ```
 """
 macro op(name, basis)
@@ -138,7 +138,11 @@ basis(x::SymQ) = x.basis
 
 Base.show(io::IO, x::SKet) = print(io, "|$(symbollabel(x))⟩")
 Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
-Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator}) = print(io, "$(symbollabel(x))̂")
+Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator}) = begin
+    symbol_name = String(symbollabel(x))
+    middle_index = (length(symbol_name) + 1) ÷ 2
+    print(io, symbol_name[1:middle_index-1] * symbol_name[middle_index] * "\u0302" * symbol_name[middle_index+1:end]) # add hat to the middle character
+end
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
 struct SZero{T<:QObj} <: Symbolic{T} end

@@ -13,7 +13,7 @@ julia> K = kraus(A₁, A₂, A₃)
 julia> @op ρ;
 
 julia> K*ρ
-(A₁ρA₁†+A₂ρA₂†+A₃ρA₃†)
+(Â₁ρ̂Â₁†+Â₂ρ̂Â₂†+Â₃ρ̂Â₃†)
 ```
 """
 @withmetadata struct KrausRepr <: Symbolic{AbstractSuperOperator}
@@ -41,7 +41,7 @@ Base.show(io::IO, x::KrausRepr) = print(io, "𝒦("*join([symbollabel(i) for i i
 julia> @op A; @superop S;
 
 julia> S*A
-S[A]
+S[Â]
 ```
 """
 @withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}

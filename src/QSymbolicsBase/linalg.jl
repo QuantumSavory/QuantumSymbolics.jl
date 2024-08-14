@@ -14,7 +14,7 @@ function anticommutator end
 julia> @op A; @op B;
 
 julia> commutator(A, B)
-[A,B]
+[Â,B̂]
 
 julia> commutator(A, A)
 𝟎
@@ -51,7 +51,7 @@ basis(x::SCommutator) = basis(x.op1)
 julia> @op A; @op B;
 
 julia> anticommutator(A, B)
-{A,B}
+{Â,B̂}
 ```
 """
 @withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
@@ -85,7 +85,7 @@ basis(x::SAnticommutator) = basis(x.op1)
 julia> @op A; @ket k;
 
 julia> conj(A)
-Aˣ
+Âˣ
 
 julia> conj(k)
 |k⟩ˣ
@@ -161,10 +161,10 @@ end
 julia> @op A; @op B; @ket k;
 
 julia> transpose(A)
-Aᵀ
+Âᵀ
 
 julia> transpose(A+B)
-(Aᵀ+Bᵀ)
+(Âᵀ+B̂ᵀ)
 
 julia> transpose(k)
 |k⟩ᵀ
@@ -206,20 +206,20 @@ end
 julia> @ket a; @op A;
 
 julia> dagger(2*im*A*a)
-(0 - 2im)|a⟩†A†
+(0 - 2im)|a⟩†Â†
 
 julia> @op B;
 
 julia> dagger(A*B)
-B†A†
+B̂†Â†
 
 julia> ℋ = SHermitianOperator(:ℋ); U = SUnitaryOperator(:U);
 
 julia> dagger(ℋ)
-ℋ
+ℋ̂
 
 julia> dagger(U)
-U⁻¹
+Û⁻¹
 ```
 """
 @withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
@@ -275,7 +275,7 @@ end
 julia> @op A; @op B;
 
 julia> tr(A)
-tr(A)
+tr(Â)
 
 julia> tr(commutator(A, B))
 0
@@ -318,7 +318,7 @@ Base.isequal(x::STrace, y::STrace) = isequal(x.op, y.op)
 julia> @op 𝒪 SpinBasis(1//2)⊗SpinBasis(1//2);
 
 julia> op = ptrace(𝒪, 1)
-tr1(𝒪)
+tr1(𝒪̂)
 
 julia> QuantumSymbolics.basis(op)
 Spin(1/2)
@@ -326,27 +326,27 @@ Spin(1/2)
 julia> @op A; @op B;
 
 julia> ptrace(A⊗B, 1)
-(tr(A))B
+(tr(Â))B̂
 
 julia> @ket k; @bra b;
 
 julia> factorizable = A ⊗ (k*b)
-(A⊗|k⟩⟨b|)
+(Â⊗|k⟩⟨b|)
 
 julia> ptrace(factorizable, 1)
-(tr(A))|k⟩⟨b|
+(tr(Â))|k⟩⟨b|
 
 julia> ptrace(factorizable, 2)
-(⟨b||k⟩)A
+(⟨b||k⟩)Â
 
 julia> mixed_state = (A⊗(k*b)) + ((k*b)⊗B)
-((A⊗|k⟩⟨b|)+(|k⟩⟨b|⊗B))
+((Â⊗|k⟩⟨b|)+(|k⟩⟨b|⊗B̂))
 
 julia> ptrace(mixed_state, 1)
-((0 + ⟨b||k⟩)B+(tr(A))|k⟩⟨b|)
+((0 + ⟨b||k⟩)B̂+(tr(Â))|k⟩⟨b|)
 
 julia> ptrace(mixed_state, 2)
-((0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|)
+((0 + ⟨b||k⟩)Â+(tr(B̂))|k⟩⟨b|)
 ```
 """
 @withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}
@@ -441,7 +441,7 @@ end
 julia> @op A;
 
 julia> inv(A)
-A⁻¹
+Â⁻¹
 
 julia> inv(A)*A
 𝕀
@@ -474,7 +474,7 @@ inv(x::Symbolic{AbstractOperator}) = SInvOperator(x)
 julia> @op A; @op B;
 
 julia> exp(A)
-exp(A)
+exp(Â)
 ```
 """
 @withmetadata struct SExpOperator <: Symbolic{AbstractOperator}
@@ -502,10 +502,10 @@ exp(x::Symbolic{AbstractOperator}) = SExpOperator(x)
 julia> @op A; @op B;
 
 julia> vec(A)
-|A⟩⟩
+|Â⟩⟩
 
 julia> vec(A+B)
-(|A⟩⟩+|B⟩⟩)
+(|Â⟩⟩+|B̂⟩⟩)
 ```
 """
 @withmetadata struct SVec <: Symbolic{AbstractKet}

@@ -31,7 +31,7 @@ julia> @ket k # object of type SKet
 |k⟩
 
 julia> @op A # object of type SOperator
-A
+Â
 
 julia> @superop S # object of type SSuperOperator
 S
@@ -41,13 +41,13 @@ By default, each of the above macros defines a symbolic quantum object in the sp
 
 ```jldoctest
 julia> @op B FockBasis(Inf, 0.0)
-B
+B̂
 
 julia> basis(B)
 Fock(cutoff=Inf)
 
 julia> @op C SpinBasis(1//2)⊗SpinBasis(5//2)
-C
+Ĉ
 
 julia> basis(C)
 [Spin(1/2) ⊗ Spin(5/2)]
@@ -69,7 +69,7 @@ julia> 2*k
 2|k⟩
 
 julia> A*k
-A|k⟩
+Â|k⟩
 ```
 
 Similar scaling procedures can be performed on bras and operators. Addition between symbolic objects is also available, for instance:
@@ -78,7 +78,7 @@ Similar scaling procedures can be performed on bras and operators. Addition betw
 julia> @op A₁; @op A₂;
 
 julia> A₁+A₂
-(A₁+A₂)
+(Â₁+Â₂)
 
 julia> @bra b;
 
@@ -117,10 +117,10 @@ More involved combinations of operations can be explored. Here are few other str
 julia> @bra b; @ket k; @op A; @op B;
 
 julia> 3*A*B*k
-3AB|k⟩
+3ÂB̂|k⟩
 
 julia> A⊗(k*b + B)
-(A⊗(B+|k⟩⟨b|))
+(Â⊗(B̂+|k⟩⟨b|))
 
 julia> A-A
 𝟎
@@ -135,10 +135,10 @@ QuantumSymbolics supports a wide variety of linear algebra on symbolic bras, ket
 julia> @op A; @op B;
 
 julia> commutator(A, B)
-[A,B]
+[Â,B̂]
 
 julia> anticommutator(A, B)
-{A,B}
+{Â,B̂}
 
 julia> commutator(A, A)
 𝟎
@@ -149,13 +149,13 @@ Or, one can take the dagger of a quantum object with the [`dagger`](@ref) functi
 julia> @ket k; @op A; @op B;
 
 julia> dagger(A)
-A†
+Â†
 
 julia> dagger(A*k)
-|k⟩†A†
+|k⟩†Â†
 
 julia> dagger(A*B)
-B†A†
+B̂†Â†
 ```
 Below, we state all of the supported linear algebra operations on quantum objects:
 
@@ -209,10 +209,10 @@ Symbolic expressions containing quantum objects can be expanded with the [`qexpa
 julia> @op A; @op B; @op C;
 
 julia> qexpand(A⊗(B+C))
-((A⊗B)+(A⊗C))
+((Â⊗B̂)+(Â⊗Ĉ))
 
 julia> qexpand((B+C)*A)
-(BA+CA)
+(B̂Â+ĈÂ)
 
 julia> @ket k₁; @ket k₂; @ket k₃;
 
@@ -220,7 +220,7 @@ julia> qexpand(k₁⊗(k₂+k₃))
 (|k₁⟩|k₂⟩+|k₁⟩|k₃⟩)
 
 julia> qexpand((A*B)*(k₁+k₂))
-(AB|k₁⟩+AB|k₂⟩)
+(ÂB̂|k₁⟩+ÂB̂|k₂⟩)
 ```
 
 ## Numerical Translation of Symbolic Objects
