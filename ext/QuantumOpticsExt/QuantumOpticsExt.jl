@@ -84,12 +84,12 @@ function finite_basis(s,r)
 end
 express_nolookup(s::FockState, r::QuantumOpticsRepr) = fockstate(finite_basis(s,r),s.idx)
 express_nolookup(s::CoherentState, r::QuantumOpticsRepr) = coherentstate(finite_basis(s,r),s.alpha)
-express_nolookup(o::NumberOp, r::QuantumOpticsRepr) = number(finite_basis(s,r))
-express_nolookup(o::CreateOp, r::QuantumOpticsRepr) = create(finite_basis(s,r))
-express_nolookup(o::DestroyOp, r::QuantumOpticsRepr) = destroy(finite_basis(s,r))
-express_nolookup(o::DisplaceOp, r::QuantumOpticsRepr) = displace(finite_basis(s,r), o.alpha)
-express_nolookup(x::MixedState, ::QuantumOpticsRepr) = identityoperator(finite_basis(s,r))/length(finite_basis(s,r)) # TODO there is probably a more efficient way to represent it
-express_nolookup(x::IdentityOp, r::QuantumOpticsRepr) = identityoperator(finite_basis(s,r))
+express_nolookup(o::NumberOp, r::QuantumOpticsRepr) = number(finite_basis(o,r))
+express_nolookup(o::CreateOp, r::QuantumOpticsRepr) = create(finite_basis(o,r))
+express_nolookup(o::DestroyOp, r::QuantumOpticsRepr) = destroy(finite_basis(o,r))
+express_nolookup(o::DisplaceOp, r::QuantumOpticsRepr) = displace(finite_basis(o,r), o.alpha)
+express_nolookup(x::MixedState, r::QuantumOpticsRepr) = identityoperator(finite_basis(x,r))/length(finite_basis(s,r)) # TODO there is probably a more efficient way to represent it
+express_nolookup(x::IdentityOp, r::QuantumOpticsRepr) = identityoperator(finite_basis(x,r))
 
 express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasis(1//2), [1-p.px-p.py-p.pz,p.px,p.py,p.pz],
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])
