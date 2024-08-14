@@ -1,8 +1,12 @@
 # News
 
-## v0.4.3 - 2024-08-13
+## v0.4.4 - 2024-08-13
 
 - Operators now print with hat
+
+## v0.4.3 - 2024-08-13
+
+- **(fix)** Fix for incorrect basis for `express(_,::QuantumOpticsRepr)` for certain operators.
 
 ## v0.4.2 - 2024-08-11
 
