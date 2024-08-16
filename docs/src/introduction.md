@@ -187,8 +187,8 @@ julia> X, Y, Z, I # Pauli operators
 julia> X1, X2 # Eigenstates of the Pauli X operator
 (|X₁⟩, |X₂⟩)
 
-julia> H * (Z1 ⊗ Z2) # Application of Hadamard gate on |01⟩
-H|Z₁⟩|Z₂⟩
+julia> CPHASE * (Z1 ⊗ Z2) # Application of CPHASE gate on |01⟩
+CPHASE|Z₁⟩|Z₂⟩
 ```
 
 We also have symbolic representations of bosonic systems:
