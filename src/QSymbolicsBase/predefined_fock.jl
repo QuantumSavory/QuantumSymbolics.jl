@@ -18,6 +18,15 @@ end
 CoherentState(alpha::Number) = CoherentState(alpha, inf_fock_basis)
 symbollabel(x::CoherentState) = "$(x.alpha)"
 
+"""Squeezed coherent state in defined Fock basis."""
+@withmetadata struct SqueezedCoherentState <: SpecialKet
+    alpha::Number
+    z::Number
+    basis::FockBasis
+end
+SqueezedCoherentState(alpha::Number, z::Number) = SqueezedCoherentState(alpha, z, inf_fock_basis)
+symbollabel(x::SqueezedCoherentState) = "$(x.alpha),$(x.z)"
+
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
 const vac = const F₀ = const F0 = FockState(0)
@@ -137,3 +146,23 @@ There is no unicode dagger superscript, so we use the uparrow"""
 const Create = const âꜛ = CreateOp()
 """Annihilation operator, also available as the constant `â`, in an infinite dimension Fock basis."""
 const Destroy = const â = DestroyOp()
+
+"""Squeezing operator in defined Fock basis.
+
+```jldoctest
+julia> c = CoherentState(im)
+|im⟩
+
+julia> S = SqueezeOp(pi)
+S(π)
+
+julia> qsimplify(S*c, rewriter=qsimplify_fock)
+|im,π⟩
+```
+"""
+@withmetadata struct SqueezeOp <: AbstractSingleBosonOp
+    z::Number
+    basis::FockBasis
+end
+SqueezeOp(z::Number) = SqueezeOp(z, inf_fock_basis)
+symbollabel(x::SqueezeOp) = "S($(x.z))"

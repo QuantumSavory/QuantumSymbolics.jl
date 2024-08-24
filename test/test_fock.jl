@@ -6,6 +6,8 @@
     phase1 = PhaseShiftOp(0)
     phase2 = PhaseShiftOp(pi)
     displace = DisplaceOp(im)
+    squeezeop = SqueezeOp(pi)
+    scstate = SqueezedCoherentState(im,pi)
 
     @testset "ladder and number operators" begin
         @test isequal(qsimplify(Destroy*vac, rewriter=qsimplify_fock), SZeroKet())
@@ -22,5 +24,9 @@
         @test isequal(qsimplify(dagger(displace)*Destroy*displace, rewriter=qsimplify_fock), Destroy + im*IdentityOp(inf_fock_basis))
         @test isequal(qsimplify(dagger(displace)*Create*displace, rewriter=qsimplify_fock), Create - im*IdentityOp(inf_fock_basis))
         @test isequal(qsimplify(displace*vac, rewriter=qsimplify_fock), cstate)
+    end
+
+    @testset "Squeeze operators" begin
+        @test isequal(qsimplify(squeezeop*cstate, rewriter=qsimplify_fock), scstate)
     end
 end
