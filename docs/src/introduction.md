@@ -194,7 +194,7 @@ CPHASE|Z₁⟩|Z₂⟩
 We also have symbolic representations of bosonic systems:
 
 ```jldoctest
-julia> FockState(4) # Fock state with 4 quantum harmonic oscillators
+julia> FockState(4) # Fock state with 4 excitation quanta
 |4⟩
 
 julia> Create, Destroy # creation and annihilation operators
