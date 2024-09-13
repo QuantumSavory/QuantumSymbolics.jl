@@ -13,10 +13,10 @@ julia> 2*k
 2|k⟩
 
 julia> @op A
-A
+Â
 
 julia> 2*A
-2A
+2Â
 ```
 """
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
@@ -125,7 +125,7 @@ end
 julia> @op A; @op B;
 
 julia> A*B
-AB
+ÂB̂
 ```
 """
 @withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
@@ -165,7 +165,7 @@ julia> k₁ ⊗ k₂
 julia> @op A; @op B;
 
 julia> A ⊗ B
-(A⊗B)
+(Â⊗B̂)
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}

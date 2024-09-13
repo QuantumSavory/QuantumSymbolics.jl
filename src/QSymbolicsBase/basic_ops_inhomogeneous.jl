@@ -8,7 +8,7 @@
 julia> @ket k; @op A;
 
 julia> A*k
-A|k⟩
+Â|k⟩
 ```
 """
 @withmetadata struct SApplyKet <: Symbolic{AbstractKet}
@@ -41,7 +41,7 @@ basis(x::SApplyKet) = basis(x.ket)
 julia> @bra b; @op A;
 
 julia> b*A
-⟨b|A
+⟨b|Â
 ```
 """
 @withmetadata struct SApplyBra <: Symbolic{AbstractBra}
