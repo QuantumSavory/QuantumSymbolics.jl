@@ -171,6 +171,56 @@ Below, we state all of the supported linear algebra operations on quantum object
 - exponential of an operator: [`exp`](@ref),
 - vectorization of an operator: [`vec`](@ref).
 
+## Predefined Quantum Objects
+
+So far in this tutorial, we have considered arbitrary kets, bras, operators, and their corresponding operations. This package supports predefined quantum objects and operations in several formalisms, which are discussed in detail in other sections (see, for example, the [quantum harmonic oscillators](@ref Quantum-Harmonic-Oscillators) or [qubit basis](@ref Typical-Qubit-Bases) pages). To get a taste of what's available, let us consider a few symbolic examples. For a complete description, see the [full API page](@ref Full-API).
+
+Quantum gates and their basis states can be represented symbolically:
+
+```jldoctest
+julia> CNOT # CNOT Gate
+CNOT
+
+julia> X, Y, Z, I # Pauli operators
+(X, Y, Z, 𝕀)
+
+julia> X1, X2 # Eigenstates of the Pauli X operator
+(|X₁⟩, |X₂⟩)
+
+julia> CPHASE * (Z1 ⊗ Z2) # Application of CPHASE gate on |01⟩
+CPHASE|Z₁⟩|Z₂⟩
+```
+
+We also have symbolic representations of bosonic systems:
+
+```jldoctest
+julia> FockState(4) # Fock state with 4 excitation quanta
+|4⟩
+
+julia> Create, Destroy # creation and annihilation operators
+(a†, a)
+
+julia> DisplaceOp(im) # Displacement operator for single bosonic mode
+D(im)
+
+julia> N * vac # Application of number operator on vacuum state
+n|0⟩
+```
+
+If we want to substitute a predefined quantum object into a general symbolic expression, we can use the [`substitute`](https://symbolics.juliasymbolics.org/v3.5/manual/expression_manipulation/#SymbolicUtils.substitute) command from [`Symbolics.jl`](https://github.com/JuliaSymbolics/Symbolics.jl):
+
+```jldoctest
+julia> using Symbolics
+
+julia> @op A; @ket k;
+
+julia> ex = 2*A + projector(k)
+(2A+𝐏[|k⟩])
+
+julia> substitute(ex, Dict([A => X, k => X1]))
+(2X+𝐏[|X₁⟩])
+```
+
 ## Simplifying Expressions
 
 For predefined objects such as the Pauli operators [`X`](@ref), [`Y`](@ref), and [`Z`](@ref), additional simplification can be performed with the [`qsimplify`](@ref) function. Take the following example:

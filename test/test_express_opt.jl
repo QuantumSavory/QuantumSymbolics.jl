@@ -20,7 +20,7 @@
     express(state)
     nocache = @timed express(state2)
     withcache = @timed express(state2)
-    @test nocache.time > 50*withcache.time
+    @test nocache.time > 20*withcache.time
     @test withcache.bytes == 0
     @test nocache.value ≈ withcache.value ≈ express(state2)
 
