@@ -1,5 +1,9 @@
 # News
 
+## v0.4.4 - 2024-09-16
+
+- Implement squeezing with `SqueezeOp` and `SqueezedState`.
+
 ## v0.4.3 - 2024-08-13
 
 - **(fix)** Fix for incorrect basis for `express(_,::QuantumOpticsRepr)` for certain operators.
