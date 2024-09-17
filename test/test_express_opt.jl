@@ -44,7 +44,7 @@
     @test express(Destroy*F1) ≈ express(Destroy)*express(F1)
     @test express(displace*cstate) ≈ express(displace)*express(cstate)
 
-    squeezedcstate = SqueezedCoherentState(im, pi)
-    squeezeop = SqueezeOp(pi)
-    @test express(squeezedcstate) ≈ express(squeezeop)*express(cstate)
+    squeezed = SqueezedState(pi/4)
+    squeezeop = SqueezeOp(pi/4)
+    @test express(squeezed) ≈ express(squeezeop)*express(vac)
 end

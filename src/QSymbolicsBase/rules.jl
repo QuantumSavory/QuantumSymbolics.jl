@@ -106,7 +106,7 @@ RULES_FOCK = [
     @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp((~o2).basis)),
     @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp((~o2).basis)),
     @rule(~o::_isa(DisplaceOp) * ~k::((x->(isa(x,FockState) && x.idx == 0))) => CoherentState((~o).alpha)),
-    @rule(~o::_isa(SqueezeOp) * ~k::_isa(CoherentState) => SqueezedCoherentState((~k).alpha, (~o).z))
+    @rule(~o::_isa(SqueezeOp) * ~k::_isequal(vac) => SqueezedState((~o).z, (~o).basis))
 ]
 
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]

@@ -84,7 +84,7 @@ function finite_basis(s,r)
 end
 express_nolookup(s::FockState, r::QuantumOpticsRepr) = fockstate(finite_basis(s,r),s.idx)
 express_nolookup(s::CoherentState, r::QuantumOpticsRepr) = coherentstate(finite_basis(s,r),s.alpha)
-express_nolookup(s::SqueezedCoherentState, r::QuantumOpticsRepr) = (b = finite_basis(s,r); squeeze(b, s.z)*coherentstate(b, s.alpha))
+express_nolookup(s::SqueezedState, r::QuantumOpticsRepr) = (b = finite_basis(s,r); squeeze(b, s.z)*fockstate(b, 0))
 express_nolookup(o::NumberOp, r::QuantumOpticsRepr) = number(finite_basis(o,r))
 express_nolookup(o::CreateOp, r::QuantumOpticsRepr) = create(finite_basis(o,r))
 express_nolookup(o::DestroyOp, r::QuantumOpticsRepr) = destroy(finite_basis(o,r))

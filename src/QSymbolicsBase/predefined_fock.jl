@@ -18,14 +18,13 @@ end
 CoherentState(alpha::Number) = CoherentState(alpha, inf_fock_basis)
 symbollabel(x::CoherentState) = "$(x.alpha)"
 
-"""Squeezed coherent state in defined Fock basis."""
-@withmetadata struct SqueezedCoherentState <: SpecialKet
-    alpha::Number
+"""Squeezed vacuum state in defined Fock basis."""
+@withmetadata struct SqueezedState <: SpecialKet
     z::Number
     basis::FockBasis
 end
-SqueezedCoherentState(alpha::Number, z::Number) = SqueezedCoherentState(alpha, z, inf_fock_basis)
-symbollabel(x::SqueezedCoherentState) = "$(x.alpha),$(x.z)"
+SqueezedState(z::Number) = SqueezedState(z, inf_fock_basis)
+symbollabel(x::SqueezedState) = "0,$(x.z)"
 
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
@@ -150,14 +149,11 @@ const Destroy = const â = DestroyOp()
 """Squeezing operator in defined Fock basis.
 
 ```jldoctest
-julia> c = CoherentState(im)
-|im⟩
-
 julia> S = SqueezeOp(pi)
 S(π)
 
-julia> qsimplify(S*c, rewriter=qsimplify_fock)
-|im,π⟩
+julia> qsimplify(S*vac, rewriter=qsimplify_fock)
+|0,π⟩
 ```
 """
 @withmetadata struct SqueezeOp <: AbstractSingleBosonOp

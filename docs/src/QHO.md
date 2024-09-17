@@ -35,7 +35,7 @@ Summarized below are supported bosonic states.
 
 - Fock state: `FockState(idx::Int)`,
 - Coherent state: `CoherentState(alpha::Number)`,
-- Squeezed coherent state: `SqueezedCoherentState(alpha::Number, z::Number)`.
+- Squeezed vacuum state: `SqueezedState(z::Number)`.
   
 ## Operators
 
