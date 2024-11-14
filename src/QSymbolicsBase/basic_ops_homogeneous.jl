@@ -29,7 +29,7 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c, x::Symbolic{T}) where {T<:QObj}
+function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Number}},T<:QObj}
     if (isa(c, Number) && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)
@@ -40,9 +40,9 @@ function Base.:(*)(c, x::Symbolic{T}) where {T<:QObj}
         SScaled{T}(c, x)
     end
 end
-Base.:(*)(x::Symbolic{T}, c) where {T<:QObj} = c*x
+Base.:(*)(x::Symbolic{T}, c::Number) where {T<:QObj} = c*x
 Base.:(*)(x::Symbolic{T}, y::Symbolic{S}) where {T<:QObj,S<:QObj} = throw(ArgumentError("multiplication between $(typeof(x)) and $(typeof(y)) is not defined; maybe you are looking for a tensor product `tensor`"))
-Base.:(/)(x::Symbolic{T}, c) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
+Base.:(/)(x::Symbolic{T}, c::Number) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
@@ -94,13 +94,13 @@ arguments(x::SAdd) = x._arguments_precomputed
 operation(x::SAdd) = +
 head(x::SAdd) = :+
 children(x::SAdd) = [:+; x._arguments_precomputed]
-function Base.:(+)(xs::Vararg{Symbolic{T},N}) where {T<:QObj,N}
+function Base.:(+)(x::Symbolic{T}, xs::Vararg{Symbolic{T}, N}) where {T<:QObj, N}
+    xs = (x, xs...)
     xs = collect(xs)
     f = first(xs)
     nonzero_terms = filter!(x->!iszero(x),xs)
     isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}))
 end
-Base.:(+)(xs::Vararg{Symbolic{<:QObj},0}) = 0 # to avoid undefined type parameters issue in the above method
 basis(x::SAdd) = basis(first(x.dict).first)
 
 const SAddBra = SAdd{AbstractBra}
@@ -137,7 +137,8 @@ arguments(x::SMulOperator) = x.terms
 operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
-function Base.:(*)(xs::Symbolic{AbstractOperator}...)
+function Base.:(*)(x::Symbolic{AbstractOperator}, xs::Vararg{Symbolic{AbstractOperator}, N}) where {N}
+    xs = (x, xs...)
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
         if any(x->!(samebases(basis(x),basis(first(xs)))),xs)

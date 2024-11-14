@@ -29,6 +29,8 @@ kraus(xs::Symbolic{AbstractOperator}...) = KrausRepr(collect(xs))
 basis(x::KrausRepr) = basis(first(x.krausops))
 Base.:(*)(sop::KrausRepr, op::Symbolic{AbstractOperator}) = (+)((i*op*dagger(i) for i in sop.krausops)...)
 Base.:(*)(sop::KrausRepr, k::Symbolic{AbstractKet}) = (+)((i*SProjector(k)*dagger(i) for i in sop.krausops)...)
+Base.:(*)(sop::KrausRepr, k::SZeroOperator) = SZeroOperator()
+Base.:(*)(sop::KrausRepr, k::SZeroKet) = SZeroOperator()
 Base.show(io::IO, x::KrausRepr) = print(io, "𝒦("*join([symbollabel(i) for i in x.krausops], ",")*")")
 
 ##
