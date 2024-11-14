@@ -41,8 +41,8 @@ export SymQObj,QObj,
        MixedState,IdentityOp,
        SApplyKet,SApplyBra,SMulOperator,SSuperOpApply,SCommutator,SAnticommutator,SBraKet,SOuterKetBra,
        HGate,XGate,YGate,ZGate,CPHASEGate,CNOTGate,
-       XBasisState,YBasisState,ZBasisState,FockState,CoherentState,
-       NumberOp,CreateOp,DestroyOp,PhaseShiftOp,DisplaceOp,
+       XBasisState,YBasisState,ZBasisState,FockState,CoherentState,SqueezedState,
+       NumberOp,CreateOp,DestroyOp,PhaseShiftOp,DisplaceOp,SqueezeOp,
        XCXGate,XCYGate,XCZGate,YCXGate,YCYGate,YCZGate,ZCXGate,ZCYGate,ZCZGate,
        qsimplify,qsimplify_pauli,qsimplify_commutator,qsimplify_anticommutator,qsimplify_fock,
        qexpand,
@@ -99,7 +99,7 @@ Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
 hash((typeof(x),symbollabel(x),basis(x)), h)
-maketerm(::Type{<:SymQObj}, f, a, t, m) = f(a...)
+maketerm(::Type{<:SymQObj}, f, a, m) = f(a...)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y

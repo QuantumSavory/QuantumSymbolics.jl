@@ -26,7 +26,7 @@ end
 @latexrecipe function f(x::Union{SpecialKet,SKet})
     return Expr(:latexifymerge, "\\left|", symbollabel(x), "\\right\\rangle")
 end
-@latexrecipe function f(x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,AbstractSingleQubitOp,AbstractTwoQubitOp,AbstractSingleBosonGate})
+@latexrecipe function f(x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,AbstractSingleQubitOp,AbstractTwoQubitOp,AbstractSingleBosonOp})
     return LaTeXString("\\hat $(symbollabel(x))")
 end
 @latexrecipe function f(x::SZero)

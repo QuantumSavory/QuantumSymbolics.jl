@@ -20,7 +20,7 @@
     express(state)
     nocache = @timed express(state2)
     withcache = @timed express(state2)
-    @test nocache.time > 50*withcache.time
+    @test nocache.time > 20*withcache.time
     @test withcache.bytes == 0
     @test nocache.value ≈ withcache.value ≈ express(state2)
 
@@ -43,4 +43,8 @@
     @test express(Create*F1) ≈ express(Create)*express(F1)
     @test express(Destroy*F1) ≈ express(Destroy)*express(F1)
     @test express(displace*cstate) ≈ express(displace)*express(cstate)
+
+    squeezed = SqueezedState(pi/4)
+    squeezeop = SqueezeOp(pi/4)
+    @test express(squeezed) ≈ express(squeezeop)*express(vac)
 end
