@@ -70,7 +70,6 @@ function consistent_representation(reprs,state)
     end
     first(reprs)
 end
-express(state::Symbolic) = express(state, QuantumOpticsRepr()) # The default representation
 express_nolookup(state, ::QuantumMCRepr) = express_nolookup(state, QuantumOpticsRepr())
 
 function express_nolookup(s, repr::AbstractRepresentation)
