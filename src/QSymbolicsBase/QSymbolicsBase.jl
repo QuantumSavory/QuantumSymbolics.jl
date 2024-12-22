@@ -16,7 +16,8 @@ import QuantumInterface:
     basis,Basis,samebases,IncompatibleBases,SpinBasis,FockBasis,CompositeBasis,
     nqubits,
     projector,dagger,tr,ptrace,
-    AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator
+    AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator,
+    express,AbstractRepresentation,QuantumOpticsRepr,QuantumMCRepr,CliffordRepr
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
@@ -53,8 +54,6 @@ export SymQObj,QObj,
 # Metadata cache helpers
 ##
 
-"""An abstract type for the supported representation of quantum objects."""
-abstract type AbstractRepresentation end
 abstract type AbstractUse end
 struct UseAsState <: AbstractUse end
 struct UseAsOperation <: AbstractUse end
