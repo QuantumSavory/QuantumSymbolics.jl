@@ -151,9 +151,11 @@ const Pm = const σ₋ = PauliM()
 const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
-"""Rotation gates"""
+"""Rotation X gate"""
 const Rx(θ::Float64) = RGate(:x, θ)
+"""Rotation Y gate"""
 const Ry(θ::Float64) = RGate(:y, θ)
+"""Rotation Z gate"""
 const Rz(θ::Float64) = RGate(:z, θ)
 """CNOT gate"""
 const CNOT = CNOTGate()
