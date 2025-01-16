@@ -43,4 +43,8 @@
     @test express(Create*F1) ≈ express(Create)*express(F1)
     @test express(Destroy*F1) ≈ express(Destroy)*express(F1)
     @test express(displace*cstate) ≈ express(displace)*express(cstate)
+
+    squeezed = SqueezedState(pi/4)
+    squeezeop = SqueezeOp(pi/4)
+    @test express(squeezed) ≈ express(squeezeop)*express(vac)
 end

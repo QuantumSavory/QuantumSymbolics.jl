@@ -1,5 +1,13 @@
 # News
 
+## v0.4.5 - 2024-11-14
+
+- Updated compat lower bounds for Symbolics to v6 (and for SymbolicUtils and TermInterface)
+
+## v0.4.4 - 2024-09-16
+
+- Implement squeezing with `SqueezeOp` and `SqueezedState`.
+
 ## v0.4.3 - 2024-08-13
 
 - **(fix)** Fix for incorrect basis for `express(_,::QuantumOpticsRepr)` for certain operators.
@@ -19,14 +27,14 @@
 - Added phase-shift and displacement operators `DisplaceOp` and `PhaseShiftOp`.
 - Simplification rules for Fock objects.
 - **(breaking)** `FockBasisState` was renamed to `FockState`.
-  
+
 ## v0.3.4 - 2024-07-22
 
 - Added `tr` and `ptrace` functionalities.
 - New symbolic superoperator representations.
 - Added linear algebra operations `exp`, `vec`, `conj`, `transpose`.
 - Created a getting-started guide in docs.
-  
+
 ## v0.3.3 - 2024-07-12
 
 - Added single qubit simplification rules.
@@ -47,7 +55,7 @@
 - Implement zero objects.
 - Equality for commutative operations, hashing, and lexicographic ordering when printing.
 - Added tests.
-  
+
 ## v0.3.0 - 2024-06-12
 
 - Bump compat for symbolics-related foundational packages.
@@ -74,12 +82,12 @@
 - Add all conditional Paulis.
 - Remove `stab_to_ket` in favor of directly using the `Ket` constructor.
 
-## v0.2.2 - 2023-06-28 
+## v0.2.2 - 2023-06-28
 
 - Bump `QuantumInterface` compat.
 - Upstream some `apply!` definitions to QuantumOpticsBase.
 
-## v0.2.1 - 2023-06-11 
+## v0.2.1 - 2023-06-11
 
 - Bump `QuantumInterface` compat.
 
