@@ -17,7 +17,8 @@ import QuantumInterface:
     nqubits,
     projector,dagger,tr,ptrace,
     AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator,
-    express,AbstractRepresentation,QuantumOpticsRepr,QuantumMCRepr,CliffordRepr
+    express,AbstractRepresentation,AbstractUse,UseAsState,UseAsObservable,UseAsOperation,
+    QuantumOpticsRepr,QuantumMCRepr,CliffordRepr
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
@@ -53,11 +54,6 @@ export SymQObj,QObj,
 ##
 # Metadata cache helpers
 ##
-
-abstract type AbstractUse end
-struct UseAsState <: AbstractUse end
-struct UseAsOperation <: AbstractUse end
-struct UseAsObservable <: AbstractUse end
 
 const CacheType = Dict{Tuple{<:AbstractRepresentation,<:AbstractUse},Any}
 mutable struct Metadata

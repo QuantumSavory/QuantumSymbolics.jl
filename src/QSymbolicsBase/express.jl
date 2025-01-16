@@ -11,7 +11,7 @@ import SymbolicUtils: Symbolic
 """
     express(s, repr::AbstractRepresentation=QuantumOpticsRepr()[, use::AbstractUse])
 
-The main interface for expressing quantum objects in various representations.
+The main interface for expressing symbolic quantum objects in various representations.
 
 ```jldoctest
 julia> express(X1)
@@ -48,10 +48,6 @@ function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse
         return express_from_cache(cache)
     end
 end
-
-express(s::Number, repr::AbstractRepresentation, use::AbstractUse) = s
-
-express(s, repr::AbstractRepresentation) = express(s, repr, UseAsState())
 
 express_nolookup(x, repr::AbstractRepresentation, ::AbstractUse) = express_nolookup(x, repr)
 
