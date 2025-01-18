@@ -11,7 +11,7 @@ import SymbolicUtils: Symbolic
 """
     express(s, repr::AbstractRepresentation=QuantumOpticsRepr()[, use::AbstractUse])
 
-The main interface for expressing quantum objects in various representations.
+The main interface for expressing symbolic quantum objects in various representations.
 
 ```jldoctest
 julia> express(X1)
@@ -37,8 +37,6 @@ julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsObservable())
 + X
 ```
 """
-function express end
-
 function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse)
     md = metadata(state)
     isnothing(md) && return express_from_cache(express_nolookup(state, repr, use))
@@ -50,10 +48,6 @@ function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse
         return express_from_cache(cache)
     end
 end
-
-express(s::Number, repr::AbstractRepresentation, use::AbstractUse) = s
-
-express(s, repr::AbstractRepresentation) = express(s, repr, UseAsState())
 
 express_nolookup(x, repr::AbstractRepresentation, ::AbstractUse) = express_nolookup(x, repr)
 
@@ -72,23 +66,7 @@ function consistent_representation(reprs,state)
     end
     first(reprs)
 end
-
-##
-# Commonly used representations -- interfaces for each one defined in separate packages
-##
-
-"""Representation using kets, bras, density matrices, and superoperators governed by `QuantumOptics.jl`."""
-@kwdef struct QuantumOpticsRepr <: AbstractRepresentation 
-    cutoff::Int = 2
-end
-"""Similar to `QuantumOpticsRepr`, but using trajectories instead of superoperators."""
-struct QuantumMCRepr <: AbstractRepresentation end
-"""Representation using tableaux governed by `QuantumClifford.jl`"""
-struct CliffordRepr <: AbstractRepresentation end
-
-express(state::Symbolic) = express(state, QuantumOpticsRepr()) # The default representation
 express_nolookup(state, ::QuantumMCRepr) = express_nolookup(state, QuantumOpticsRepr())
-express(state) = state
 
 function express_nolookup(s, repr::AbstractRepresentation)
     if isexpr(s)

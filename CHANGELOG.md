@@ -1,5 +1,9 @@
 # News
 
+## v0.4.6 - 2025-01-18
+
+- Migrate `express` functionality and representation types to QuantumInterface.
+
 ## v0.4.5 - 2024-11-14
 
 - Updated compat lower bounds for Symbolics to v6 (and for SymbolicUtils and TermInterface)

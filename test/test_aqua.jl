@@ -3,8 +3,8 @@
     
     # Add any new types needed to QObj, or here if QObj if not appropriate.
     # Add types from elsewhere in the ecosystem here or preferably to QObj
-    own_types = [Base.uniontypes(QObj)...,]
-    own_types_union = Union{SymQObj,}
+    own_types = [Base.uniontypes(QObj)...,AbstractRepresentation,AbstractUse,]
+    own_types_union = Union{SymQObj,AbstractRepresentation,AbstractUse,}
 
     Aqua.test_all(QuantumSymbolics, piracies=(;treat_as_own=own_types))
 
