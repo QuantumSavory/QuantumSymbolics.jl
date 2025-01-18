@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Getting Started with QuantumSymbolics.jl · QuantumSymbolics.jl</title><meta name="title" content="Getting Started with QuantumSymbolics.jl · QuantumSymbolics.jl"/><meta property="og:title" content="Getting Started with QuantumSymbolics.jl · QuantumSymbolics.jl"/><meta property="twitter:title" content="Getting Started with QuantumSymbolics.jl · QuantumSymbolics.jl"/><meta name="description" content="Documentation for QuantumSymbolics.jl."/><meta property="og:description" content="Documentation for QuantumSymbolics.jl."/><meta property="twitter:description" content="Documentation for QuantumSymbolics.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><script src="../assets/init.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">QuantumSymbolics.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">QuantumSymbolics.jl</a></li><li class="is-active"><a class="tocitem" href>Getting Started with QuantumSymbolics.jl</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Literal-Symbolic-Quantum-Objects"><span>Literal Symbolic Quantum Objects</span></a></li><li><a class="tocitem" href="#Basic-Operations"><span>Basic Operations</span></a></li><li><a class="tocitem" href="#Linear-Algebra-on-Bras,-Kets,-and-Operators"><span>Linear Algebra on Bras, Kets, and Operators</span></a></li><li><a class="tocitem" href="#Predefined-Quantum-Objects"><span>Predefined Quantum Objects</span></a></li><li><a class="tocitem" href="#Simplifying-Expressions"><span>Simplifying Expressions</span></a></li><li><a class="tocitem" href="#Expanding-Expressions"><span>Expanding Expressions</span></a></li><li><a class="tocitem" href="#Numerical-Translation-of-Symbolic-Objects"><span>Numerical Translation of Symbolic Objects</span></a></li></ul></li><li><a class="tocitem" href="../express/">Express Functionality</a></li><li><a class="tocitem" href="../qubit_basis/">Qubit Basis Choice</a></li><li><a class="tocitem" href="../QHO/">Quantum Harmonic Oscillators</a></li><li><a class="tocitem" href="../API/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Getting Started with QuantumSymbolics.jl</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Getting Started with QuantumSymbolics.jl</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/QuantumSavory/QuantumSymbolics.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/QuantumSavory/QuantumSymbolics.jl/blob/main/docs/src/introduction.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Getting-Started-with-QuantumSymbolics.jl"><a class="docs-heading-anchor" href="#Getting-Started-with-QuantumSymbolics.jl">Getting Started with QuantumSymbolics.jl</a><a id="Getting-Started-with-QuantumSymbolics.jl-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-Started-with-QuantumSymbolics.jl" title="Permalink"></a></h1><p>QuantumSymbolics is designed for manipulation and numerical translation of symbolic quantum objects. This tutorial introduces basic features of the package.</p><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p>QuantumSymbolics.jl can be installed through the Julia package system in the standard way:</p><pre><code class="nohighlight hljs">using Pkg
+Pkg.add(&quot;QuantumSymbolics&quot;)</code></pre><h2 id="Literal-Symbolic-Quantum-Objects"><a class="docs-heading-anchor" href="#Literal-Symbolic-Quantum-Objects">Literal Symbolic Quantum Objects</a><a id="Literal-Symbolic-Quantum-Objects-1"></a><a class="docs-heading-anchor-permalink" href="#Literal-Symbolic-Quantum-Objects" title="Permalink"></a></h2><p>Basic objects of type <a href="../API/#QuantumSymbolics.SBra"><code>SBra</code></a>, <a href="../API/#QuantumSymbolics.SKet"><code>SKet</code></a>, <a href="../API/#QuantumSymbolics.SOperator"><code>SOperator</code></a>, and <a href="../API/#QuantumSymbolics.SSuperOperator"><code>SSuperOperator</code></a> represent symbolic quantum objects with <code>name</code> and <code>basis</code> properties. Each type can be generated with a straightforward macro:</p><pre><code class="language-julia-repl hljs">julia&gt; using QuantumSymbolics
+
+julia&gt; @bra b # object of type SBra
+⟨b|
+
+julia&gt; @ket k # object of type SKet
+|k⟩
+
+julia&gt; @op A # object of type SOperator
+A
+
+julia&gt; @superop S # object of type SSuperOperator
+S</code></pre><p>By default, each of the above macros defines a symbolic quantum object in the spin-1/2 basis. One can simply choose a different basis, such as the Fock basis or a tensor product of several bases, by passing an object of type <code>Basis</code> to the second argument in the macro call:</p><pre><code class="language-julia-repl hljs">julia&gt; @op B FockBasis(Inf, 0.0)
+B
+
+julia&gt; basis(B)
+Fock(cutoff=Inf)
+
+julia&gt; @op C SpinBasis(1//2)⊗SpinBasis(5//2)
+C
+
+julia&gt; basis(C)
+[Spin(1/2) ⊗ Spin(5/2)]</code></pre><p>Here, we extracted the basis of the defined symbolic operators using the <code>basis</code> function.</p><p>Symbolic quantum objects with additional properties can be defined, such as a Hermitian operator, or the zero ket (i.e., a symbolic ket equivalent to the zero vector <span>$\bm{0}$</span>).</p><h2 id="Basic-Operations"><a class="docs-heading-anchor" href="#Basic-Operations">Basic Operations</a><a id="Basic-Operations-1"></a><a class="docs-heading-anchor-permalink" href="#Basic-Operations" title="Permalink"></a></h2><p>Expressions containing symbolic quantum objects can be built with a variety of functions. Let us consider the most fundamental operations: multiplication <code>*</code>, addition <code>+</code>, and the tensor product <code>⊗</code>. </p><p>We can multiply, for example, a ket by a scalar value, or apply an operator to a ket:</p><pre><code class="language-julia-repl hljs">julia&gt; @ket k; @op A;
+
+julia&gt; 2*k
+2|k⟩
+
+julia&gt; A*k
+A|k⟩</code></pre><p>Similar scaling procedures can be performed on bras and operators. Addition between symbolic objects is also available, for instance:</p><pre><code class="language-julia-repl hljs">julia&gt; @op A₁; @op A₂;
+
+julia&gt; A₁+A₂
+(A₁+A₂)
+
+julia&gt; @bra b;
+
+julia&gt; 2*b + 5*b
+7⟨b|</code></pre><p>Built into the package are straightforward automatic simplification rules, as shown in the last example, where <code>2⟨b|+5⟨b|</code> evaluates to <code>7⟨b|</code>. </p><p>Tensor products of symbolic objects can be performed, with basis information transferred:</p><pre><code class="language-julia-repl hljs">julia&gt; @ket k₁; @ket k₂;
+
+julia&gt; tp = k₁⊗k₂
+|k₁⟩|k₂⟩
+
+julia&gt; basis(tp)
+[Spin(1/2) ⊗ Spin(1/2)]</code></pre><p>Inner and outer products of bras and kets can be generated:</p><pre><code class="language-julia-repl hljs">julia&gt; @bra b; @ket k;
+
+julia&gt; b*k
+⟨b||k⟩
+
+julia&gt; k*b
+|k⟩⟨b|</code></pre><p>More involved combinations of operations can be explored. Here are few other straightforward examples:</p><pre><code class="language-julia-repl hljs">julia&gt; @bra b; @ket k; @op A; @op B;
+
+julia&gt; 3*A*B*k
+3AB|k⟩
+
+julia&gt; A⊗(k*b + B)
+(A⊗(B+|k⟩⟨b|))
+
+julia&gt; A-A
+𝟎</code></pre><p>In the last example, a zero operator, denoted <code>𝟎</code>, was returned by subtracting a symbolic operator from itself. Such an object is of the type <a href="../API/#QuantumSymbolics.SZeroOperator"><code>SZeroOperator</code></a>, and similar objects <a href="../API/#QuantumSymbolics.SZeroBra"><code>SZeroBra</code></a> and <a href="../API/#QuantumSymbolics.SZeroKet"><code>SZeroKet</code></a> correspond to zero bras and zero kets, respectively.</p><h2 id="Linear-Algebra-on-Bras,-Kets,-and-Operators"><a class="docs-heading-anchor" href="#Linear-Algebra-on-Bras,-Kets,-and-Operators">Linear Algebra on Bras, Kets, and Operators</a><a id="Linear-Algebra-on-Bras,-Kets,-and-Operators-1"></a><a class="docs-heading-anchor-permalink" href="#Linear-Algebra-on-Bras,-Kets,-and-Operators" title="Permalink"></a></h2><p>QuantumSymbolics supports a wide variety of linear algebra on symbolic bras, kets, and operators. For instance, the commutator and anticommutator of two operators, can be generated:</p><pre><code class="language-julia-repl hljs">julia&gt; @op A; @op B;
+
+julia&gt; commutator(A, B)
+[A,B]
+
+julia&gt; anticommutator(A, B)
+{A,B}
+
+julia&gt; commutator(A, A)
+𝟎</code></pre><p>Or, one can take the dagger of a quantum object with the <a href="../API/#QuantumInterface.dagger-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractBra}}"><code>dagger</code></a> function:</p><pre><code class="language-julia-repl hljs">julia&gt; @ket k; @op A; @op B;
+
+julia&gt; dagger(A)
+A†
+
+julia&gt; dagger(A*k)
+|k⟩†A†
+
+julia&gt; dagger(A*B)
+B†A†</code></pre><p>Below, we state all of the supported linear algebra operations on quantum objects:</p><ul><li>commutator of two operators: <a href="../API/#QuantumSymbolics.commutator"><code>commutator</code></a>,</li><li>anticommutator of two operators: <a href="../API/#QuantumSymbolics.anticommutator"><code>anticommutator</code></a>,</li><li>complex conjugate: <a href="../API/#Base.conj-Union{Tuple{SymbolicUtils.Symbolic{T}}, Tuple{T}} where T&lt;:Union{QuantumInterface.AbstractBra, QuantumInterface.AbstractKet, QuantumInterface.AbstractOperator, QuantumInterface.AbstractSuperOperator}"><code>conj</code></a>,</li><li>transpose: <a href="../API/#Base.transpose-Union{Tuple{SymbolicUtils.Symbolic{T}}, Tuple{T}} where T&lt;:Union{QuantumInterface.AbstractBra, QuantumInterface.AbstractKet, QuantumInterface.AbstractOperator}"><code>transpose</code></a>,</li><li>projection of a ket: <a href="../API/#QuantumInterface.projector-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractKet}}"><code>projector</code></a>,</li><li>adjoint or dagger: <a href="../API/#QuantumInterface.dagger-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractBra}}"><code>dagger</code></a>,</li><li>trace: <a href="../API/#LinearAlgebra.tr-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractOperator}}"><code>tr</code></a>,</li><li>partial trace: <a href="../API/#QuantumInterface.ptrace-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractOperator}, Any}"><code>ptrace</code></a>,</li><li>inverse of an operator: <a href="../API/#Base.inv-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractOperator}}"><code>inv</code></a>,</li><li>exponential of an operator: <a href="../API/#Base.exp-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractOperator}}"><code>exp</code></a>,</li><li>vectorization of an operator: <a href="../API/#Base.vec-Tuple{SymbolicUtils.Symbolic{QuantumInterface.AbstractOperator}}"><code>vec</code></a>.</li></ul><h2 id="Predefined-Quantum-Objects"><a class="docs-heading-anchor" href="#Predefined-Quantum-Objects">Predefined Quantum Objects</a><a id="Predefined-Quantum-Objects-1"></a><a class="docs-heading-anchor-permalink" href="#Predefined-Quantum-Objects" title="Permalink"></a></h2><p>So far in this tutorial, we have considered arbitrary kets, bras, operators, and their corresponding operations. This package supports predefined quantum objects and operations in several formalisms, which are discussed in detail in other sections (see, for example, the <a href="../QHO/#Quantum-Harmonic-Oscillators">quantum harmonic oscillators</a> or <a href="../qubit_basis/#Typical-Qubit-Bases">qubit basis</a> pages). To get a taste of what&#39;s available, let us consider a few symbolic examples. For a complete description, see the <a href="../API/#Full-API">full API page</a>.</p><p>Quantum gates and their basis states can be represented symbolically:</p><pre><code class="language-julia-repl hljs">julia&gt; CNOT # CNOT Gate
+CNOT
+
+julia&gt; X, Y, Z, I # Pauli operators
+(X, Y, Z, 𝕀)
+
+julia&gt; X1, X2 # Eigenstates of the Pauli X operator
+(|X₁⟩, |X₂⟩)
+
+julia&gt; CPHASE * (Z1 ⊗ Z2) # Application of CPHASE gate on |01⟩
+CPHASE|Z₁⟩|Z₂⟩</code></pre><p>We also have symbolic representations of bosonic systems:</p><pre><code class="language-julia-repl hljs">julia&gt; FockState(4) # Fock state with 4 excitation quanta
+|4⟩
+
+julia&gt; Create, Destroy # creation and annihilation operators
+(a†, a)
+
+julia&gt; DisplaceOp(im) # Displacement operator for single bosonic mode
+D(im)
+
+julia&gt; N * vac # Application of number operator on vacuum state
+n|0⟩</code></pre><p>If we want to substitute a predefined quantum object into a general symbolic expression, we can use the <a href="https://symbolics.juliasymbolics.org/v3.5/manual/expression_manipulation/#SymbolicUtils.substitute"><code>substitute</code></a> command from <a href="https://github.com/JuliaSymbolics/Symbolics.jl"><code>Symbolics.jl</code></a>:</p><pre><code class="language-julia-repl hljs">julia&gt; using Symbolics
+
+julia&gt; @op A; @ket k;
+
+julia&gt; ex = 2*A + projector(k)
+(2A+𝐏[|k⟩])
+
+julia&gt; substitute(ex, Dict([A =&gt; X, k =&gt; X1]))
+(2X+𝐏[|X₁⟩])</code></pre><h2 id="Simplifying-Expressions"><a class="docs-heading-anchor" href="#Simplifying-Expressions">Simplifying Expressions</a><a id="Simplifying-Expressions-1"></a><a class="docs-heading-anchor-permalink" href="#Simplifying-Expressions" title="Permalink"></a></h2><p>For predefined objects such as the Pauli operators <a href="../API/#QuantumSymbolics.X"><code>X</code></a>, <a href="../API/#QuantumSymbolics.Y"><code>Y</code></a>, and <a href="../API/#QuantumSymbolics.Z"><code>Z</code></a>, additional simplification can be performed with the <a href="../API/#QuantumSymbolics.qsimplify-Tuple{Any}"><code>qsimplify</code></a> function. Take the following example:</p><pre><code class="language-julia-repl hljs">julia&gt; qsimplify(X*Z)
+(0 - 1im)Y</code></pre><p>Here, we have the relation <span>$XZ = -iY$</span>, so calling <a href="../API/#QuantumSymbolics.qsimplify-Tuple{Any}"><code>qsimplify</code></a> on the expression <code>X*Z</code> will rewrite the expression as <code>-im*Y</code>.</p><p>Note that simplification rewriters used in QuantumSymbolics are built from the interface of <a href="https://github.com/JuliaSymbolics/SymbolicUtils.jl"><code>SymbolicUtils.jl</code></a>. By default, when called on an expression, <a href="../API/#QuantumSymbolics.qsimplify-Tuple{Any}"><code>qsimplify</code></a> will iterate through every defined simplification rule in the QuantumSymbolics package until the expression can no longer be simplified. </p><p>Now, suppose we only want to use a specific subset of rules. For instance, say we wish to simplify commutators, but not anticommutators. Then, we can pass the keyword argument <code>rewriter=qsimplify_commutator</code> to <a href="../API/#QuantumSymbolics.qsimplify-Tuple{Any}"><code>qsimplify</code></a>, as done in the following example:</p><pre><code class="language-julia-repl hljs">julia&gt; qsimplify(commutator(X, Y), rewriter=qsimplify_commutator)
+(0 + 2im)Z
+
+julia&gt; qsimplify(anticommutator(X, Y), rewriter=qsimplify_commutator)
+{X,Y}</code></pre><p>As shown above, we apply <a href="../API/#QuantumSymbolics.qsimplify-Tuple{Any}"><code>qsimplify</code></a> to two expressions: <code>commutator(X, Y)</code> and <code>anticommutator(X, Y)</code>. We specify that only commutator rules will be applied, thus the first expression is rewritten to <code>(0 + 2im)Z</code> while the second expression is simply returned. This feature can greatly reduce the time it takes for an expression to be simplified.</p><p>Below, we state all of the simplification rule subsets that can be passed to <a href="../API/#QuantumSymbolics.qsimplify-Tuple{Any}"><code>qsimplify</code></a>:</p><ul><li><code>qsimplify_pauli</code> for Pauli multiplication,</li><li><code>qsimplify_commutator</code> for commutators of Pauli operators,</li><li><code>qsimplify_anticommutator</code> for anticommutators of Pauli operators.</li></ul><h2 id="Expanding-Expressions"><a class="docs-heading-anchor" href="#Expanding-Expressions">Expanding Expressions</a><a id="Expanding-Expressions-1"></a><a class="docs-heading-anchor-permalink" href="#Expanding-Expressions" title="Permalink"></a></h2><p>Symbolic expressions containing quantum objects can be expanded with the <a href="../API/#QuantumSymbolics.qexpand-Tuple{Any}"><code>qexpand</code></a> function. We demonstrate this capability with the following examples.</p><pre><code class="language-julia-repl hljs">julia&gt; @op A; @op B; @op C;
+
+julia&gt; qexpand(A⊗(B+C))
+((A⊗B)+(A⊗C))
+
+julia&gt; qexpand((B+C)*A)
+(BA+CA)
+
+julia&gt; @ket k₁; @ket k₂; @ket k₃;
+
+julia&gt; qexpand(k₁⊗(k₂+k₃))
+(|k₁⟩|k₂⟩+|k₁⟩|k₃⟩)
+
+julia&gt; qexpand((A*B)*(k₁+k₂))
+(AB|k₁⟩+AB|k₂⟩)</code></pre><h2 id="Numerical-Translation-of-Symbolic-Objects"><a class="docs-heading-anchor" href="#Numerical-Translation-of-Symbolic-Objects">Numerical Translation of Symbolic Objects</a><a id="Numerical-Translation-of-Symbolic-Objects-1"></a><a class="docs-heading-anchor-permalink" href="#Numerical-Translation-of-Symbolic-Objects" title="Permalink"></a></h2><p>Symbolic expressions containing predefined objects can be converted to numerical representations with <a href="../API/#QuantumInterface.express-Tuple{SymbolicUtils.Symbolic, AbstractRepresentation, AbstractUse}"><code>express</code></a>. Numerics packages supported by this translation capability are <a href="https://github.com/qojulia/QuantumOptics.jl"><code>QuantumOptics.jl</code></a> and <a href="https://github.com/QuantumSavory/QuantumClifford.jl/"><code>QuantumClifford.jl</code></a>.</p><p>By default, <a href="../API/#QuantumInterface.express-Tuple{SymbolicUtils.Symbolic, AbstractRepresentation, AbstractUse}"><code>express</code></a> converts an object to the quantum optics state vector representation. For instance, we can represent the exponential of the Pauli operator <a href="../API/#QuantumSymbolics.X"><code>X</code></a> numerically as follows:</p><pre><code class="language-julia-repl hljs">julia&gt; using QuantumOptics
+
+julia&gt; express(exp(X))
+Operator(dim=2x2)
+  basis: Spin(1/2)sparse([1, 2, 1, 2], [1, 1, 2, 2], ComplexF64[1.5430806327160496 + 0.0im, 1.1752011684303352 + 0.0im, 1.1752011684303352 + 0.0im, 1.5430806327160496 + 0.0im], 2, 2)</code></pre><p>To convert to the Clifford representation, an instance of <code>CliffordRepr</code> must be passed to <a href="../API/#QuantumInterface.express-Tuple{SymbolicUtils.Symbolic, AbstractRepresentation, AbstractUse}"><code>express</code></a>. For instance, we can represent the projection of the basis state <a href="../API/#QuantumSymbolics.X1"><code>X1</code></a> of the Pauli operator <a href="../API/#QuantumSymbolics.X"><code>X</code></a> as follows:</p><pre><code class="language-julia-repl hljs">julia&gt; using QuantumClifford
+
+julia&gt; express(projector(X1), CliffordRepr())
+𝒟ℯ𝓈𝓉𝒶𝒷
++ Z
+𝒮𝓉𝒶𝒷
++ X</code></pre><p>For more details on using <a href="../API/#QuantumInterface.express-Tuple{SymbolicUtils.Symbolic, AbstractRepresentation, AbstractUse}"><code>express</code></a>, refer to the <a href="../API/#QuantumInterface.express-Tuple{SymbolicUtils.Symbolic, AbstractRepresentation, AbstractUse}">express functionality page</a>.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« QuantumSymbolics.jl</a><a class="docs-footer-nextpage" href="../express/">Express Functionality »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.8.0 on <span class="colophon-date" title="Saturday 18 January 2025 17:55">Saturday 18 January 2025</span>. Using Julia version 1.11.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
