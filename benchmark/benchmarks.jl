@@ -68,3 +68,20 @@ expanded_pauli_expr = qexpand(compact_pauli_expr)
 SUITE["manipulation"]["expand"] = @benchmarkable qexpand($compact_pauli_expr)
 SUITE["manipulation"]["simplify"]["applicable_rules"] = @benchmarkable qsimplify($expanded_pauli_expr, rewriter=qsimplify_pauli)
 SUITE["manipulation"]["simplify"]["irrelevant_rules"] = @benchmarkable qsimplify($expanded_pauli_expr, rewriter=qsimplify_fock)
+
+# Expression benchmarks
+SUITE["express"] = BenchmarkGroup(["express"])
+clear_cache!(x) = empty!(x.metadata.express_cache)
+state_4 = (Z1⊗Z1 + Z2⊗Z2)/√2
+pauli_op_4 = YCX * transpose(Z⊗Y) * YCZ * dagger(Y⊗X) * conj(ZCY) * exp(X ⊗ (2-3im)X) 
+pauli_state_8 = (conj(XCY⊗Y) + dagger(Z⊗YCX) + transpose(0.5im*Y ⊗ exp(XCY))) * (X1⊗Y1⊗Z1)
+
+SUITE["express"]["optics"]["state_4"] = @benchmarkable express($state_4) setup=clear_cache!(state_4)
+SUITE["express"]["optics"]["pauli_op_4"] = @benchmarkable express($pauli_op_4) setup=clear_cache!(pauli_op_4)
+SUITE["express"]["optics"]["pauli_state_8"] = @benchmarkable express($pauli_state_8) setup=clear_cache!(pauli_state_8)
+
+# TODO: not sure what else to add here
+test_op = X⊗Y
+SUITE["express"]["clifford"]["operator"] = @benchmarkable express($X, CliffordRepr()) setup=clear_cache!(X)
+SUITE["express"]["clifford"]["observable"] = @benchmarkable express($test_op, CliffordRepr(), UseAsObservable()) setup=clear_cache!(test_op)
+
