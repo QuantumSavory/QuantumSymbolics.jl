@@ -1,32 +1,33 @@
 using QuantumSymbolics
-using QuantumOptics
-using QuantumClifford
+import QuantumOpticsBase
+import QuantumClifford
+
 using BenchmarkTools
 
 const SUITE = BenchmarkGroup()
+@ket k1; @ket k2; @bra b1; @bra b2; @op A; @op B; @op C;
 
-SUITE["import_time"] = BenchmarkGroup(["slow"])
+# Time to import and first usage of simple operations
+SUITE["latency"] = BenchmarkGroup(["slow"])
 load_command = `julia --quiet --project=./ --eval="using QuantumSymbolics"`
 ttfx_command = `
     julia --quiet --project=./ --eval="""
         using QuantumSymbolics;
         @ket k1; @op A;
-        A * commutator(A,X) * k1 |> qexpand
+        A * commutator(A,X) * k1
     """`
-SUITE["import_time"]["using"] = @benchmarkable run(load_command) samples=3 seconds=15
-SUITE["import_time"]["ttfx"] = @benchmarkable run(ttfx_command) samples=3 seconds=15
-#TODO: qsimplify ttfx is very slow
+SUITE["latency"]["using"] = @benchmarkable run(load_command) samples=3 seconds=15
+SUITE["latency"]["ttf_operation"] = @benchmarkable run(ttfx_command) samples=3 seconds=15
+SUITE["latency"]["ttf_simplify"] = @benchmarkable qsimplify(X*Y) samples=1
 
 # Basic symbolic object creation
 SUITE["creation"] = BenchmarkGroup(["symbolic"])
-SUITE["creation"]["ket"] = @benchmarkable @ket k
-SUITE["creation"]["op"] = @benchmarkable @op A
-SUITE["creation"]["super_op"] = @benchmarkable @superop S
+SUITE["creation"]["ket"] = @benchmarkable @ket _k
+SUITE["creation"]["op"] = @benchmarkable @op _A
+SUITE["creation"]["super_op"] = @benchmarkable @superop _S
 
-# Basic operations benchmarks
+# Basic operations
 SUITE["operations"] = BenchmarkGroup(["symbolic"])
-@ket k1; @ket k2; @bra b1; @bra b2; @op A; @op B; @op C;
-
 SUITE["operations"]["scaling"] = BenchmarkGroup()
 SUITE["operations"]["scaling"]["ket"] = @benchmarkable 2 * $k1
 SUITE["operations"]["scaling"]["op"] = @benchmarkable 3 * $A
@@ -50,7 +51,7 @@ SUITE["operations"]["tensor"]["op"] = @benchmarkable $A ⊗ $B
 SUITE["operations"]["tensor"]["many"] = @benchmarkable $A ⊗ $B ⊗ $C ⊗ $A ⊗ $B ⊗ $C
 
 # Linear algebra operations
-SUITE["linalg"]["creation"] = BenchmarkGroup(["symbolic"])
+SUITE["linalg"] = BenchmarkGroup(["symbolic"])
 SUITE["linalg"]["trace"] = @benchmarkable tr($A)
 SUITE["linalg"]["ptrace"] = @benchmarkable ptrace($A ⊗ $B, 1)
 SUITE["linalg"]["inverse"] = @benchmarkable inv($A)
@@ -61,27 +62,32 @@ SUITE["linalg"]["commutator"] = @benchmarkable commutator($A, $B)
 SUITE["linalg"]["anticommutator"] = @benchmarkable anticommutator($A, $B)
 
 # Simplification benchmarks
-SUITE["manipulation"] = BenchmarkGroup()
+SUITE["manipulation"] = BenchmarkGroup(["symbolic"])
 compact_pauli_expr = (H * (X+Y+Z)) * (H * (Y1+Y2+Z1))
 expanded_pauli_expr = qexpand(compact_pauli_expr)
+commutator_expr = commutator(X, commutator(Y, commutator(X, Z)))
 
-SUITE["manipulation"]["expand"] = @benchmarkable qexpand($compact_pauli_expr)
+SUITE["manipulation"]["expand"]["distribution"] = @benchmarkable qexpand($compact_pauli_expr)
+SUITE["manipulation"]["expand"]["commutator"] = @benchmarkable qexpand($commutator_expr)
 SUITE["manipulation"]["simplify"]["applicable_rules"] = @benchmarkable qsimplify($expanded_pauli_expr, rewriter=qsimplify_pauli)
+# Expression isn't simplified with fock rules. Testing how fast we go through inapplicable rules.
 SUITE["manipulation"]["simplify"]["irrelevant_rules"] = @benchmarkable qsimplify($expanded_pauli_expr, rewriter=qsimplify_fock)
+SUITE["manipulation"]["simplify"]["commutator"] = @benchmarkable qsimplify($commutator_expr, rewriter=qsimplify_commutator)
 
 # Expression benchmarks
 SUITE["express"] = BenchmarkGroup(["express"])
 clear_cache!(x) = empty!(x.metadata.express_cache)
-state_4 = (Z1⊗Z1 + Z2⊗Z2)/√2
+simple_op = X⊗Y
+simple_ket = Z1⊗Z1
 pauli_op_4 = YCX * transpose(Z⊗Y) * YCZ * dagger(Y⊗X) * conj(ZCY) * exp(X ⊗ (2-3im)X) 
 pauli_state_8 = (conj(XCY⊗Y) + dagger(Z⊗YCX) + transpose(0.5im*Y ⊗ exp(XCY))) * (X1⊗Y1⊗Z1)
 
-SUITE["express"]["optics"]["state_4"] = @benchmarkable express($state_4) setup=clear_cache!(state_4)
-SUITE["express"]["optics"]["pauli_op_4"] = @benchmarkable express($pauli_op_4) setup=clear_cache!(pauli_op_4)
-SUITE["express"]["optics"]["pauli_state_8"] = @benchmarkable express($pauli_state_8) setup=clear_cache!(pauli_state_8)
+SUITE["express"]["optics"]["simple_op"] = @benchmarkable express($simple_op) setup=clear_cache!(simple_op) evals=1
+SUITE["express"]["optics"]["simple_ket"] = @benchmarkable express($simple_ket) setup=clear_cache!(simple_ket) evals=1
+SUITE["express"]["optics"]["pauli_op_4"] = @benchmarkable express($pauli_op_4) setup=clear_cache!(pauli_op_4) evals=1
+SUITE["express"]["optics"]["pauli_state_8"] = @benchmarkable express($pauli_state_8) setup=clear_cache!(pauli_state_8) evals=1
 
 # TODO: not sure what else to add here
-test_op = X⊗Y
-SUITE["express"]["clifford"]["operator"] = @benchmarkable express($X, CliffordRepr()) setup=clear_cache!(X)
-SUITE["express"]["clifford"]["observable"] = @benchmarkable express($test_op, CliffordRepr(), UseAsObservable()) setup=clear_cache!(test_op)
+SUITE["express"]["clifford"]["simple_ket"] = @benchmarkable express($simple_ket, CliffordRepr()) setup=clear_cache!(simple_ket) evals=1
+SUITE["express"]["clifford"]["simple_observable"] = @benchmarkable express($simple_op, CliffordRepr(), UseAsObservable()) setup=clear_cache!(simple_op) evals=1
 
