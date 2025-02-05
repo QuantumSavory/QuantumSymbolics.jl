@@ -18,13 +18,28 @@ ttfx_command = `
     """`
 SUITE["latency"]["using"] = @benchmarkable run(load_command) samples=3 seconds=15
 SUITE["latency"]["ttf_operation"] = @benchmarkable run(ttfx_command) samples=3 seconds=15
-SUITE["latency"]["ttf_simplify"] = @benchmarkable qsimplify(X*Y) samples=1
+SUITE["latency"]["ttf_simplify"] = @benchmarkable qsimplify(X*Y) samples=1 evals=1
 
-# Basic symbolic object creation
+
+# Symbolic object creation
 SUITE["creation"] = BenchmarkGroup(["symbolic"])
 SUITE["creation"]["ket"] = @benchmarkable @ket _k
 SUITE["creation"]["op"] = @benchmarkable @op _A
 SUITE["creation"]["super_op"] = @benchmarkable @superop _S
+
+SUITE["creation"]["large_trees"] = BenchmarkGroup(["allocs"])
+function large_tree_with_plenty_reallocations(layers)
+    expr_op = QuantumSymbolics.I
+    expr_ket = X1
+    for _ in 1:layers
+        expr_op = rand([X, Y, Z, H]) + (rand([X, Y, Z, H]) * expr_op)
+        expr_ket = (expr_op * expr_ket) + rand([X1, X2, Y1, Y2, Z1, Z2])
+    end
+    return expr_op, expr_ket
+end
+SUITE["creation"]["large_trees"]["10_layers"] = @benchmarkable large_tree_with_plenty_reallocations(10)
+SUITE["creation"]["large_trees"]["50_layers"] = @benchmarkable large_tree_with_plenty_reallocations(50)
+
 
 # Basic operations
 SUITE["operations"] = BenchmarkGroup(["symbolic"])
@@ -50,6 +65,7 @@ SUITE["operations"]["tensor"]["ket"] = @benchmarkable $k1 ⊗ $k2
 SUITE["operations"]["tensor"]["op"] = @benchmarkable $A ⊗ $B
 SUITE["operations"]["tensor"]["many"] = @benchmarkable $A ⊗ $B ⊗ $C ⊗ $A ⊗ $B ⊗ $C
 
+
 # Linear algebra operations
 SUITE["linalg"] = BenchmarkGroup(["symbolic"])
 SUITE["linalg"]["trace"] = @benchmarkable tr($A)
@@ -60,6 +76,7 @@ SUITE["linalg"]["conjugate"] = @benchmarkable conj($A)
 SUITE["linalg"]["transpose"] = @benchmarkable transpose($A)
 SUITE["linalg"]["commutator"] = @benchmarkable commutator($A, $B)
 SUITE["linalg"]["anticommutator"] = @benchmarkable anticommutator($A, $B)
+
 
 # Simplification benchmarks
 SUITE["manipulation"] = BenchmarkGroup(["symbolic"])
@@ -74,6 +91,7 @@ SUITE["manipulation"]["simplify"]["applicable_rules"] = @benchmarkable qsimplify
 SUITE["manipulation"]["simplify"]["irrelevant_rules"] = @benchmarkable qsimplify($expanded_pauli_expr, rewriter=qsimplify_fock)
 SUITE["manipulation"]["simplify"]["commutator"] = @benchmarkable qsimplify($commutator_expr, rewriter=qsimplify_commutator)
 
+
 # Expression benchmarks
 SUITE["express"] = BenchmarkGroup(["express"])
 clear_cache!(x) = empty!(x.metadata.express_cache)
@@ -87,7 +105,7 @@ SUITE["express"]["optics"]["simple_ket"] = @benchmarkable express($simple_ket) s
 SUITE["express"]["optics"]["pauli_op_4"] = @benchmarkable express($pauli_op_4) setup=clear_cache!(pauli_op_4) evals=1
 SUITE["express"]["optics"]["pauli_state_8"] = @benchmarkable express($pauli_state_8) setup=clear_cache!(pauli_state_8) evals=1
 
-# TODO: not sure what else to add here
+# TODO: add additional clifford expressions
 SUITE["express"]["clifford"]["simple_ket"] = @benchmarkable express($simple_ket, CliffordRepr()) setup=clear_cache!(simple_ket) evals=1
 SUITE["express"]["clifford"]["simple_observable"] = @benchmarkable express($simple_op, CliffordRepr(), UseAsObservable()) setup=clear_cache!(simple_op) evals=1
 
