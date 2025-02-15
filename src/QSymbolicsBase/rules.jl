@@ -131,6 +131,7 @@ The defined rewriters for simplification are the following objects:
     - `qsimplify_pauli`
     - `qsimplify_commutator`
     - `qsimplify_anticommutator`
+    - `qsimplify_fock`
 
 ```jldoctest
 julia> qsimplify(σʸ*commutator(σˣ*σᶻ, σᶻ))
