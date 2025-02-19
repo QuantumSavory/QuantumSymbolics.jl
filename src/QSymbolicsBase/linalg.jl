@@ -106,7 +106,7 @@ children(x::SConjugate) = [:conj, x.obj]
     conj(x::Symbolic{AbstractOperator})
     conj(x::Symbolic{AbstractSuperOperator})
 
-Symbolic transpose operation. See also [`SConjugate`](@ref).
+Symbolic complex conjugate operation. See also [`SConjugate`](@ref).
 """
 conj(x::Symbolic{T}) where {T<:QObj} = SConjugate{T}(x)
 conj(x::SZero) = x
@@ -234,19 +234,19 @@ children(x::SDagger) = [:dagger, x.obj]
 """
     dagger(x::Symbolic{AbstractKet})
 
-Symbolic transpose operation. See also [`SDagger`](@ref).
+Symbolic adjoint operation. See also [`SDagger`](@ref).
 """
 dagger(x::Symbolic{AbstractKet})= SDagger{AbstractBra}(x)
 """
     dagger(x::Symbolic{AbstractBra})
 
-Symbolic transpose operation. See also [`SDagger`](@ref).
+Symbolic adjoint operation. See also [`SDagger`](@ref).
 """
 dagger(x::Symbolic{AbstractBra})= SDagger{AbstractKet}(x)
 """
     dagger(x::Symbolic{AbstractOperator})
 
-Symbolic transpose operation. See also [`SDagger`](@ref).
+Symbolic adjoint operation. See also [`SDagger`](@ref).
 """
 dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
 dagger(x::SScaled) = conj(x.coeff)*dagger(x.obj)
@@ -491,7 +491,7 @@ Base.show(io::IO, x::SExpOperator) = print(io, "exp($(x.op))")
 """
     exp(x::Symbolic{AbstractOperator})
 
-Symbolic inverse of an operator. See also [`SExpOperator`](@ref).
+Symbolic exponential of an operator. See also [`SExpOperator`](@ref).
 """
 exp(x::Symbolic{AbstractOperator}) = SExpOperator(x)
 
