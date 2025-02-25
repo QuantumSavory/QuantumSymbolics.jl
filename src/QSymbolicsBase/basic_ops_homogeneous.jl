@@ -85,6 +85,7 @@ julia> k₁ + k₂
     _arguments_precomputed
 end
 function SAdd{S}(d) where S
+    isempty(d) && return SZero{S}()
     terms = [c*obj for (obj,c) in d]
     length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
 end
@@ -99,7 +100,7 @@ function Base.:(+)(x::Symbolic{T}, xs::Vararg{Symbolic{T}, N}) where {T<:QObj, N
     xs = collect(xs)
     f = first(xs)
     nonzero_terms = filter!(x->!iszero(x),xs)
-    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}))
+    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SAdd{T}, SScaled{T}))
 end
 basis(x::SAdd) = basis(first(x.dict).first)
 

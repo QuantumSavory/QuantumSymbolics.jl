@@ -34,14 +34,29 @@ function countmap(samples) # A simpler version of StatsBase.countmap, because St
     counts
 end
 
-function countmap_flatten(samples, flattenhead)
+function countmap_flatten(samples, flattenadd, flattenmul)
     counts = Dict{Any,Any}()
     for s in samples
-        if isexpr(s) && s isa flattenhead # TODO Could you use the TermInterface `operation` here instead of `flattenhead`?
+        if s isa flattenadd
+            for (term,coef) in pairs(s.dict)
+                counts[term] = get(counts, term, 0)+coef
+            end
+        elseif s isa flattenmul
             coef, term = arguments(s)
-            counts[term] = get(counts, term, 0)+coef
+            if term isa flattenadd
+                for (_term,_coef) in pairs(term.dict)
+                    counts[_term] = get(counts, _term, 0)+coef*_coef
+                end
+            else
+                counts[term] = get(counts, term, 0)+coef
+            end
         else
             counts[s] = get(counts, s, 0)+1
+        end
+    end
+    for (term,coef) in pairs(counts)
+        if iszero(coef)===true # iszero might return symbolic expressions instead of true/false # TODO make into a proper function like isdefinitelyzero, see whether upstream Symbolics has it
+            delete!(counts, term)
         end
     end
     counts

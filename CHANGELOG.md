@@ -1,5 +1,9 @@
 # News
 
+## v0.4.7 - 2025-02-25
+
+- Improvements to default flattening of expressions having nested sums and scalings.
+
 ## v0.4.6 - 2025-01-18
 
 - Migrate `express` functionality and representation types to QuantumInterface.
