@@ -2,6 +2,10 @@
 
 ## v0.4.7 - 2025-02-25
 
+- Proper expression of outer products in QuantumOptics.
+
+## v0.4.7 - 2025-02-25
+
 - Improvements to default flattening of expressions having nested sums and scalings.
 
 ## v0.4.6 - 2025-01-18
