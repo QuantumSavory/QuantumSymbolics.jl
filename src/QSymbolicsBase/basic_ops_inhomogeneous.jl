@@ -32,7 +32,10 @@ end
 Base.:(*)(op::SZeroOperator, k::Symbolic{AbstractKet}) = SZeroKet()
 Base.:(*)(op::Symbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
 Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
-Base.show(io::IO, x::SApplyKet) = begin print(io, x.op); print(io, x.ket) end
+function Base.show(io::IO, x::SApplyKet) 
+    str_func = x -> x isa SAdd || x isa STensor ? "("*string(x)*")" : string(x)
+    print(io, join(map(str_func, arguments(x)),""))
+end
 basis(x::SApplyKet) = basis(x.ket)
 
 """Symbolic application of an operator on a bra (from the right).
@@ -65,7 +68,10 @@ end
 Base.:(*)(b::SZeroBra, op::Symbolic{AbstractOperator}) = SZeroBra()
 Base.:(*)(b::Symbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
 Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
-Base.show(io::IO, x::SApplyBra) = begin print(io, x.bra); print(io, x.op) end
+function Base.show(io::IO, x::SApplyBra) 
+    str_func = x -> x isa SAdd || x isa STensor ? "("*string(x)*")" : string(x)
+    print(io, join(map(str_func, arguments(x)),""))
+end
 basis(x::SApplyBra) = basis(x.bra)
 
 """Symbolic inner product of a bra and a ket.
