@@ -78,7 +78,7 @@ Similar scaling procedures can be performed on bras and operators. Addition betw
 julia> @op A₁; @op A₂;
 
 julia> A₁+A₂
-(A₁+A₂)
+A₁+A₂
 
 julia> @bra b;
 
@@ -120,7 +120,7 @@ julia> 3*A*B*k
 3AB|k⟩
 
 julia> A⊗(k*b + B)
-(A⊗(B+|k⟩⟨b|))
+A⊗(B+|k⟩⟨b|)
 
 julia> A-A
 𝟎
@@ -215,10 +215,10 @@ julia> using Symbolics
 julia> @op A; @ket k;
 
 julia> ex = 2*A + projector(k)
-(2A+𝐏[|k⟩])
+2A+𝐏[|k⟩]
 
 julia> substitute(ex, Dict([A => X, k => X1]))
-(2X+𝐏[|X₁⟩])
+2X+𝐏[|X₁⟩]
 ```
 
 ## Simplifying Expressions
@@ -259,18 +259,18 @@ Symbolic expressions containing quantum objects can be expanded with the [`qexpa
 julia> @op A; @op B; @op C;
 
 julia> qexpand(A⊗(B+C))
-((A⊗B)+(A⊗C))
+(A⊗B)+(A⊗C)
 
 julia> qexpand((B+C)*A)
-(BA+CA)
+BA+CA
 
 julia> @ket k₁; @ket k₂; @ket k₃;
 
 julia> qexpand(k₁⊗(k₂+k₃))
-(|k₁⟩|k₂⟩+|k₁⟩|k₃⟩)
+|k₁⟩|k₂⟩+|k₁⟩|k₃⟩
 
 julia> qexpand((A*B)*(k₁+k₂))
-(AB|k₁⟩+AB|k₂⟩)
+AB|k₁⟩+AB|k₂⟩
 ```
 
 ## Numerical Translation of Symbolic Objects
