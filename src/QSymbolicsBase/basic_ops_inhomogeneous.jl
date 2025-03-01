@@ -33,7 +33,7 @@ Base.:(*)(op::SZeroOperator, k::Symbolic{AbstractKet}) = SZeroKet()
 Base.:(*)(op::Symbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
 Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
 function Base.show(io::IO, x::SApplyKet) 
-    str_func = x -> x isa SAdd || x isa STensor ? "("*string(x)*")" : string(x)
+    str_func = x -> x isa SAdd || x isa STensorOperator ? "("*string(x)*")" : string(x)
     print(io, join(map(str_func, arguments(x)),""))
 end
 basis(x::SApplyKet) = basis(x.ket)
