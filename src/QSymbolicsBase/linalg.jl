@@ -164,7 +164,7 @@ julia> transpose(A)
 Aᵀ
 
 julia> transpose(A+B)
-(Aᵀ+Bᵀ)
+Aᵀ+Bᵀ
 
 julia> transpose(k)
 |k⟩ᵀ
@@ -331,7 +331,7 @@ julia> ptrace(A⊗B, 1)
 julia> @ket k; @bra b;
 
 julia> factorizable = A ⊗ (k*b)
-(A⊗|k⟩⟨b|)
+A⊗|k⟩⟨b|
 
 julia> ptrace(factorizable, 1)
 (tr(A))|k⟩⟨b|
@@ -340,13 +340,13 @@ julia> ptrace(factorizable, 2)
 (⟨b||k⟩)A
 
 julia> mixed_state = (A⊗(k*b)) + ((k*b)⊗B)
-((A⊗|k⟩⟨b|)+(|k⟩⟨b|⊗B))
+(A⊗|k⟩⟨b|)+(|k⟩⟨b|⊗B)
 
 julia> ptrace(mixed_state, 1)
-((0 + ⟨b||k⟩)B+(tr(A))|k⟩⟨b|)
+(0 + ⟨b||k⟩)B+(tr(A))|k⟩⟨b|
 
 julia> ptrace(mixed_state, 2)
-((0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|)
+(0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|
 ```
 """
 @withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}
@@ -505,7 +505,7 @@ julia> vec(A)
 |A⟩⟩
 
 julia> vec(A+B)
-(|A⟩⟩+|B⟩⟩)
+|A⟩⟩+|B⟩⟩
 ```
 """
 @withmetadata struct SVec <: Symbolic{AbstractKet}
