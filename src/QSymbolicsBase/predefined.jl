@@ -106,6 +106,14 @@ symbollabel(::HGate) = "H"
 ishermitian(::HGate) = true
 isunitary(::HGate) = true
 
+@withmetadata struct RGate <: AbstractSingleQubitGate 
+    dir::Symbol
+    θ::Float64
+end
+symbollabel(g::RGate) = "R$(g.dir)($(g.θ))"
+ishermitian(::RGate) = true
+isunitary(::RGate) = true
+
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
 ishermitian(::CNOTGate) = true
@@ -143,6 +151,12 @@ const Pm = const σ₋ = PauliM()
 const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
+"""Rotation X gate"""
+const Rx(θ::Float64) = RGate(:x, θ)
+"""Rotation Y gate"""
+const Ry(θ::Float64) = RGate(:y, θ)
+"""Rotation Z gate"""
+const Rz(θ::Float64) = RGate(:z, θ)
 """CNOT gate"""
 const CNOT = CNOTGate()
 """CPHASE gate"""
