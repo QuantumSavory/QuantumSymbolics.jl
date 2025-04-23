@@ -106,13 +106,36 @@ symbollabel(::HGate) = "H"
 ishermitian(::HGate) = true
 isunitary(::HGate) = true
 
-@withmetadata struct RGate <: AbstractSingleQubitGate 
-    dir::Symbol
-    θ::Float64
+abstract type AbstractRotGate <: AbstractSingleQubitGate end
+ishermitian(::AbstractRotGate) = false
+isunitary(::AbstractRotGate) = true
+isexpr(::AbstractRotGate) = true
+iscall(::AbstractRotGate) = true
+arguments(x::AbstractRotGate) = [x.θ]
+
+@withmetadata struct RotX <: AbstractRotGate
+    θ
 end
-symbollabel(g::RGate) = "R$(g.dir)($(g.θ))"
-ishermitian(::RGate) = true
-isunitary(::RGate) = true
+operation(::RotX) = RotX
+head(::RotX) = :RotX
+children(x::RotX) = [:RotX, x.θ]
+symbollabel(x::RotX) = "Rx($(x.θ))"
+
+@withmetadata struct RotY <: AbstractRotGate
+    θ
+end
+operation(::RotY) = RotY
+head(::RotY) = :RotY
+children(x::RotY) = [:RotY, x.θ]
+symbollabel(x::RotY) = "Ry($(x.θ))"
+
+@withmetadata struct RotZ <: AbstractRotGate
+    θ
+end
+operation(::RotZ) = RotZ
+head(::RotZ) = :RotZ
+children(x::RotZ) = [:RotZ, x.θ]
+symbollabel(x::RotZ) = "Rz($(x.θ))"
 
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
@@ -151,12 +174,6 @@ const Pm = const σ₋ = PauliM()
 const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
-"""Rotation X gate"""
-const Rx(θ::Float64) = RGate(:x, θ)
-"""Rotation Y gate"""
-const Ry(θ::Float64) = RGate(:y, θ)
-"""Rotation Z gate"""
-const Rz(θ::Float64) = RGate(:z, θ)
 """CNOT gate"""
 const CNOT = CNOTGate()
 """CPHASE gate"""
