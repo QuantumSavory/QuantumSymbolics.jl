@@ -41,7 +41,8 @@ function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Numb
     end
 end
 
-function Base.zero(x::Symbolic{T}) where T
+
+function Base.zero(x::Symbolic{T}) where T<:QObj
     return SZero{T}()
 end
 
