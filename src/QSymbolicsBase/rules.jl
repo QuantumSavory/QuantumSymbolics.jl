@@ -109,7 +109,19 @@ RULES_FOCK = [
     @rule(~o::_isa(SqueezeOp) * ~k::_isequal(vac) => SqueezedState((~o).z, (~o).basis))
 ]
 
-RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
+RULES_ROT = [
+    @rule(RotX(0) => I),
+    @rule(RotY(0) => I),
+    @rule(RotZ(0) => I),
+    @rule(RotX(~θ1) * RotX(~θ2) => RotX(~θ1 + ~θ2)),
+    @rule(RotY(~θ1) * RotY(~θ2) => RotY(~θ1 + ~θ2)),
+    @rule(RotZ(~θ1) * RotZ(~θ2) => RotZ(~θ1 + ~θ2)),
+    @rule(exp(-im * ~θ / 2 * X) => RotX(~θ)),
+    @rule(exp(-im * ~θ / 2 * Y) => RotY(~θ)),
+    @rule(exp(-im * ~θ / 2 * Z) => RotZ(~θ)),
+]
+
+RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK; RULES_ROT]
 
 ##
 # Simplification rewriters
@@ -119,6 +131,7 @@ qsimplify_pauli = Chain(RULES_PAULI)
 qsimplify_commutator = Chain(RULES_COMMUTATOR)
 qsimplify_anticommutator = Chain(RULES_ANTICOMMUTATOR)
 qsimplify_fock = Chain(RULES_FOCK)
+qsimplify_rot = Chain(RULES_ROT)
 
 """
     qsimplify(s; rewriter=nothing)
