@@ -284,7 +284,9 @@ julia> using QuantumOptics
 
 julia> express(exp(X))
 Operator(dim=2x2)
-  basis: Spin(1/2)sparse([1, 2, 1, 2], [1, 1, 2, 2], ComplexF64[1.5430806327160496 + 0.0im, 1.1752011684303352 + 0.0im, 1.1752011684303352 + 0.0im, 1.5430806327160496 + 0.0im], 2, 2)
+  basis: Spin(1/2)
+ 1.5430806327160496 + 0.0im  1.1752011684303352 + 0.0im
+ 1.1752011684303352 + 0.0im  1.5430806327160496 + 0.0im
 ```
 
 To convert to the Clifford representation, an instance of `CliffordRepr` must be passed to [`express`](@ref). For instance, we can represent the projection of the basis state [`X1`](@ref) of the Pauli operator [`X`](@ref) as follows:
