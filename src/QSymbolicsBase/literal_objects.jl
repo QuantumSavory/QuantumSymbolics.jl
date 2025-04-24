@@ -143,6 +143,10 @@ Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probab
 
 struct SZero{T<:QObj} <: Symbolic{T} end
 
+function Base.zero(x::Symbolic{T}) where T<:QObj
+    return SZero{T}()
+end
+
 """Symbolic zero bra"""
 const SZeroBra = SZero{AbstractBra}
 

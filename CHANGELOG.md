@@ -1,6 +1,10 @@
 # News
 
-## v0.4.7 - 2025-02-25
+## v0.4.9 - 2025-04-23
+
+- `Base.zero` implemented for quantum symbolic objects.
+
+## v0.4.8 - 2025-02-25
 
 - Proper expression of outer products in QuantumOptics.
 

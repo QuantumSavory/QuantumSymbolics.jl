@@ -17,6 +17,7 @@
         @test isequal(anticommutator(A, Oop), Oop) && isequal(anticommutator(Oop, A), Oop) && isequal(anticommutator(Oop, Oop), Oop)
         @test isequal(projector(Ok), Oop)
         @test isequal(dagger(Oop), Oop)
+        @test isequal(zero(A), Oop)
     end
 
     @testset "zero bra and ket tests" begin

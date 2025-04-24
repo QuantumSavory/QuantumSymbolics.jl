@@ -3,7 +3,7 @@
 #
 # The main function is `express`, which takes a quantum object and a representation and returns an expression of the object in that representation.
 ##
-
+ 
 export express, express_nolookup, consistent_representation
 
 import SymbolicUtils: Symbolic
@@ -28,7 +28,9 @@ julia> express(X1, CliffordRepr())
 
 julia> express(QuantumSymbolics.X)
 Operator(dim=2x2)
-  basis: Spin(1/2)sparse([2, 1], [1, 2], ComplexF64[1.0 + 0.0im, 1.0 + 0.0im], 2, 2)
+  basis: Spin(1/2)
+      ⋅       1.0 + 0.0im
+ 1.0 + 0.0im       ⋅
 
 julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsOperation())
 sX
