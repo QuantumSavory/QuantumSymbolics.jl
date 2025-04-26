@@ -56,12 +56,12 @@
     end
 
     @testset "Exponential tests" begin
-        @test isequal(qsimplify(exp(-im * π/2 * X), rewriter=qsimplify_rot), Rx(1π))
-        @test isequal(qsimplify(exp(-im * π/2 * Y), rewriter=qsimplify_rot), Ry(1π))
-        @test isequal(qsimplify(exp(-im * π/2 * Z), rewriter=qsimplify_rot), Rz(1π))
+        @test isequal(qsimplify(exp(-im * π/2 * X), rewriter=qsimplify_rot), -im*X)
+        @test isequal(qsimplify(exp(-im * π/2 * Y), rewriter=qsimplify_rot), -im*Y)
+        @test isequal(qsimplify(exp(-im * π/2 * Z), rewriter=qsimplify_rot), -im*Z)
 
-        @test isequal(qsimplify(exp(-im * 2π/2 * X) * exp(-im * π/2 * X), rewriter=qsimplify_rot), Rx(1π))
-        @test isequal(qsimplify(exp(-im * 2π/2 * Y) * exp(-im * π/2 * Y), rewriter=qsimplify_rot), Ry(1π))
-        @test isequal(qsimplify(exp(-im * 2π/2 * Z) * exp(-im * π/2 * Z), rewriter=qsimplify_rot), Rz(1π))
+        @test isequal(qsimplify(2 * exp(-im * 2π/2 * X) * exp(-im * 5π/2 * X), rewriter=qsimplify_rot), 2im*X)
+        @test isequal(qsimplify(2 * exp(-im * 2π/2 * Y) * exp(-im * 5π/2 * Y), rewriter=qsimplify_rot), 2im*Y)
+        @test isequal(qsimplify(2 * exp(-im * 2π/2 * Z) * exp(-im * 5π/2 * Z), rewriter=qsimplify_rot), 2im*Z)
     end
 end
