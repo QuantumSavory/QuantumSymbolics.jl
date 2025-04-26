@@ -175,11 +175,11 @@ const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
 """Rotation around the X axis"""
-const Rx(θ) = RotXGate(θ)
+const Rx = RotXGate
 """Rotation around the Y axis"""
-const Ry(θ) = RotYGate(θ)
+const Ry = RotYGate
 """Rotation around the Z axis"""
-const Rz(θ) = RotZGate(θ)
+const Rz = RotZGate
 """CNOT gate"""
 const CNOT = CNOTGate()
 """CPHASE gate"""
