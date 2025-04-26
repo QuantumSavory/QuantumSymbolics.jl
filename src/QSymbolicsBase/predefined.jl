@@ -113,29 +113,29 @@ isexpr(::AbstractRotGate) = true
 iscall(::AbstractRotGate) = true
 arguments(x::AbstractRotGate) = [x.θ]
 
-@withmetadata struct RotX <: AbstractRotGate
+@withmetadata struct RotXGate <: AbstractRotGate
     θ
 end
-operation(::RotX) = RotX
-head(::RotX) = :RotX
-children(x::RotX) = [:RotX, x.θ]
-symbollabel(x::RotX) = "Rx($(x.θ))"
+operation(::RotXGate) = Rx
+head(::RotXGate) = :RotX
+children(x::RotXGate) = [:RotX, x.θ]
+symbollabel(x::RotXGate) = "Rx($(x.θ))"
 
-@withmetadata struct RotY <: AbstractRotGate
+@withmetadata struct RotYGate <: AbstractRotGate
     θ
 end
-operation(::RotY) = RotY
-head(::RotY) = :RotY
-children(x::RotY) = [:RotY, x.θ]
-symbollabel(x::RotY) = "Ry($(x.θ))"
+operation(::RotYGate) = Ry
+head(::RotYGate) = :RotY
+children(x::RotYGate) = [:RotY, x.θ]
+symbollabel(x::RotYGate) = "Ry($(x.θ))"
 
-@withmetadata struct RotZ <: AbstractRotGate
+@withmetadata struct RotZGate <: AbstractRotGate
     θ
 end
-operation(::RotZ) = RotZ
-head(::RotZ) = :RotZ
-children(x::RotZ) = [:RotZ, x.θ]
-symbollabel(x::RotZ) = "Rz($(x.θ))"
+operation(::RotZGate) = Rz
+head(::RotZGate) = :RotZ
+children(x::RotZGate) = [:RotZ, x.θ]
+symbollabel(x::RotZGate) = "Rz($(x.θ))"
 
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
@@ -174,6 +174,12 @@ const Pm = const σ₋ = PauliM()
 const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
+"""Rotation around the X axis"""
+const Rx(θ) = RotXGate(θ)
+"""Rotation around the Y axis"""
+const Ry(θ) = RotYGate(θ)
+"""Rotation around the Z axis"""
+const Rz(θ) = RotZGate(θ)
 """CNOT gate"""
 const CNOT = CNOTGate()
 """CPHASE gate"""
