@@ -13,7 +13,7 @@ julia> K = kraus(A₁, A₂, A₃)
 julia> @op ρ;
 
 julia> K*ρ
-(A₁ρA₁†+A₂ρA₂†+A₃ρA₃†)
+A₁ρA₁†+A₂ρA₂†+A₃ρA₃†
 ```
 """
 @withmetadata struct KrausRepr <: Symbolic{AbstractSuperOperator}

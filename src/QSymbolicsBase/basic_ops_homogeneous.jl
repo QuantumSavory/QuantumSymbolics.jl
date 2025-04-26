@@ -40,6 +40,7 @@ function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Numb
         SScaled{T}(c, x)
     end
 end
+
 Base.:(*)(x::Symbolic{T}, c::Number) where {T<:QObj} = c*x
 Base.:(*)(x::Symbolic{T}, y::Symbolic{S}) where {T<:QObj,S<:QObj} = throw(ArgumentError("multiplication between $(typeof(x)) and $(typeof(y)) is not defined; maybe you are looking for a tensor product `tensor`"))
 Base.:(/)(x::Symbolic{T}, c::Number) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
@@ -76,7 +77,7 @@ end
 julia> @ket k₁; @ket k₂;
 
 julia> k₁ + k₂
-(|k₁⟩+|k₂⟩)
+|k₁⟩+|k₂⟩
 ```
 """
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
@@ -85,6 +86,7 @@ julia> k₁ + k₂
     _arguments_precomputed
 end
 function SAdd{S}(d) where S
+    isempty(d) && return SZero{S}()
     terms = [c*obj for (obj,c) in d]
     length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
 end
@@ -99,24 +101,25 @@ function Base.:(+)(x::Symbolic{T}, xs::Vararg{Symbolic{T}, N}) where {T<:QObj, N
     xs = collect(xs)
     f = first(xs)
     nonzero_terms = filter!(x->!iszero(x),xs)
-    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SScaled{T}))
+    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SAdd{T}, SScaled{T}))
 end
 basis(x::SAdd) = basis(first(x.dict).first)
 
 const SAddBra = SAdd{AbstractBra}
 function Base.show(io::IO, x::SAddBra)
     ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+    print(io, join(ordered_terms,"+")::String) # type assert to help inference
 end
 const SAddKet = SAdd{AbstractKet}
 function Base.show(io::IO, x::SAddKet)
     ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+    print(io, join(ordered_terms,"+")::String) # type assert to help inference
 end
 const SAddOperator = SAdd{AbstractOperator}
 function Base.show(io::IO, x::SAddOperator)
-    ordered_terms = sort([repr(i) for i in arguments(x)])
-    print(io, "("*join(ordered_terms,"+")::String*")") # type assert to help inference
+    repr_func = x -> x isa STensor ? "("*repr(x)*")" : repr(x)
+    ordered_terms = sort([repr_func(i) for i in arguments(x)])
+    print(io, join(ordered_terms,"+")::String) # type assert to help inference
 end
 
 """Symbolic application of operator on operator.
@@ -152,7 +155,10 @@ function Base.:(*)(x::Symbolic{AbstractOperator}, xs::Vararg{Symbolic{AbstractOp
         SZeroOperator()
     end
 end
-Base.show(io::IO, x::SMulOperator) = print(io, join(map(string, arguments(x)),""))
+function Base.show(io::IO, x::SMulOperator)
+    str_func = x -> x isa SAdd || x isa STensor ? "("*string(x)*")" : string(x)
+    print(io, join(map(str_func, arguments(x)),""))
+end
 basis(x::SMulOperator) = basis(first(x.terms))
 
 """Tensor product of quantum objects (kets, operators, or bras).
@@ -166,7 +172,7 @@ julia> k₁ ⊗ k₂
 julia> @op A; @op B;
 
 julia> A ⊗ B
-(A⊗B)
+A⊗B
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
@@ -195,6 +201,12 @@ Base.show(io::IO, x::STensorBra) = print(io, join(map(string, arguments(x)),""))
 const STensorKet = STensor{AbstractKet}
 Base.show(io::IO, x::STensorKet) = print(io, join(map(string, arguments(x)),""))
 const STensorOperator = STensor{AbstractOperator}
-Base.show(io::IO, x::STensorOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
+function Base.show(io::IO, x::STensorOperator)
+    str_func = x -> x isa SAdd ? "("*string(x)*")" : string(x)
+    print(io, join(map(str_func, arguments(x)),"⊗"))
+end
 const STensorSuperOperator = STensor{AbstractSuperOperator}
-Base.show(io::IO, x::STensorSuperOperator) = print(io, "("*join(map(string, arguments(x)),"⊗")*")")
+function Base.show(io::IO, x::STensorSuperOperator)
+    str_func = x -> x isa SAdd ? "("*string(x)*")" : string(x)
+    print(io, join(map(str_func, arguments(x)),"⊗"))
+end

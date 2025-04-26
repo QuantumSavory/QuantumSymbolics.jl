@@ -1,5 +1,21 @@
 # News
 
+## v0.4.9 - 2025-04-23
+
+- `Base.zero` implemented for quantum symbolic objects.
+
+## v0.4.8 - 2025-02-25
+
+- Proper expression of outer products in QuantumOptics.
+
+## v0.4.7 - 2025-02-25
+
+- Improvements to default flattening of expressions having nested sums and scalings.
+
+## v0.4.6 - 2025-01-18
+
+- Migrate `express` functionality and representation types to QuantumInterface.
+
 ## v0.4.5 - 2024-11-14
 
 - Updated compat lower bounds for Symbolics to v6 (and for SymbolicUtils and TermInterface)

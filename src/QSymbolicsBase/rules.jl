@@ -147,6 +147,7 @@ The defined rewriters for simplification are the following objects:
     - `qsimplify_pauli`
     - `qsimplify_commutator`
     - `qsimplify_anticommutator`
+    - `qsimplify_fock`
 
 ```jldoctest
 julia> qsimplify(σʸ*commutator(σˣ*σᶻ, σᶻ))
@@ -198,15 +199,15 @@ Manually expand a symbolic expression of quantum objects.
 julia> @op A; @op B; @op C;
 
 julia> qexpand(commutator(A, B))
-(-1BA+AB)
+-1BA+AB
 
 julia> qexpand(A⊗(B+C))
-((A⊗B)+(A⊗C))
+(A⊗B)+(A⊗C)
 
 julia> @ket k₁; @ket k₂;
 
 julia> qexpand(A*(k₁+k₂))
-(A|k₁⟩+A|k₂⟩)
+A|k₁⟩+A|k₂⟩
 ```
 """
 function qexpand(s)

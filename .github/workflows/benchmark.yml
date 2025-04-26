@@ -24,7 +24,7 @@ jobs:
         run: |
           julia -e '
             using BenchmarkCI
-            BenchmarkCI.judge()
+            BenchmarkCI.judge(baseline = "origin/main")
             BenchmarkCI.displayjudgement()
             '
 

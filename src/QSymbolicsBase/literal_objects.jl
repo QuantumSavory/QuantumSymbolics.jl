@@ -66,7 +66,7 @@ SOperator(name) = SOperator(name, qubit_basis)
 """
     @op(name, basis=SpinBasis(1//2))
 
-Define a symbolic ket of type `SOperator`. By default, the defined basis is the spin-1/2 basis.
+Define a symbolic operator of type `SOperator`. By default, the defined basis is the spin-1/2 basis.
 
 ```jldoctest
 julia> @op A
@@ -142,6 +142,10 @@ Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermit
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
 struct SZero{T<:QObj} <: Symbolic{T} end
+
+function Base.zero(x::Symbolic{T}) where T<:QObj
+    return SZero{T}()
+end
 
 """Symbolic zero bra"""
 const SZeroBra = SZero{AbstractBra}
