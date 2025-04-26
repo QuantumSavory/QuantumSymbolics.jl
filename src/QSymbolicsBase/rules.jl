@@ -110,15 +110,18 @@ RULES_FOCK = [
 ]
 
 RULES_ROT = [
-    @rule(RotX(0) => I),
-    @rule(RotY(0) => I),
-    @rule(RotZ(0) => I),
-    @rule(RotX(~θ1) * RotX(~θ2) => RotX(~θ1 + ~θ2)),
-    @rule(RotY(~θ1) * RotY(~θ2) => RotY(~θ1 + ~θ2)),
-    @rule(RotZ(~θ1) * RotZ(~θ2) => RotZ(~θ1 + ~θ2)),
-    @rule(exp(-im * ~θ / 2 * X) => RotX(~θ)),
-    @rule(exp(-im * ~θ / 2 * Y) => RotY(~θ)),
-    @rule(exp(-im * ~θ / 2 * Z) => RotZ(~θ)),
+    @rule(~r::_isa(RotX) => I where (~r).θ == 0),
+    @rule(~r::_isa(RotY) => I where (~r).θ == 0),
+    @rule(~r::_isa(RotZ) => I where (~r).θ == 0),
+    @rule(~r1::_isa(RotX) * ~r2::_isa(RotX) => try RotX((~r1).θ + (~r2).θ) catch end),
+    @rule(~r1::_isa(RotY) * ~r2::_isa(RotY) => try RotY((~r1).θ + (~r2).θ) catch end),
+    @rule(~r1::_isa(RotZ) * ~r2::_isa(RotZ) => try RotZ((~r1).θ + (~r2).θ) catch end),
+    @rule(~r::_isa(RotX) => try RotX(mod((~r).θ, 2π)) catch end),
+    @rule(~r::_isa(RotY) => try RotY(mod((~r).θ, 2π)) catch end),
+    @rule(~r::_isa(RotZ) => try RotZ(mod((~r).θ, 2π)) catch end),
+    @rule(exp(~α * ~x::_isa(XGate)) => try real(~α) == 0 ? RotX(-2imag(~α)) : nothing catch end),
+    @rule(exp(~α * ~x::_isa(YGate)) => try real(~α) == 0 ? RotY(-2imag(~α)) : nothing catch end),
+    @rule(exp(~α * ~x::_isa(ZGate)) => try real(~α) == 0 ? RotZ(-2imag(~α)) : nothing catch end)
 ]
 
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK; RULES_ROT]
