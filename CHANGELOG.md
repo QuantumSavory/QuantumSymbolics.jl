@@ -1,5 +1,10 @@
 # News
 
+## v0.4.10 - 2025-05-11
+
+- Polish `Base.show` methods for application products and scaled quantum objects.
+- Add test suite for `Base.show` methods of quantum symbolic types.
+
 ## v0.4.9 - 2025-04-23
 
 - `Base.zero` implemented for quantum symbolic objects.
