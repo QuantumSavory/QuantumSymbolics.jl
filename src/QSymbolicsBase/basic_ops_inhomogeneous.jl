@@ -69,7 +69,7 @@ Base.:(*)(b::SZeroBra, op::Symbolic{AbstractOperator}) = SZeroBra()
 Base.:(*)(b::Symbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
 Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
 function Base.show(io::IO, x::SApplyBra) 
-    str_func = x -> x isa SAdd || x isa STensor ? "("*string(x)*")" : string(x)
+    str_func = x -> x isa SAdd || x isa STensorOperator ? "("*string(x)*")" : string(x)
     print(io, join(map(str_func, arguments(x)),""))
 end
 basis(x::SApplyBra) = basis(x.bra)
