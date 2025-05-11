@@ -29,9 +29,16 @@ symbollabel(x::SqueezedState) = "0,$(x.z)"
 """Two-mode squeezed vacuum state, or EPR state, in defined Fock basis."""
 @withmetadata struct EPRState <: SpecialKet
     z::Number
-    basis::FockBasis
+    basis::CompositeBasis
+    function EPRState(z::Number, basis::CompositeBasis)
+        bases = basis.bases
+        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
+                throw(ArgumentError(lazy"The underlying basis for an EPR state must be a
+                                        tensor product of two bases for single-mode quantum systems."))
+        return new(z, basis)
+    end
 end
-EPRState(z::Number) = EPRState(z, inf_fock_basis)
+EPRState(z::Number) = EPRState(z, inf_fock_basis^2)
 symbollabel(x::EPRState) = "0,$(x.z)"
 
 const inf_fock_basis = FockBasis(Inf,0.)
@@ -187,6 +194,13 @@ symbollabel(x::ThermalState) = "ρₜₕ($(x.photons))"
 @withmetadata struct TwoSqueezeOp <: AbstractTwoBosonOp
     z::Number
     basis::CompositeBasis
+    function TwoSqueezeOp(z::Number, basis::CompositeBasis)
+        bases = basis.bases
+        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
+                throw(ArgumentError(lazy"The underlying basis for a two-mode squeeze operator must be a
+                                        tensor product of two bases for single-mode quantum systems."))
+        return new(z, basis)
+    end
 end
 TwoSqueezeOp(z::Number) = TwoSqueezeOp(z, inf_fock_basis^2)
 symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
@@ -195,6 +209,13 @@ symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
 @withmetadata struct BeamSplitterOp <: AbstractTwoBosonOp
     transmit::Number
     basis::CompositeBasis
+    function BeamSplitterOp(transmit::Number, basis::CompositeBasis)
+        bases = basis.bases
+        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
+                throw(ArgumentError(lazy"The underlying basis for a beam splitter operator must be a
+                                        tensor product of two bases for single-mode quantum systems."))
+        return new(transmit, basis)
+    end
 end
 BeamSplitterOp(transmit::Number) = BeamSplitterOp(transmit, inf_fock_basis^2)
 symbollabel(x::BeamSplitterOp) = "B($(x.transmit))"

@@ -7,7 +7,9 @@
     phase2 = PhaseShiftOp(pi)
     displace = DisplaceOp(im)
     squeezeop = SqueezeOp(pi)
+    twosqueezeop = TwoSqueezeOp(pi)
     sstate = SqueezedState(pi)
+    tsstate = EPRState(pi)
 
     @testset "ladder and number operators" begin
         @test isequal(qsimplify(Destroy*vac, rewriter=qsimplify_fock), SZeroKet())
@@ -28,5 +30,6 @@
 
     @testset "Squeeze operators" begin
         @test isequal(qsimplify(squeezeop*vac, rewriter=qsimplify_fock), sstate)
+        @test isequal(qsimplify(twosqueezeop*(vac ⊗ vac), rewriter=qsimplify_fock), tsstate)
     end
 end
