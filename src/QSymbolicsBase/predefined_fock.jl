@@ -26,6 +26,14 @@ end
 SqueezedState(z::Number) = SqueezedState(z, inf_fock_basis)
 symbollabel(x::SqueezedState) = "0,$(x.z)"
 
+"""Two-mode squeezed vacuum state, or EPR state, in defined Fock basis."""
+@withmetadata struct EPRState <: SpecialKet
+    z::Number
+    basis::FockBasis
+end
+EPRState(z::Number) = EPRState(z, inf_fock_basis)
+symbollabel(x::EPRState) = "0,$(x.z)"
+
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
 const vac = const F₀ = const F0 = FockState(0)
@@ -37,9 +45,13 @@ const F₁ = const F1 = FockState(1)
 ##
 
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
+abstract type AbstractTwoBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
+abstract type AbstractTwoBosonGate <: AbstractTwoBosonOp end
 isexpr(::AbstractSingleBosonGate) = false
 basis(x::AbstractSingleBosonOp) = inf_fock_basis
+isexpr(::AbstractTwoBosonGate) = false
+basis(x::AbstractTwoBosonOp) = inf_fock_basis^2
 
 """Number operator.
 
@@ -162,3 +174,27 @@ julia> qsimplify(S*vac, rewriter=qsimplify_fock)
 end
 SqueezeOp(z::Number) = SqueezeOp(z, inf_fock_basis)
 symbollabel(x::SqueezeOp) = "S($(x.z))"
+
+"""Thermal bosonic state in defined Fock basis."""
+@withmetadata struct ThermalState <: AbstractSingleBosonOp
+    photons::Int
+    basis::FockBasis
+end
+ThermalState(photons::Int) = ThermalState(photons, inf_fock_basis)
+symbollabel(x::ThermalState) = "ρₜₕ($(x.photons))"
+
+"""Two-mode squeezing operator in defined Fock basis."""
+@withmetadata struct TwoSqueezeOp <: AbstractTwoBosonOp
+    z::Number
+    basis::CompositeBasis
+end
+TwoSqueezeOp(z::Number) = TwoSqueezeOp(z, inf_fock_basis^2)
+symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
+
+"""Two-mode beamsplitter operator in defined Fock basis."""
+@withmetadata struct BeamSplitterOp <: AbstractTwoBosonOp
+    transmit::Number
+    basis::CompositeBasis
+end
+BeamSplitterOp(transmit::Number) = BeamSplitterOp(transmit, inf_fock_basis^2)
+symbollabel(x::BeamSplitterOp) = "B($(x.transmit))"
