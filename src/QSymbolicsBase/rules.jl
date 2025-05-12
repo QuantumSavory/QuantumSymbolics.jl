@@ -11,7 +11,6 @@ function hasscalings(xs)
     end
 end
 _isa(T) = x->isa(x,T)
-_isequal(obj) = x->isequal(x, obj)
 _vecisa(T) = x->all(_isa(T), x)
 
 ##
@@ -33,36 +32,36 @@ RULES_PAULI = [
     @rule(~o1::_isa(HGate)*~o2::_isa(YGate)*~o3::_isa(HGate) => -Y),
     @rule(~o1::_isa(HGate)*~o2::_isa(ZGate)*~o3::_isa(HGate) => X),
 
-    @rule(~o::_isa(XGate)*~k::_isequal(X1) => X1),
-    @rule(~o::_isa(YGate)*~k::_isequal(X1) => -im*X2),
-    @rule(~o::_isa(ZGate)*~k::_isequal(X1) => X2),
+    @rule(~o::_isa(XGate)*~k::isequal(X1) => X1),
+    @rule(~o::_isa(YGate)*~k::isequal(X1) => -im*X2),
+    @rule(~o::_isa(ZGate)*~k::isequal(X1) => X2),
 
-    @rule(~o::_isa(XGate)*~k::_isequal(X2) => -X2),
-    @rule(~o::_isa(YGate)*~k::_isequal(X2) => im*X1),
-    @rule(~o::_isa(ZGate)*~k::_isequal(X2) => X1),
+    @rule(~o::_isa(XGate)*~k::isequal(X2) => -X2),
+    @rule(~o::_isa(YGate)*~k::isequal(X2) => im*X1),
+    @rule(~o::_isa(ZGate)*~k::isequal(X2) => X1),
 
-    @rule(~o::_isa(XGate)*~k::_isequal(Y1) => im*Y2),
-    @rule(~o::_isa(YGate)*~k::_isequal(Y1) => Y1),
-    @rule(~o::_isa(ZGate)*~k::_isequal(Y1) => Y2),
+    @rule(~o::_isa(XGate)*~k::isequal(Y1) => im*Y2),
+    @rule(~o::_isa(YGate)*~k::isequal(Y1) => Y1),
+    @rule(~o::_isa(ZGate)*~k::isequal(Y1) => Y2),
 
-    @rule(~o::_isa(XGate)*~k::_isequal(Y2) => -im*Y1),
-    @rule(~o::_isa(YGate)*~k::_isequal(Y2) => -Y2),
-    @rule(~o::_isa(ZGate)*~k::_isequal(Y2) => Y1),
+    @rule(~o::_isa(XGate)*~k::isequal(Y2) => -im*Y1),
+    @rule(~o::_isa(YGate)*~k::isequal(Y2) => -Y2),
+    @rule(~o::_isa(ZGate)*~k::isequal(Y2) => Y1),
 
-    @rule(~o::_isa(XGate)*~k::_isequal(Z1) => Z2),
-    @rule(~o::_isa(YGate)*~k::_isequal(Z1) => im*Z2),
-    @rule(~o::_isa(ZGate)*~k::_isequal(Z1) => Z1),
+    @rule(~o::_isa(XGate)*~k::isequal(Z1) => Z2),
+    @rule(~o::_isa(YGate)*~k::isequal(Z1) => im*Z2),
+    @rule(~o::_isa(ZGate)*~k::isequal(Z1) => Z1),
 
-    @rule(~o::_isa(XGate)*~k::_isequal(Z2) => Z1),
-    @rule(~o::_isa(YGate)*~k::_isequal(Z2) => -im*Z1),
-    @rule(~o::_isa(ZGate)*~k::_isequal(Z2) => -Z2),
+    @rule(~o::_isa(XGate)*~k::isequal(Z2) => Z1),
+    @rule(~o::_isa(YGate)*~k::isequal(Z2) => -im*Z1),
+    @rule(~o::_isa(ZGate)*~k::isequal(Z2) => -Z2),
 
-    @rule(~o::_isa(HGate)*~k::_isequal(X1) => Z1),
-    @rule(~o::_isa(HGate)*~k::_isequal(X2) => Z2),
-    @rule(~o::_isa(HGate)*~k::_isequal(Y1) => (X1+im*X2)/sqrt(2)),
-    @rule(~o::_isa(HGate)*~k::_isequal(Y2) => (X1-im*X2)/sqrt(2)),
-    @rule(~o::_isa(HGate)*~k::_isequal(Z1) => X1),
-    @rule(~o::_isa(HGate)*~k::_isequal(Z2) => X2)
+    @rule(~o::_isa(HGate)*~k::isequal(X1) => Z1),
+    @rule(~o::_isa(HGate)*~k::isequal(X2) => Z2),
+    @rule(~o::_isa(HGate)*~k::isequal(Y1) => (X1+im*X2)/sqrt(2)),
+    @rule(~o::_isa(HGate)*~k::isequal(Y2) => (X1-im*X2)/sqrt(2)),
+    @rule(~o::_isa(HGate)*~k::isequal(Z1) => X1),
+    @rule(~o::_isa(HGate)*~k::isequal(Z2) => X2)
 ]
 
 # Commutator identities
@@ -95,7 +94,7 @@ RULES_ANTICOMMUTATOR = [
 ]
 
 RULES_FOCK = [
-    @rule(~o::_isa(DestroyOp) * ~k::_isequal(vac) => SZeroKet()),
+    @rule(~o::_isa(DestroyOp) * ~k::isequal(vac) => SZeroKet()),
     @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx+1])*FockState((~k).idx+1)),
     @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx])*FockState((~k).idx-1)),
     @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
@@ -106,8 +105,8 @@ RULES_FOCK = [
     @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp((~o2).basis)),
     @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp((~o2).basis)),
     @rule(~o::_isa(DisplaceOp) * ~k::((x->(isa(x,FockState) && x.idx == 0))) => CoherentState((~o).alpha)),
-    @rule(~o::_isa(SqueezeOp) * ~k::_isequal(vac) => SqueezedState((~o).z, (~o).basis)),
-    @rule(~o::_isa(TwoSqueezeOp) * ~k::_isequal(vac ⊗ vac) => TwoSqueezedState((~o).z, (~o).basis))
+    @rule(~o::_isa(SqueezeOp) * ~k::isequal(vac) => SqueezedState((~o).z, (~o).basis)),
+    @rule(~o::_isa(TwoSqueezeOp) * ~k::isequal(vac ⊗ vac) => TwoSqueezedState((~o).z, (~o).basis))
 ]
 
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
