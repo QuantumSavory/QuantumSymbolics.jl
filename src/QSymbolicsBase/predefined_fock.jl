@@ -26,6 +26,20 @@ end
 SqueezedState(z::Number) = SqueezedState(z, inf_fock_basis)
 symbollabel(x::SqueezedState) = "0,$(x.z)"
 
+"""Two-mode squeezed vacuum state, or EPR state, in defined Fock basis."""
+@withmetadata struct TwoSqueezedState <: SpecialKet
+    z::Number
+    basis::CompositeBasis
+    function TwoSqueezedState(z::Number, basis::CompositeBasis)
+        bases = basis.bases
+        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
+                throw(ArgumentError(lazy"The underlying basis for an EPR state must be a tensor product of two bases for single-mode quantum systems."))
+        return new(z, basis)
+    end
+end
+TwoSqueezedState(z::Number) = TwoSqueezedState(z, inf_fock_basis^2)
+symbollabel(x::TwoSqueezedState) = "0,$(x.z)"
+
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
 const vac = const F₀ = const F0 = FockState(0)
@@ -37,9 +51,13 @@ const F₁ = const F1 = FockState(1)
 ##
 
 abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
+abstract type AbstractTwoBosonOp <: Symbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
+abstract type AbstractTwoBosonGate <: AbstractTwoBosonOp end
 isexpr(::AbstractSingleBosonGate) = false
 basis(x::AbstractSingleBosonOp) = inf_fock_basis
+isexpr(::AbstractTwoBosonGate) = false
+basis(x::AbstractTwoBosonOp) = inf_fock_basis^2
 
 """Number operator.
 
@@ -162,3 +180,39 @@ julia> qsimplify(S*vac, rewriter=qsimplify_fock)
 end
 SqueezeOp(z::Number) = SqueezeOp(z, inf_fock_basis)
 symbollabel(x::SqueezeOp) = "S($(x.z))"
+
+"""Thermal bosonic state in defined Fock basis."""
+@withmetadata struct BosonicThermalState <: AbstractSingleBosonOp
+    photons::Number
+    basis::FockBasis
+end
+BosonicThermalState(photons::Number) = BosonicThermalState(photons, inf_fock_basis)
+symbollabel(x::BosonicThermalState) = "ρₜₕ($(x.photons))"
+
+"""Two-mode squeezing operator in defined Fock basis."""
+@withmetadata struct TwoSqueezeOp <: AbstractTwoBosonOp
+    z::Number
+    basis::CompositeBasis
+    function TwoSqueezeOp(z::Number, basis::CompositeBasis)
+        bases = basis.bases
+        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
+                throw(ArgumentError(lazy"The underlying basis for a two-mode squeeze operator must be a tensor product of two bases for single-mode quantum systems."))
+        return new(z, basis)
+    end
+end
+TwoSqueezeOp(z::Number) = TwoSqueezeOp(z, inf_fock_basis^2)
+symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
+
+"""Two-mode beamsplitter operator in defined Fock basis."""
+@withmetadata struct BeamSplitterOp <: AbstractTwoBosonOp
+    transmit::Number
+    basis::CompositeBasis
+    function BeamSplitterOp(transmit::Number, basis::CompositeBasis)
+        bases = basis.bases
+        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
+                throw(ArgumentError(lazy"The underlying basis for a beam splitter operator must be a tensor product of two bases for single-mode quantum systems."))
+        return new(transmit, basis)
+    end
+end
+BeamSplitterOp(transmit::Number) = BeamSplitterOp(transmit, inf_fock_basis^2)
+symbollabel(x::BeamSplitterOp) = "B($(x.transmit))"
