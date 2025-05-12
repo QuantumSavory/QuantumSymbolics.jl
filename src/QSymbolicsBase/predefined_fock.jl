@@ -33,8 +33,7 @@ symbollabel(x::SqueezedState) = "0,$(x.z)"
     function EPRState(z::Number, basis::CompositeBasis)
         bases = basis.bases
         length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
-                throw(ArgumentError(lazy"The underlying basis for an EPR state must be a
-                                        tensor product of two bases for single-mode quantum systems."))
+                throw(ArgumentError(lazy"The underlying basis for an EPR state must be a tensor product of two bases for single-mode quantum systems."))
         return new(z, basis)
     end
 end
@@ -197,8 +196,7 @@ symbollabel(x::ThermalState) = "ρₜₕ($(x.photons))"
     function TwoSqueezeOp(z::Number, basis::CompositeBasis)
         bases = basis.bases
         length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
-                throw(ArgumentError(lazy"The underlying basis for a two-mode squeeze operator must be a
-                                        tensor product of two bases for single-mode quantum systems."))
+                throw(ArgumentError(lazy"The underlying basis for a two-mode squeeze operator must be a tensor product of two bases for single-mode quantum systems."))
         return new(z, basis)
     end
 end
@@ -212,8 +210,7 @@ symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
     function BeamSplitterOp(transmit::Number, basis::CompositeBasis)
         bases = basis.bases
         length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
-                throw(ArgumentError(lazy"The underlying basis for a beam splitter operator must be a
-                                        tensor product of two bases for single-mode quantum systems."))
+                throw(ArgumentError(lazy"The underlying basis for a beam splitter operator must be a tensor product of two bases for single-mode quantum systems."))
         return new(transmit, basis)
     end
 end
