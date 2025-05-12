@@ -27,18 +27,18 @@ SqueezedState(z::Number) = SqueezedState(z, inf_fock_basis)
 symbollabel(x::SqueezedState) = "0,$(x.z)"
 
 """Two-mode squeezed vacuum state, or EPR state, in defined Fock basis."""
-@withmetadata struct EPRState <: SpecialKet
+@withmetadata struct TwoSqueezedState <: SpecialKet
     z::Number
     basis::CompositeBasis
-    function EPRState(z::Number, basis::CompositeBasis)
+    function TwoSqueezedState(z::Number, basis::CompositeBasis)
         bases = basis.bases
         length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
                 throw(ArgumentError(lazy"The underlying basis for an EPR state must be a tensor product of two bases for single-mode quantum systems."))
         return new(z, basis)
     end
 end
-EPRState(z::Number) = EPRState(z, inf_fock_basis^2)
-symbollabel(x::EPRState) = "0,$(x.z)"
+TwoSqueezedState(z::Number) = TwoSqueezedState(z, inf_fock_basis^2)
+symbollabel(x::TwoSqueezedState) = "0,$(x.z)"
 
 const inf_fock_basis = FockBasis(Inf,0.)
 """Vacuum basis state of n"""
@@ -182,12 +182,12 @@ SqueezeOp(z::Number) = SqueezeOp(z, inf_fock_basis)
 symbollabel(x::SqueezeOp) = "S($(x.z))"
 
 """Thermal bosonic state in defined Fock basis."""
-@withmetadata struct ThermalState <: AbstractSingleBosonOp
+@withmetadata struct BosonicThermalState <: AbstractSingleBosonOp
     photons::Int
     basis::FockBasis
 end
-ThermalState(photons::Int) = ThermalState(photons, inf_fock_basis)
-symbollabel(x::ThermalState) = "ρₜₕ($(x.photons))"
+BosonicThermalState(photons::Int) = BosonicThermalState(photons, inf_fock_basis)
+symbollabel(x::BosonicThermalState) = "ρₜₕ($(x.photons))"
 
 """Two-mode squeezing operator in defined Fock basis."""
 @withmetadata struct TwoSqueezeOp <: AbstractTwoBosonOp

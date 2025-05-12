@@ -15,7 +15,7 @@
     @test_throws IncompatibleBases b*l
     @test_throws ArgumentError ptrace(B, 2)
     @test_throws ArgumentError ptrace(B+C, 2)
-    @test_throws ArgumentError EPRState(pi, fb^3)
+    @test_throws ArgumentError TwoSqueezedState(pi, fb^3)
     @test_throws ArgumentError TwoSqueezeOp(pi, fb^3)
     @test_throws ArgumentError BeamSplitterOp(pi, fb^3)
 end

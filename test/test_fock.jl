@@ -9,7 +9,7 @@
     squeezeop = SqueezeOp(pi)
     twosqueezeop = TwoSqueezeOp(pi)
     sstate = SqueezedState(pi)
-    tsstate = EPRState(pi)
+    tsstate = TwoSqueezedState(pi)
 
     @testset "ladder and number operators" begin
         @test isequal(qsimplify(Destroy*vac, rewriter=qsimplify_fock), SZeroKet())
