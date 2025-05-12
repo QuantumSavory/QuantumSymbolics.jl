@@ -183,10 +183,10 @@ symbollabel(x::SqueezeOp) = "S($(x.z))"
 
 """Thermal bosonic state in defined Fock basis."""
 @withmetadata struct BosonicThermalState <: AbstractSingleBosonOp
-    photons::Int
+    photons::Number
     basis::FockBasis
 end
-BosonicThermalState(photons::Int) = BosonicThermalState(photons, inf_fock_basis)
+BosonicThermalState(photons::Number) = BosonicThermalState(photons, inf_fock_basis)
 symbollabel(x::BosonicThermalState) = "ρₜₕ($(x.photons))"
 
 """Two-mode squeezing operator in defined Fock basis."""
