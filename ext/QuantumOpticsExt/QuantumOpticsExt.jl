@@ -100,4 +100,28 @@ express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ke
 
 include("should_upstream.jl")
 
+"""
+    StateVectorRepr(config=nothing)
+
+A custom backend for `QuantumSymbolics.express`. Converts symbolic quantum
+objects into Julia's `Vector{ComplexF64}` (kets) or `Matrix{ComplexF64}` (operators).
+
+Internally uses `QuantumOptics.QuantumOpticsRepr` and extracts `.data`.
+An optional `config` (e.g., `(cutoff=4,)`) is forwarded to `QuantumOptics.QuantumOpticsRepr`.
+"""
+struct StateVectorRepr{C}
+    config::C
+    StateVectorRepr(config=nothing) = new{typeof(config)}(config)
+end
+
+function QuantumSymbolics.express(sym_obj::QuantumSymbolics.AbstractSymbolic, backend::StateVectorRepr)
+    qo_repr = if backend.config isa Nothing
+        QuantumOptics.QuantumOpticsRepr()
+    else
+        QuantumOptics.QuantumOpticsRepr(backend.config...)
+    end
+    qo_obj = QuantumSymbolics.express(sym_obj, qo_repr)
+    return qo_obj.data
+end
+
 end
