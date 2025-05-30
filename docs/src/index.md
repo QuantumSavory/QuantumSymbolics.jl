@@ -203,3 +203,18 @@ express(MixedState(X1)/2+SProjector(Z1)/2, CliffordRepr())
 !!! warning "Stabilizer state expressions"
 
     The state written as $\frac{|Z₁⟩⊗|Z₁⟩+|Z₂⟩⊗|Z₂⟩}{√2}$ is a well known stabilizer state, namely a Bell state. However, automatically expressing it as a stabilizer is a prohibitively expensive computational operation in general. We do not perform that computation automatically. If you want to ensure that states you define can be automatically converted to tableaux for Clifford simulations, avoid using summation of kets. On the other hand, in all of our Clifford Monte-Carlo simulations, `⊗` is fully supported, as well as [`projector`](@ref), [`MixedState`](@ref), [`StabilizerState`](@ref), and summation of density matrices.
+
+## Backends
+
+`QuantumSymbolics.jl` supports multiple numerical backends via the `express` API. In addition to structured representations like `QuantumOpticsRepr` and `CliffordRepr`, the new `StateVectorRepr` backend converts symbolic objects to basic linear algebra objects:
+
+```julia
+julia> express(X1, StateVectorRepr())
+2-element Vector{ComplexF64}:
+ 0.7071067811865475 + 0.0im
+ 0.7071067811865475 + 0.0im
+
+julia> express(Z1, StateVectorRepr())
+2×2 Matrix{ComplexF64}:
+ 1.0+0.0im   0.0+0.0im
+ 0.0+0.0im  -1.0+0.0im
