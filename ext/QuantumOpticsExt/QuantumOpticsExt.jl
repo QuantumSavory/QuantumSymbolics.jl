@@ -114,7 +114,7 @@ struct StateVectorRepr{C}
     StateVectorRepr(config=nothing) = new{typeof(config)}(config)
 end
 
-function QuantumSymbolics.express(sym_obj::QuantumSymbolics.AbstractSymbolic, backend::StateVectorRepr)
+function QuantumSymbolics.express(sym_obj::QuantumInterface.AbstractQuantumObject, backend::StateVectorRepr)
     qo_repr = if backend.config isa Nothing
         QuantumOptics.QuantumOpticsRepr()
     else
