@@ -1,5 +1,6 @@
 [deps]
 QuantumSavory = "b2e4b478-f7b5-4b07-94a2-11c52b7b515a"
+QuantumSymbolics = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
