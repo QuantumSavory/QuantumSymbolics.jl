@@ -1,9 +1,8 @@
-using Test
 using QuantumSymbolics
 using QuantumOptics
 using QuantumSavory
 
-@testset "StateVectorRepr Conversion Tests" begin
+@testitem "StateVectorRepr Conversion Tests" begin
     # Test: Symbolic Ket (X1) conversion
     sym_X1_test = QuantumSavory.X1
     qo_X1_data = QuantumOptics.express(sym_X1_test, QuantumOptics.QuantumOpticsRepr()).data
