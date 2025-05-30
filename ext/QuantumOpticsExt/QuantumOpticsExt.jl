@@ -15,6 +15,8 @@ import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
 
+using SymbolicUtils
+
 const _b2 = SpinBasis(1//2)
 const _l0 = spinup(_b2)
 const _l1 = spindown(_b2)
