@@ -16,11 +16,12 @@ TermInterface = "8ea1fca8-c5ef-4a55-8b96-4e9afe9c9a3c"
 [weakdeps]
 QuantumClifford = "0525e862-1e90-11e9-3e4d-1b39d7109de1"
 QuantumOpticsBase = "4f57444f-1401-5e15-980d-4471b28d5678"
+QuantumOptics = "6e4d0e0e-3d2e-5f0e-8f3f-2b5b8e8d2f1e"
 
 [extensions]
 MixedCliffordOpticsExt = ["QuantumClifford", "QuantumOpticsBase"]
 QuantumCliffordExt = "QuantumClifford"
-QuantumOpticsExt = "QuantumOpticsBase"
+QuantumOpticsExt = ["QuantumOpticsBase", "QuantumOptics"]
 
 [compat]
 Latexify = "0.16"
@@ -29,6 +30,7 @@ MacroTools = "0.5.13"
 PrecompileTools = "1.2"
 QuantumClifford = "0.8.19, 0.9"
 QuantumInterface = "0.3.7"
+QuantumOptics = "0.9"
 QuantumOpticsBase = "0.4.22, 0.5"
 SymbolicUtils = "3.7"
 Symbolics = "6"
