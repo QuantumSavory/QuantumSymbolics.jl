@@ -1,6 +1,5 @@
 [deps]
 QuantumSavory = "b2e4b478-f7b5-4b07-94a2-11c52b7b515a"
-QuantumSymbolics = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
@@ -22,8 +21,12 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 TermInterface = "8ea1fca8-c5ef-4a55-8b96-4e9afe9c9a3c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
+QuantumSymbolics = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 
 [compat]
-julia = "1" 
+julia = "1"
 QuantumSavory = "0.1"
 QuantumSymbolics = "0.4"
+
+[targets]
+test = ["Test", "TestItemRunner", "QuantumSymbolics", "QuantumSavory", "QuantumOptics", "QuantumClifford", "QuantumInterface", "QuantumOpticsBase", "SymbolicUtils", "TermInterface"]
