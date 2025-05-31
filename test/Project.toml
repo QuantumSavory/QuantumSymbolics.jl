@@ -26,7 +26,7 @@ TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 
 [compat]
 julia = "1"
-QuantumSavory = "0.5"
+QuantumSavory = "0.1"
 QuantumSymbolics = "0.4"
 
 [targets]
