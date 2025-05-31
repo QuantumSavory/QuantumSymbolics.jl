@@ -111,9 +111,10 @@ objects into Julia's `Vector{ComplexF64}` (kets) or `Matrix{ComplexF64}` (operat
 Internally uses `QuantumOptics.QuantumOpticsRepr` and extracts `.data`.
 An optional `config` (e.g., `(cutoff=4,)`) is forwarded to `QuantumOptics.QuantumOpticsRepr`.
 """
-struct StateVectorRepr{C}
-    config::C
-    StateVectorRepr(config=nothing) = new{typeof(config)}(config)
+struct StateVectorRepr
+    cutoff::Int
+    StateVectorRepr(cutoff::Int) = new(cutoff)
+    StateVectorRepr(; cutoff::Int = 0) = new(cutoff)
 end
 
 function QuantumSymbolics.express(sym_obj::SymbolicUtils.Symbolic, backend::StateVectorRepr)
