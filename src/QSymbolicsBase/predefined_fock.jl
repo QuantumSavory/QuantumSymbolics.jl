@@ -2,48 +2,40 @@
 # Predefined objects in the Fock space.
 ##
 
+const inf_fock_basis = FockBasis(Inf,0)
+
+abstract type AbstractSingleBosonState <: SpecialKet
+abstract type AbstractTwoBosonState <: SpecialKet
+basis(::AbstractSingleBosonState) = inf_fock_basis
+basis(::AbstractTwoBosonState) = inf_fock_basis^2
+
 """Fock state in defined Fock basis."""
-@withmetadata struct FockState <: SpecialKet
+@withmetadata struct FockState <: AbstractSingleBosonState
     idx::Int
-    basis::FockBasis
 end
-FockState(idx::Int) = FockState(idx, inf_fock_basis)
 symbollabel(x::FockState) = "$(x.idx)"
 
 """Coherent state in defined Fock basis."""
-@withmetadata struct CoherentState <: SpecialKet
+@withmetadata struct CoherentState <: AbstractSingleBosonState
     alpha::Number # TODO parameterize
-    basis::FockBasis
 end
-CoherentState(alpha::Number) = CoherentState(alpha, inf_fock_basis)
 symbollabel(x::CoherentState) = "$(x.alpha)"
 
 """Squeezed vacuum state in defined Fock basis."""
-@withmetadata struct SqueezedState <: SpecialKet
+@withmetadata struct SqueezedState <: AbstractSingleBosonState
     z::Number
-    basis::FockBasis
 end
-SqueezedState(z::Number) = SqueezedState(z, inf_fock_basis)
 symbollabel(x::SqueezedState) = "0,$(x.z)"
 
 """Two-mode squeezed vacuum state, or EPR state, in defined Fock basis."""
-@withmetadata struct TwoSqueezedState <: SpecialKet
+@withmetadata struct TwoSqueezedState <: AbstractTwoBosonState
     z::Number
-    basis::CompositeBasis
-    function TwoSqueezedState(z::Number, basis::CompositeBasis)
-        bases = basis.bases
-        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
-                throw(ArgumentError(lazy"The underlying basis for an EPR state must be a tensor product of two bases for single-mode quantum systems."))
-        return new(z, basis)
-    end
 end
-TwoSqueezedState(z::Number) = TwoSqueezedState(z, inf_fock_basis^2)
 symbollabel(x::TwoSqueezedState) = "0,$(x.z)"
 
-const inf_fock_basis = FockBasis(Inf,0.)
-"""Vacuum basis state of n"""
+"""Vacuum basis state"""
 const vac = const F₀ = const F0 = FockState(0)
-"""Single photon basis state of n"""
+"""Single photon basis state"""
 const F₁ = const F1 = FockState(1)
 
 ##
@@ -72,10 +64,7 @@ julia> qsimplify(num*f, rewriter=qsimplify_fock)
 2|2⟩
 ```
 """
-@withmetadata struct NumberOp <: AbstractSingleBosonOp 
-    basis::FockBasis
-end
-NumberOp() = NumberOp(inf_fock_basis)
+@withmetadata struct NumberOp <: AbstractSingleBosonOp end
 symbollabel(::NumberOp) = "n"
 
 """Creation (raising) operator.
@@ -91,10 +80,7 @@ julia> qsimplify(create*f, rewriter=qsimplify_fock)
 (sqrt(3))|3⟩
 ```
 """
-@withmetadata struct CreateOp <: AbstractSingleBosonOp
-    basis::FockBasis
-end
-CreateOp() = CreateOp(inf_fock_basis)
+@withmetadata struct CreateOp <: AbstractSingleBosonOp end
 symbollabel(::CreateOp) = "a†"
 
 """Annihilation (lowering or destroy) operator in defined Fock basis.
@@ -110,10 +96,7 @@ julia> qsimplify(destroy*f, rewriter=qsimplify_fock)
 (sqrt(2))|1⟩
 ```
 """
-@withmetadata struct DestroyOp <: AbstractSingleBosonOp
-    basis::FockBasis
-end
-DestroyOp() = DestroyOp(inf_fock_basis)
+@withmetadata struct DestroyOp <: AbstractSingleBosonOp end
 symbollabel(::DestroyOp) = "a"
 
 """Phase-shift operator in defined Fock basis.
@@ -131,9 +114,7 @@ julia> qsimplify(phase*c, rewriter=qsimplify_fock)
 """
 @withmetadata struct PhaseShiftOp <: AbstractSingleBosonOp
     phase::Number
-    basis::FockBasis
 end
-PhaseShiftOp(phase::Number) = PhaseShiftOp(phase, inf_fock_basis)
 symbollabel(x::PhaseShiftOp) = "U($(x.phase))"
 
 """Displacement operator in defined Fock basis.
@@ -151,9 +132,7 @@ julia> qsimplify(displace*f, rewriter=qsimplify_fock)
 """
 @withmetadata struct DisplaceOp <: AbstractSingleBosonOp
     alpha::Number
-    basis::FockBasis
 end
-DisplaceOp(alpha::Number) = DisplaceOp(alpha, inf_fock_basis)
 symbollabel(x::DisplaceOp) = "D($(x.alpha))"
 
 """Number operator, also available as the constant `n̂`, in an infinite dimension Fock basis."""
@@ -176,43 +155,23 @@ julia> qsimplify(S*vac, rewriter=qsimplify_fock)
 """
 @withmetadata struct SqueezeOp <: AbstractSingleBosonOp
     z::Number
-    basis::FockBasis
 end
-SqueezeOp(z::Number) = SqueezeOp(z, inf_fock_basis)
 symbollabel(x::SqueezeOp) = "S($(x.z))"
 
 """Thermal bosonic state in defined Fock basis."""
 @withmetadata struct BosonicThermalState <: AbstractSingleBosonOp
     photons::Number
-    basis::FockBasis
 end
-BosonicThermalState(photons::Number) = BosonicThermalState(photons, inf_fock_basis)
 symbollabel(x::BosonicThermalState) = "ρₜₕ($(x.photons))"
 
 """Two-mode squeezing operator in defined Fock basis."""
 @withmetadata struct TwoSqueezeOp <: AbstractTwoBosonOp
     z::Number
-    basis::CompositeBasis
-    function TwoSqueezeOp(z::Number, basis::CompositeBasis)
-        bases = basis.bases
-        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
-                throw(ArgumentError(lazy"The underlying basis for a two-mode squeeze operator must be a tensor product of two bases for single-mode quantum systems."))
-        return new(z, basis)
-    end
 end
-TwoSqueezeOp(z::Number) = TwoSqueezeOp(z, inf_fock_basis^2)
 symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
 
 """Two-mode beamsplitter operator in defined Fock basis."""
 @withmetadata struct BeamSplitterOp <: AbstractTwoBosonOp
     transmit::Number
-    basis::CompositeBasis
-    function BeamSplitterOp(transmit::Number, basis::CompositeBasis)
-        bases = basis.bases
-        length(bases) == 2 && all(x -> x isa FockBasis, bases) || 
-                throw(ArgumentError(lazy"The underlying basis for a beam splitter operator must be a tensor product of two bases for single-mode quantum systems."))
-        return new(transmit, basis)
-    end
 end
-BeamSplitterOp(transmit::Number) = BeamSplitterOp(transmit, inf_fock_basis^2)
 symbollabel(x::BeamSplitterOp) = "B($(x.transmit))"

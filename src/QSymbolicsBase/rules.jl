@@ -85,8 +85,8 @@ RULES_ANTICOMMUTATOR = [
     @rule(anticommutator(~o1::_isa(YGate), ~o2::_isa(XGate)) => 0),
     @rule(anticommutator(~o1::_isa(ZGate), ~o2::_isa(YGate)) => 0),
     @rule(anticommutator(~o1::_isa(XGate), ~o2::_isa(ZGate)) => 0),
-    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(CreateOp)) => IdentityOp((~o1).basis)),
-    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(DestroyOp)) => -IdentityOp((~o1).basis)),
+    @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(CreateOp)) => IdentityOp(basis(~o1))),
+    @rule(commutator(~o1::_isa(CreateOp), ~o2::_isa(DestroyOp)) => -IdentityOp(basis(~o1))),
     @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(DestroyOp)) => -(~o2)),
     @rule(commutator(~o1::_isa(DestroyOp), ~o2::_isa(NumberOp)) => (~o1)),
     @rule(commutator(~o1::_isa(NumberOp), ~o2::_isa(CreateOp)) => (~o2)),
@@ -102,11 +102,11 @@ RULES_FOCK = [
     @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(CoherentState) => CoherentState((~k).alpha * exp(-im*(~o).phase))),
     @rule(dagger(~o1::_isa(PhaseShiftOp)) * ~o2::_isa(DestroyOp) * ~o1 => ~o2*exp(-im*((~o1).phase))),
     @rule(~o1::_isa(PhaseShiftOp) * ~o2::_isa(DestroyOp) * dagger(~o1) => ~o2*exp(im*((~o1).phase))),
-    @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp((~o2).basis)),
-    @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp((~o2).basis)),
+    @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(DestroyOp) * ~o1 => (~o2) + (~o1).alpha*IdentityOp(basis(~o2))),
+    @rule(dagger(~o1::_isa(DisplaceOp)) * ~o2::_isa(CreateOp) * ~o1 => (~o2) + conj((~o1).alpha)*IdentityOp(basis(~o2))),
     @rule(~o::_isa(DisplaceOp) * ~k::((x->(isa(x,FockState) && x.idx == 0))) => CoherentState((~o).alpha)),
-    @rule(~o::_isa(SqueezeOp) * ~k::isequal(vac) => SqueezedState((~o).z, (~o).basis)),
-    @rule(~o::_isa(TwoSqueezeOp) * ~k::isequal(vac ⊗ vac) => TwoSqueezedState((~o).z, (~o).basis))
+    @rule(~o::_isa(SqueezeOp) * ~k::isequal(vac) => SqueezedState((~o).z)),
+    @rule(~o::_isa(TwoSqueezeOp) * ~k::isequal(vac ⊗ vac) => TwoSqueezedState((~o).z))
 ]
 
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
