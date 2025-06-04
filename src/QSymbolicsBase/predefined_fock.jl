@@ -4,8 +4,8 @@
 
 const inf_fock_basis = FockBasis(Inf,0.0) # Inf is Float, so the second parameter has to be Float too
 
-abstract type AbstractSingleBosonState <: SpecialKet
-abstract type AbstractTwoBosonState <: SpecialKet
+abstract type AbstractSingleBosonState <: SpecialKet end
+abstract type AbstractTwoBosonState <: SpecialKet end
 basis(::AbstractSingleBosonState) = inf_fock_basis
 basis(::AbstractTwoBosonState) = inf_fock_basis^2
 
