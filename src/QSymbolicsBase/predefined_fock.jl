@@ -2,7 +2,7 @@
 # Predefined objects in the Fock space.
 ##
 
-const inf_fock_basis = FockBasis(Inf,0)
+const inf_fock_basis = FockBasis(Inf,0.0) # Inf is Float, so the second parameter has to be Float too
 
 abstract type AbstractSingleBosonState <: SpecialKet
 abstract type AbstractTwoBosonState <: SpecialKet
