@@ -38,6 +38,13 @@ jobs:
         with:
           channel: ${{ matrix.version }}~${{ matrix.arch }}
       - uses: julia-actions/cache@v2
+
+      # --- START OF ADDED/MODIFIED BLOCK ---
+      - name: Update Julia Registries (Aggressive)
+        run: |
+          julia -e 'import Pkg; Pkg.Registry.rm("General"); Pkg.Registry.add("General"); Pkg.Registry.update()'
+      # --- END OF ADDED/MODIFIED BLOCK ---
+
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
         env:

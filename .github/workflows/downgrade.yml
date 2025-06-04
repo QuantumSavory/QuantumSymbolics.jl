@@ -25,5 +25,12 @@ jobs:
         with:
           skip: Pkg,TOML,InteractiveUtils,Random,LinearAlgebra
       - uses: julia-actions/cache@v2
+
+      
+      - name: Update Julia Registries (Aggressive)
+        run: |
+          julia -e 'import Pkg; Pkg.Registry.rm("General"); Pkg.Registry.add("General"); Pkg.Registry.update()'
+      
+
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1

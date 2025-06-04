@@ -51,6 +51,11 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2
+      # --- MODIFIED STEP TO UPDATE JULIA REGISTRIES (AGGRESSIVE) ---
+      - name: Update Julia Registries (Aggressive)
+        run: |
+          julia -e 'import Pkg; Pkg.Registry.rm("General"); Pkg.Registry.add("General"); Pkg.Registry.update()'
+      # --- END OF MODIFIED STEP ---
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
         env:

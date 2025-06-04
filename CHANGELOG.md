@@ -1,5 +1,9 @@
 # News
 
+## [Unreleased]
+### Added
+- New `StateVectorRepr` backend for converting symbolic quantum objects to numerical vectors/matrices using `QuantumOpticsRepr` (Conversion of symbolic objects to base linear algebra objects (vectors, matrices, sparse matrices, etc)) (#118).
+  
 ## v0.4.10 - 2025-05-11
 
 - Polish `Base.show` methods for application products and scaled quantum objects.

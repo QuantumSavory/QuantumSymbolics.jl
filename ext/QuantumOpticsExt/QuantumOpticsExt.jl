@@ -15,6 +15,8 @@ import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
 
+using SymbolicUtils
+
 const _b2 = SpinBasis(1//2)
 const _l0 = spinup(_b2)
 const _l1 = spindown(_b2)
@@ -99,5 +101,30 @@ express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasi
 express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ket, r), express(s.bra, r))
 
 include("should_upstream.jl")
+
+"""
+    StateVectorRepr(config=nothing)
+
+A custom backend for `QuantumSymbolics.express`. Converts symbolic quantum
+objects into Julia's `Vector{ComplexF64}` (kets) or `Matrix{ComplexF64}` (operators).
+
+Internally uses `QuantumOptics.QuantumOpticsRepr` and extracts `.data`.
+An optional `config` (e.g., `(cutoff=4,)`) is forwarded to `QuantumOptics.QuantumOpticsRepr`.
+"""
+struct StateVectorRepr
+    cutoff::Int
+    StateVectorRepr(cutoff::Int) = new(cutoff)
+    StateVectorRepr(; cutoff::Int = 0) = new(cutoff)
+end
+
+function QuantumSymbolics.express(sym_obj::SymbolicUtils.Symbolic, backend::StateVectorRepr)
+    qo_repr = if backend.config isa Nothing
+        QuantumOptics.QuantumOpticsRepr()
+    else
+        QuantumOptics.QuantumOpticsRepr(backend.config...)
+    end
+    qo_obj = QuantumSymbolics.express(sym_obj, qo_repr)
+    return qo_obj.data
+end
 
 end
