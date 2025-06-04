@@ -33,9 +33,9 @@ symbollabel(x::SqueezedState) = "0,$(x.z)"
 end
 symbollabel(x::TwoSqueezedState) = "0,$(x.z)"
 
-"""Vacuum basis state"""
+"""Single-mode vacuum state"""
 const vac = const F₀ = const F0 = FockState(0)
-"""Single photon basis state"""
+"""Single photon state"""
 const F₁ = const F1 = FockState(1)
 
 ##
@@ -112,7 +112,7 @@ julia> qsimplify(phase*c, rewriter=qsimplify_fock)
 |1.2246467991473532e-16 - 1.0im⟩
 ```
 """
-@withmetadata struct PhaseShiftOp <: AbstractSingleBosonOp
+@withmetadata struct PhaseShiftOp <: AbstractSingleBosonGate
     phase::Number
 end
 symbollabel(x::PhaseShiftOp) = "U($(x.phase))"
@@ -130,7 +130,7 @@ julia> qsimplify(displace*f, rewriter=qsimplify_fock)
 |im⟩
 ```
 """
-@withmetadata struct DisplaceOp <: AbstractSingleBosonOp
+@withmetadata struct DisplaceOp <: AbstractSingleBosonGate
     alpha::Number
 end
 symbollabel(x::DisplaceOp) = "D($(x.alpha))"
@@ -153,7 +153,7 @@ julia> qsimplify(S*vac, rewriter=qsimplify_fock)
 |0,π⟩
 ```
 """
-@withmetadata struct SqueezeOp <: AbstractSingleBosonOp
+@withmetadata struct SqueezeOp <: AbstractSingleBosonGate
     z::Number
 end
 symbollabel(x::SqueezeOp) = "S($(x.z))"
@@ -165,13 +165,13 @@ end
 symbollabel(x::BosonicThermalState) = "ρₜₕ($(x.photons))"
 
 """Two-mode squeezing operator in defined Fock basis."""
-@withmetadata struct TwoSqueezeOp <: AbstractTwoBosonOp
+@withmetadata struct TwoSqueezeOp <: AbstractTwoBosonGate
     z::Number
 end
 symbollabel(x::TwoSqueezeOp) = "S₂($(x.z))"
 
 """Two-mode beamsplitter operator in defined Fock basis."""
-@withmetadata struct BeamSplitterOp <: AbstractTwoBosonOp
+@withmetadata struct BeamSplitterOp <: AbstractTwoBosonGate
     transmit::Number
 end
 symbollabel(x::BeamSplitterOp) = "B($(x.transmit))"
