@@ -18,11 +18,11 @@ import QuantumInterface:
     projector,dagger,tr,ptrace,
     AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator,
     express,AbstractRepresentation,AbstractUse,UseAsState,UseAsObservable,UseAsOperation,
-    QuantumOpticsRepr,QuantumMCRepr,CliffordRepr
+    QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,GabsRepr
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
-       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,
+       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,GabsRepr,
        UseAsState,UseAsObservable,UseAsOperation,
        apply!,
        express,
