@@ -110,9 +110,6 @@ RULES_FOCK = [
 ]
 
 RULES_ROT = [
-    @rule(~r::_isa(RotXGate) => I where (~r).θ == 0),
-    @rule(~r::_isa(RotYGate) => I where (~r).θ == 0),
-    @rule(~r::_isa(RotZGate) => I where (~r).θ == 0),
     @rule(~r::_isa(RotXGate) => (-im*X) where (~r).θ in [π, 1π]),
     @rule(~r::_isa(RotYGate) => (-im*Y) where (~r).θ in [π, 1π]),
     @rule(~r::_isa(RotZGate) => (-im*Z) where (~r).θ in [π, 1π]),

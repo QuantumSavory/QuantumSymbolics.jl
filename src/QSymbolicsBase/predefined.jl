@@ -117,25 +117,31 @@ arguments(x::AbstractRotGate) = [x.θ]
     θ
 end
 operation(::RotXGate) = Rx
-head(::RotXGate) = :RotX
-children(x::RotXGate) = [:RotX, x.θ]
+head(::RotXGate) = :Rx
+children(x::RotXGate) = [:Rx, x.θ]
 symbollabel(x::RotXGate) = "Rx($(x.θ))"
+"""Rotation around the X axis"""
+Rx(θ) = (θ == 0) ? I : RotXGate(θ)
 
 @withmetadata struct RotYGate <: AbstractRotGate
     θ
 end
 operation(::RotYGate) = Ry
-head(::RotYGate) = :RotY
-children(x::RotYGate) = [:RotY, x.θ]
+head(::RotYGate) = :Ry
+children(x::RotYGate) = [:Ry, x.θ]
 symbollabel(x::RotYGate) = "Ry($(x.θ))"
+"""Rotation around the Y axis"""
+Ry(θ) = (θ == 0) ? I : RotYGate(θ)
 
 @withmetadata struct RotZGate <: AbstractRotGate
     θ
 end
 operation(::RotZGate) = Rz
-head(::RotZGate) = :RotZ
-children(x::RotZGate) = [:RotZ, x.θ]
+head(::RotZGate) = :Rz
+children(x::RotZGate) = [:Rz, x.θ]
 symbollabel(x::RotZGate) = "Rz($(x.θ))"
+"""Rotation around the Z axis"""
+Rz(θ) = (θ == 0) ? I : RotZGate(θ)
 
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
@@ -174,12 +180,6 @@ const Pm = const σ₋ = PauliM()
 const Pp = const σ₊ = PauliP()
 """Hadamard gate"""
 const H = HGate()
-"""Rotation around the X axis"""
-const Rx = RotXGate
-"""Rotation around the Y axis"""
-const Ry = RotYGate
-"""Rotation around the Z axis"""
-const Rz = RotZGate
 """CNOT gate"""
 const CNOT = CNOTGate()
 """CPHASE gate"""

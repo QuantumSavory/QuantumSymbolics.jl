@@ -1,8 +1,8 @@
-@testitem "Test Ration" begin
+@testitem "Test Rotation" begin
     @testset "Identity tests" begin
-        @test isequal(qsimplify(Rx(0), rewriter=qsimplify_rot), I)
-        @test isequal(qsimplify(Ry(0), rewriter=qsimplify_rot), I)
-        @test isequal(qsimplify(Rz(0), rewriter=qsimplify_rot), I)
+        @test isequal(Rx(0), I)
+        @test isequal(Ry(0), I)
+        @test isequal(Rz(0), I)
     end
 
     @testset "Pauli tests" begin
