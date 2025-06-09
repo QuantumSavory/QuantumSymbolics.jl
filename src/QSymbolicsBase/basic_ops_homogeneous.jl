@@ -49,25 +49,49 @@ basis(x::SScaled) = basis(x.obj)
 const SScaledKet = SScaled{AbstractKet}
 function Base.show(io::IO, x::SScaledKet)
     if x.coeff isa Real
-        print(io, "$(x.coeff)$(x.obj)")
+        if x.obj isa SAddKet
+            print(io, "$(x.coeff)($(x.obj))")
+        else
+            print(io, "$(x.coeff)$(x.obj)")
+        end
     else
-        print(io, "($(x.coeff))$(x.obj)")
+        if x.obj isa SAddKet
+            print(io, "($(x.coeff))($(x.obj))")
+        else
+            print(io, "($(x.coeff))$(x.obj)")
+        end
     end
 end
 const SScaledOperator = SScaled{AbstractOperator}
 function Base.show(io::IO, x::SScaledOperator)
     if x.coeff isa Real
-        print(io, "$(x.coeff)$(x.obj)")
+        if x.obj isa SAddOperator
+            print(io, "$(x.coeff)($(x.obj))")
+        else
+            print(io, "$(x.coeff)$(x.obj)")
+        end
     else
-        print(io, "($(x.coeff))$(x.obj)")
+        if x.obj isa SAddOperator
+            print(io, "($(x.coeff))($(x.obj))")
+        else
+            print(io, "($(x.coeff))$(x.obj)")
+        end
     end
 end
 const SScaledBra = SScaled{AbstractBra}
 function Base.show(io::IO, x::SScaledBra)
     if x.coeff isa Real
-        print(io, "$(x.coeff)$(x.obj)")
+        if x.obj isa SAddBra
+            print(io, "$(x.coeff)($(x.obj))")
+        else
+            print(io, "$(x.coeff)$(x.obj)")
+        end
     else
-        print(io, "($(x.coeff))$(x.obj)")
+        if x.obj isa SAddBra
+            print(io, "($(x.coeff))($(x.obj))")
+        else
+            print(io, "($(x.coeff))$(x.obj)")
+        end
     end
 end
 
