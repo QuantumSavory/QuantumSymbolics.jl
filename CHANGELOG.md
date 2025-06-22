@@ -1,5 +1,9 @@
 # News
 
+## v0.4.11 - 2025-06-22
+
+- Bump compats for QuantumInterface and QuantumClifford.
+
 ## v0.4.10 - 2025-05-11
 
 - Polish `Base.show` methods for application products and scaled quantum objects.
