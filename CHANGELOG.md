@@ -3,6 +3,7 @@
 ## v0.4.11 - 2025-06-22
 
 - Bump compats for QuantumInterface and QuantumClifford.
+- Add new symbolic bosonic states and operators (`TwoSqueezeOp`, `TwoSqueezedState`, `BosonicThermalState`, `BeamSplitterOp`).
 
 ## v0.4.10 - 2025-05-11
 
