@@ -29,5 +29,4 @@ for (f,g) in [(:TwoSqueezedState, :eprstate),(:TwoSqueezeOp,:twosqueeze)]
     end
 end
 
-
 end
