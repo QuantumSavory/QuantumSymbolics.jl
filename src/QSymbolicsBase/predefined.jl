@@ -106,6 +106,43 @@ symbollabel(::HGate) = "H"
 ishermitian(::HGate) = true
 isunitary(::HGate) = true
 
+abstract type AbstractRotGate <: AbstractSingleQubitGate end
+ishermitian(::AbstractRotGate) = false
+isunitary(::AbstractRotGate) = true
+isexpr(::AbstractRotGate) = true
+iscall(::AbstractRotGate) = true
+arguments(x::AbstractRotGate) = [x.θ]
+
+@withmetadata struct RotXGate <: AbstractRotGate
+    θ
+end
+operation(::RotXGate) = Rx
+head(::RotXGate) = :Rx
+children(x::RotXGate) = [:Rx, x.θ]
+symbollabel(x::RotXGate) = "Rx($(x.θ))"
+"""Rotation around the X axis"""
+Rx(θ) = (θ == 0) ? I : RotXGate(θ)
+
+@withmetadata struct RotYGate <: AbstractRotGate
+    θ
+end
+operation(::RotYGate) = Ry
+head(::RotYGate) = :Ry
+children(x::RotYGate) = [:Ry, x.θ]
+symbollabel(x::RotYGate) = "Ry($(x.θ))"
+"""Rotation around the Y axis"""
+Ry(θ) = (θ == 0) ? I : RotYGate(θ)
+
+@withmetadata struct RotZGate <: AbstractRotGate
+    θ
+end
+operation(::RotZGate) = Rz
+head(::RotZGate) = :Rz
+children(x::RotZGate) = [:Rz, x.θ]
+symbollabel(x::RotZGate) = "Rz($(x.θ))"
+"""Rotation around the Z axis"""
+Rz(θ) = (θ == 0) ? I : RotZGate(θ)
+
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
 ishermitian(::CNOTGate) = true
