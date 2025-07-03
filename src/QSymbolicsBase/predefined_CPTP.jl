@@ -12,7 +12,7 @@ and thermal noise parameter `noise`.
 """
 @withmetadata struct AttenuatorCPTP <: NoiseCPTP
     theta::Real
-    noise::Int
+    noise::Real
 end
 basis(x::AttenuatorCPTP) = inf_fock_basis
 symbollabel(x::AttenuatorCPTP) = "𝒜𝓉𝓉"
@@ -25,7 +25,7 @@ and thermal noise parameter `noise`.
 """
 @withmetadata struct AmplifierCPTP <: NoiseCPTP
     r::Real
-    noise::Int
+    noise::Real
 end
 basis(x::AmplifierCPTP) = inf_fock_basis
 symbollabel(x::AmplifierCPTP) = "𝒜𝓂𝓅"

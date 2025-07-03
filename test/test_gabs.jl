@@ -24,8 +24,8 @@
         end
 
         @testset "Gaussian channels - $(basis)" begin
-            @test express(AttenuatorCPTP(θ, n̄), GabsRepr(basis)) ≈ attenuator(basis(1), θ, n̄)
-            @test express(AmplifierCPTP(r, n̄), GabsRepr(basis)) ≈ amplifier(basis(1), r, n̄)
+            @test express(AttenuatorCPTP(θ, τ), GabsRepr(basis)) ≈ attenuator(basis(1), θ, τ)
+            @test express(AmplifierCPTP(r, τ), GabsRepr(basis)) ≈ amplifier(basis(1), r, τ)
         end
 
         @testset "Linear algebra operations" begin
