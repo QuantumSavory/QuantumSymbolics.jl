@@ -1,5 +1,9 @@
 # News
 
+## v0.4.12 - dev
+
+- Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
+
 ## v0.4.11 - 2025-06-22
 
 - Bump compats for QuantumInterface and QuantumClifford.
