@@ -23,6 +23,11 @@
             @test express(BeamSplitterOp(τ), GabsRepr(basis)) ≈ beamsplitter(basis(2), τ)
         end
 
+        @testset "Gaussian channels - $(basis)" begin
+            @test express(AttenuatorCPTP(θ, n̄), GabsRepr(basis)) ≈ attenuator(basis(1), θ, n̄)
+            @test express(AmplifierCPTP(r, n̄), GabsRepr(basis)) ≈ amplifier(basis(1), r, n̄)
+        end
+
         @testset "Linear algebra operations" begin
             @test express(CoherentState(α) ⊗ TwoSqueezedState(r*exp(im*θ)) ⊗ vac, GabsRepr(basis)) ≈ coherentstate(basis(1), α) ⊗ eprstate(basis(2), r, θ) ⊗ vacuumstate(basis(1))
             @test express(DisplaceOp(α) * vac, GabsRepr(basis)) ≈ coherentstate(basis(1), α)

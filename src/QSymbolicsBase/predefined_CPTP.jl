@@ -1,8 +1,34 @@
-export PauliNoiseCPTP, DephasingCPTP, DephasingCPTP, GateCPTP
+export PauliNoiseCPTP, DephasingCPTP, DephasingCPTP, GateCPTP, AttenuatorCPTP, AmplifierCPTP
 
 abstract type NoiseCPTP <: Symbolic{AbstractSuperOperator} end
 isexpr(::NoiseCPTP) = false
 basis(x::NoiseCPTP) = x.basis
+
+"""
+    AttenuatorCPTP(theta::Number, noise::Int)
+
+Attenuation CPTP map, defined by the beam splitter rotation parameter `theta`
+and thermal noise parameter `noise`.
+"""
+@withmetadata struct AttenuatorCPTP <: NoiseCPTP
+    theta::Real
+    noise::Int
+end
+basis(x::AttenuatorCPTP) = inf_fock_basis
+symbollabel(x::AttenuatorCPTP) = "𝒜𝓉𝓉"
+
+"""
+    AmplifierCPTP(r::Number, noise::Int)
+
+Amplification CPTP map, defined by the squeezing amplitude parameter `r`
+and thermal noise parameter `noise`.
+"""
+@withmetadata struct AmplifierCPTP <: NoiseCPTP
+    r::Real
+    noise::Int
+end
+basis(x::AmplifierCPTP) = inf_fock_basis
+symbollabel(x::AmplifierCPTP) = "𝒜𝓂𝓅"
 
 """Single-qubit Pauli noise CPTP map
 
