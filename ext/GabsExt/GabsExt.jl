@@ -29,4 +29,7 @@ for (f,g) in [(:TwoSqueezedState, :eprstate),(:TwoSqueezeOp,:twosqueeze)]
     end
 end
 
+express_nolookup(x::AttenuatorCPTP, repr::GabsRepr) = attenuator(repr.basis(1), x.theta, x.noise)
+express_nolookup(x::AmplifierCPTP, repr::GabsRepr) = amplifier(repr.basis(1), x.r, x.noise)
+
 end
