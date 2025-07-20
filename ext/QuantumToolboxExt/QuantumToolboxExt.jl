@@ -8,14 +8,14 @@ using QuantumSymbolics:
     XBasisState, YBasisState, ZBasisState,
     NumberOp, CreateOp, DestroyOp,
     FockState,
-    MixedState, IdentityOp,
+    MixedState, IdentityOp, STensor,
     qubit_basis
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
 
-const _l0 = QuantumToolbox.basis(2,1)
-const _l1 = QuantumToolbox.basis(2,0)
+const _l0 = QuantumToolbox.basis(2,0)
+const _l1 = QuantumToolbox.basis(2,1)
 const _s₊ = (_l0+_l1)/√2
 const _s₋ = (_l0-_l1)/√2
 const _i₊ = (_l0+im*_l1)/√2
@@ -46,7 +46,7 @@ express_nolookup(::YGate, ::QuantumToolboxRepr) = _y
 express_nolookup(::ZGate, ::QuantumToolboxRepr) = _z
 express_nolookup(::CPHASEGate, ::QuantumToolboxRepr) = _cphase
 express_nolookup(::CNOTGate, ::QuantumToolboxRepr) = _cnot
-#=
+
 const xyzopdict = Dict(:X=>_x, :Y=>_y, :Z=>_z)
 const xyzstatedict = Dict(:X=>(_s₊,_s₋),:Y=>(_i₊,_i₋),:Z=>(_l0,_l1))
 for control in (:X, :Y, :Z)
@@ -68,28 +68,18 @@ express_nolookup(s::XBasisState, ::QuantumToolboxRepr) = (_s₊,_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::QuantumToolboxRepr) = (_i₊,_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::QuantumToolboxRepr) = (_l0,_l1)[s.idx]
 
-function finite_basis(s,r)
-    if isfinite(length(basis(s)))
-        return basis(s)
-    else
-        if isa(basis(s), FockBasis)
-            return FockBasis(r.cutoff)
-        else
-            error()
-        end
-    end
-end
-express_nolookup(s::FockState, r::QuantumToolboxRepr) = basisstate(finite_basis(s,r),s.idx+1)
-express_nolookup(s::CoherentState, r::QuantumToolboxRepr) = coherentstate(finite_basis(s,r),s.alpha)
-express_nolookup(s::SqueezedState, r::QuantumToolboxRepr) = (b = finite_basis(s,r); squeeze(b, s.z)*basisstate(b, 1))
-express_nolookup(o::NumberOp, r::QuantumToolboxRepr) = number(finite_basis(o,r))
-express_nolookup(o::CreateOp, r::QuantumToolboxRepr) = create(finite_basis(o,r))
-express_nolookup(o::DestroyOp, r::QuantumToolboxRepr) = destroy(finite_basis(o,r))
-express_nolookup(o::DisplaceOp, r::QuantumToolboxRepr) = displace(finite_basis(o,r), o.alpha)
-express_nolookup(o::SqueezeOp, r::QuantumToolboxRepr) = squeeze(finite_basis(o,r), o.z)
-express_nolookup(x::MixedState, r::QuantumToolboxRepr) = identityoperator(finite_basis(x,r))/length(finite_basis(x,r))
-express_nolookup(x::IdentityOp, r::QuantumToolboxRepr) = identityoperator(finite_basis(x,r))
+express_nolookup(s::FockState, r::QuantumToolboxRepr) = fock(r.cutoff, s.idx)
+express_nolookup(s::CoherentState, r::QuantumToolboxRepr) = coherent(r.cutoff,s.alpha)
+express_nolookup(s::SqueezedState, r::QuantumToolboxRepr) = (c = r.cutoff; squeeze(c, s.z)*fock(c, 0))
+express_nolookup(o::NumberOp, r::QuantumToolboxRepr) = num(r.cutoff)
+express_nolookup(o::CreateOp, r::QuantumToolboxRepr) = create(r.cutoff)
+express_nolookup(o::DestroyOp, r::QuantumToolboxRepr) = destroy(r.cutoff)
+express_nolookup(o::DisplaceOp, r::QuantumToolboxRepr) = displace(r.cutoff, o.alpha)
+express_nolookup(o::SqueezeOp, r::QuantumToolboxRepr) = squeeze(r.cutoff, o.z)
+express_nolookup(x::MixedState, r::QuantumToolboxRepr) = (l = length(x.basis); return qeye(l)/l)
+express_nolookup(x::IdentityOp, r::QuantumToolboxRepr) = qeye(length(x.basis))
 
-express_nolookup(s::SOuterKetBra, r::QuantumToolboxRepr) = projector(express(s.ket, r), express(s.bra, r))
-=#
+express_nolookup(s::SOuterKetBra, r::QuantumToolboxRepr) = proj(express(s.ket, r), express(s.bra, r))
+express_nolookup(s::STensor, r::QuantumToolboxRepr) = QuantumToolbox.tensor((express(i, r) for i in s.terms)...)
+
 end

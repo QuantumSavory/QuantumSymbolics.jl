@@ -55,7 +55,7 @@ export SymQObj,QObj,
 
 
 
-#Move this to QuantumInterface?
+# TODO: move this to QuantumInterface
 """Representation using kets, bras, density matrices, and superoperators governed by `QuantumToolbox.jl`."""
 Base.@kwdef struct QuantumToolboxRepr <: AbstractRepresentation 
     cutoff::Int = 2
