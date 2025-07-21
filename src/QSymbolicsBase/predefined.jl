@@ -113,35 +113,32 @@ isexpr(::AbstractRotGate) = true
 iscall(::AbstractRotGate) = true
 arguments(x::AbstractRotGate) = [x.θ]
 
+"""Rotation around the X axis"""
 @withmetadata struct RotXGate <: AbstractRotGate
     θ
 end
-operation(::RotXGate) = Rx
-head(::RotXGate) = :Rx
-children(x::RotXGate) = [:Rx, x.θ]
+operation(::RotXGate) = RotXGate
+head(::RotXGate) = :RotXGate
+children(x::RotXGate) = [:RotXGate, x.θ]
 symbollabel(x::RotXGate) = "Rx($(x.θ))"
-"""Rotation around the X axis"""
-Rx(θ) = (θ == 0) ? I : RotXGate(θ)
 
+"""Rotation around the Y axis"""
 @withmetadata struct RotYGate <: AbstractRotGate
     θ
 end
-operation(::RotYGate) = Ry
-head(::RotYGate) = :Ry
-children(x::RotYGate) = [:Ry, x.θ]
+operation(::RotYGate) = RotYGate
+head(::RotYGate) = :RotYGate
+children(x::RotYGate) = [:RotYGate, x.θ]
 symbollabel(x::RotYGate) = "Ry($(x.θ))"
-"""Rotation around the Y axis"""
-Ry(θ) = (θ == 0) ? I : RotYGate(θ)
 
+"""Rotation around the Z axis"""
 @withmetadata struct RotZGate <: AbstractRotGate
     θ
 end
-operation(::RotZGate) = Rz
-head(::RotZGate) = :Rz
-children(x::RotZGate) = [:Rz, x.θ]
+operation(::RotZGate) = RotZGate
+head(::RotZGate) = :RotZGate
+children(x::RotZGate) = [:RotZGate, x.θ]
 symbollabel(x::RotZGate) = "Rz($(x.θ))"
-"""Rotation around the Z axis"""
-Rz(θ) = (θ == 0) ? I : RotZGate(θ)
 
 @withmetadata struct CNOTGate <: AbstractTwoQubitGate end
 symbollabel(::CNOTGate) = "CNOT"
