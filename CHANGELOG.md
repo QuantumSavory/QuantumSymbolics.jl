@@ -1,7 +1,13 @@
 # News
 
-## v0.4.11 - dev
+## v0.4.12 - dev
 
+- Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
+- Add rotation gates `Rot[X,Y,Z]Gate`.
+
+## v0.4.11 - 2025-06-22
+
+- Bump compats for QuantumInterface and QuantumClifford.
 - Add new symbolic bosonic states and operators (`TwoSqueezeOp`, `TwoSqueezedState`, `BosonicThermalState`, `BeamSplitterOp`).
 
 ## v0.4.10 - 2025-05-11
