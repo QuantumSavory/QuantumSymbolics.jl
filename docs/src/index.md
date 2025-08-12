@@ -203,3 +203,20 @@ express(MixedState(X1)/2+SProjector(Z1)/2, CliffordRepr())
 !!! warning "Stabilizer state expressions"
 
     The state written as $\frac{|Z₁⟩⊗|Z₁⟩+|Z₂⟩⊗|Z₂⟩}{√2}$ is a well known stabilizer state, namely a Bell state. However, automatically expressing it as a stabilizer is a prohibitively expensive computational operation in general. We do not perform that computation automatically. If you want to ensure that states you define can be automatically converted to tableaux for Clifford simulations, avoid using summation of kets. On the other hand, in all of our Clifford Monte-Carlo simulations, `⊗` is fully supported, as well as [`projector`](@ref), [`MixedState`](@ref), [`StabilizerState`](@ref), and summation of density matrices.
+
+
+
+## Office Hours
+
+Office hours are held every Friday from 12:30 – 1:30 PM Eastern Time via [Zoom](https://umass-amherst.zoom.us/j/95986275946?pwd=6h7Wbai1bXIai0XQsatNRWaVbQlTDr.1). Before joining, make sure to check the [Julia community events calendar](https://julialang.org/community/#events) to confirm whether office hours are happening, rescheduled, or canceled for the week. Feel free to bring any questions or suggestions!
+
+## Support
+
+QuantumSymbolics.jl is developed by [many volunteers](https://github.com/QuantumSavory/QuantumSymbolics.jl/graphs/contributors), managed at [Prof. Krastanov's lab](https://lab.krastanov.org/) at [University of Massachusetts Amherst](https://www.umass.edu/quantum/).
+
+The development effort is supported by The [NSF Engineering and Research Center for Quantum Networks](https://cqn-erc.arizona.edu/), and
+by NSF Grant 2346089 "Research Infrastructure: CIRC: New: Full-stack Codesign Tools for Quantum Hardware".
+
+## Bounties
+
+[We run many bug bounties and encourage submissions from novices (we are happy to help onboard you in the field).](https://github.com/QuantumSavory/.github/blob/main/BUG_BOUNTIES.md)
