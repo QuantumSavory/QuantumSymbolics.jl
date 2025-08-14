@@ -3,6 +3,7 @@
 ## v0.4.12 - dev
 
 - Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
+- Add rotation gates `Rot[X,Y,Z]Gate`.
 
 ## v0.4.11 - 2025-06-22
 
