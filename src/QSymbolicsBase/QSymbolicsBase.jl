@@ -22,7 +22,7 @@ import QuantumInterface:
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
-       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,GabsRepr,
+       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,GabsRepr,QuantumToolboxRepr,
        UseAsState,UseAsObservable,UseAsOperation,
        apply!,
        express,
@@ -51,6 +51,15 @@ export SymQObj,QObj,
        qexpand,
        isunitary,
        KrausRepr,kraus
+
+
+
+
+# TODO: move this to QuantumInterface
+"""Representation using kets, bras, density matrices, and superoperators governed by `QuantumToolbox.jl`."""
+Base.@kwdef struct QuantumToolboxRepr <: AbstractRepresentation 
+    cutoff::Int = 2
+end
 
 ##
 # Metadata cache helpers
