@@ -1,7 +1,7 @@
 name = "QuantumSymbolics"
 uuid = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
-authors = ["QuantumSymbolics.jl contributors"]
 version = "0.4.12-dev"
+authors = ["QuantumSymbolics.jl contributors"]
 
 [deps]
 Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
@@ -35,7 +35,7 @@ PrecompileTools = "1.2"
 QuantumClifford = "0.9.4, 0.10"
 QuantumInterface = "0.4.1"
 QuantumOpticsBase = "0.5.6"
-QuantumToolbox = "0.34.0"
+QuantumToolbox = "0.34.0, 0.39"
 SymbolicUtils = "3.13"
 Symbolics = "6"
 TermInterface = "2"
