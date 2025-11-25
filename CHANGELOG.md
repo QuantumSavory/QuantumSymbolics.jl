@@ -4,6 +4,7 @@
 
 - Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
 - Add rotation gates `Rot[X,Y,Z]Gate`.
+- Add QuantumToolbox extension for state vector translations.
 
 ## v0.4.11 - 2025-06-22
 

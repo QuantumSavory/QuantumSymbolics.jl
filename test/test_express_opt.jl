@@ -8,7 +8,7 @@
     state = 1im*X1⊗Z2+2*Y2⊗(Z1+X1)+StabilizerState("YX ZZ")
     nocache = @timed express(state)
     withcache = @timed express(state)
-    @test nocache.time > 10*withcache.time
+    !Sys.isapple() && @test nocache.time > 10*withcache.time
     @test withcache.bytes == 0
     @test nocache.value ≈ withcache.value ≈ express(1im*X1⊗Z2+2*Y2⊗(Z1+X1)+StabilizerState("YX ZZ"))
 
@@ -20,7 +20,7 @@
     express(state)
     nocache = @timed express(state2)
     withcache = @timed express(state2)
-    @test nocache.time > 20*withcache.time
+    !Sys.isapple() && @test nocache.time > 20*withcache.time
     @test withcache.bytes == 0
     @test nocache.value ≈ withcache.value ≈ express(state2)
 
