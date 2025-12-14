@@ -57,7 +57,7 @@ SUITE["operations"]["multiplication"]["op_ket"] = @benchmarkable $A * $k1
 SUITE["operations"]["multiplication"]["bra_op"] = @benchmarkable $b1 * $A
 SUITE["operations"]["multiplication"]["inner"] = @benchmarkable $b1 * $k1
 SUITE["operations"]["multiplication"]["outer"] = @benchmarkable $k1 * $b1
-SUITE["operations"]["multiplication"]["op"] = @benchmarkable $A * $B 
+SUITE["operations"]["multiplication"]["op"] = @benchmarkable $A * $B
 SUITE["operations"]["multiplication"]["many"] = @benchmarkable $k1 * $b2 * $k2 * $b1 * $A * $B
 
 SUITE["operations"]["tensor"] = BenchmarkGroup()
@@ -97,7 +97,7 @@ SUITE["express"] = BenchmarkGroup(["express"])
 clear_cache!(x) = empty!(x.metadata.express_cache)
 simple_op = X⊗Y
 simple_ket = Z1⊗Z1
-pauli_op_4 = YCX * transpose(Z⊗Y) * YCZ * dagger(Y⊗X) * conj(ZCY) * exp(X ⊗ (2-3im)X) 
+pauli_op_4 = YCX * transpose(Z⊗Y) * YCZ * dagger(Y⊗X) * conj(ZCY) * exp(X ⊗ (2-3im)X)
 pauli_state_8 = (conj(XCY⊗Y) + dagger(Z⊗YCX) + transpose(0.5im*Y ⊗ exp(XCY))) * (X1⊗Y1⊗Z1)
 
 SUITE["express"]["optics"]["simple_op"] = @benchmarkable express($simple_op) setup=clear_cache!(simple_op) evals=1

@@ -15,7 +15,7 @@ _vecisa(T) = x->all(_isa(T), x)
 
 ##
 # Simplification rules
-## 
+##
 
 # Pauli identities
 RULES_PAULI = [
@@ -95,8 +95,8 @@ RULES_ANTICOMMUTATOR = [
 
 RULES_FOCK = [
     @rule(~o::_isa(DestroyOp) * ~k::isequal(vac) => SZeroKet()),
-    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx+1])*FockState((~k).idx+1)),
-    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx])*FockState((~k).idx-1)),
+    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => term(sqrt,(~k).idx+1)*FockState((~k).idx+1)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => term(sqrt,(~k).idx)*FockState((~k).idx-1)),
     @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
     @rule(~o::_isa(DestroyOp) * ~k::_isa(CoherentState) => (~k).alpha*(~k)),
     @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(CoherentState) => CoherentState((~k).alpha * exp(-im*(~o).phase))),
@@ -123,9 +123,9 @@ qsimplify_fock = Chain(RULES_FOCK)
 """
     qsimplify(s; rewriter=nothing)
 
-Manually simplify a symbolic expression of quantum objects. 
+Manually simplify a symbolic expression of quantum objects.
 
-If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression. 
+If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression.
 For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
 The defined rewriters for simplification are the following objects:
     - `qsimplify_pauli`
@@ -155,7 +155,7 @@ end
 
 ##
 # Expansion rules
-## 
+##
 
 RULES_EXPAND = [
     @rule(commutator(~o1, ~o2) => (~o1)*(~o2) - (~o2)*(~o1)),
@@ -168,7 +168,7 @@ RULES_EXPAND = [
     @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractOperator})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractOperator})) => ⊗(map(*, ~~ops1, ~~ops2)...)),
 ]
 
-# 
+#
 
 ##
 # Expansion rewriter
@@ -177,7 +177,7 @@ RULES_EXPAND = [
 """
     qexpand(s)
 
-Manually expand a symbolic expression of quantum objects. 
+Manually expand a symbolic expression of quantum objects.
 
 ```jldoctest
 julia> @op A; @op B; @op C;

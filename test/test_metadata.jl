@@ -1,6 +1,6 @@
 @testitem "Test metadata decoration" begin
     using QuantumSymbolics: Metadata, @withmetadata
-    
+
     @withmetadata struct Foo1
         a::Int
     end

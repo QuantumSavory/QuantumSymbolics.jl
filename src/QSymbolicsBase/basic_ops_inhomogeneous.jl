@@ -32,7 +32,7 @@ end
 Base.:(*)(op::SZeroOperator, k::Symbolic{AbstractKet}) = SZeroKet()
 Base.:(*)(op::Symbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
 Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
-function Base.show(io::IO, x::SApplyKet) 
+function Base.show(io::IO, x::SApplyKet)
     str_func = x -> x isa SAdd || x isa STensorOperator ? "("*string(x)*")" : string(x)
     print(io, join(map(str_func, arguments(x)),""))
 end
@@ -57,7 +57,7 @@ arguments(x::SApplyBra) = [x.bra,x.op]
 operation(x::SApplyBra) = *
 head(x::SApplyBra) = :*
 children(x::SApplyBra) = [:*,x.bra,x.op]
-function Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) 
+function Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator})
     if !(samebases(basis(b),basis(op)))
         throw(IncompatibleBases())
     else
@@ -68,7 +68,7 @@ end
 Base.:(*)(b::SZeroBra, op::Symbolic{AbstractOperator}) = SZeroBra()
 Base.:(*)(b::Symbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
 Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
-function Base.show(io::IO, x::SApplyBra) 
+function Base.show(io::IO, x::SApplyBra)
     str_func = x -> x isa SAdd || x isa STensorOperator ? "("*string(x)*")" : string(x)
     print(io, join(map(str_func, arguments(x)),""))
 end
@@ -93,7 +93,7 @@ arguments(x::SBraKet) = [x.bra,x.ket]
 operation(x::SBraKet) = *
 head(x::SBraKet) = :*
 children(x::SBraKet) = [:*,x.bra,x.ket]
-function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) 
+function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet})
     if !(samebases(basis(b),basis(k)))
         throw(IncompatibleBases())
     else
@@ -111,10 +111,10 @@ Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y
 
 """Symbolic outer product of a ket and a bra.
 
-```jldoctest 
+```jldoctest
 julia> @bra b; @ket k;
 
-julia> k*b 
+julia> k*b
 |k⟩⟨b|
 ```
 """

@@ -4,10 +4,10 @@
 
     @bra p
     @bra q
-        
+
     @ket m
     @ket n
-    
+
     @testset "Complex Conjugate" begin
         @test isequal(conj(O), O)
         @test isequal(conj(conj(A)), A)
@@ -33,7 +33,7 @@
     end
 
     @testset "Vector of Operators" begin
-        @test isequal([1 1;-im im]*[A;B], [A + B;im*B-im*A])  
+        @test isequal([1 1;-im im]*[A;B], [A + B;im*B-im*A])
     end
 
     @testset "Vector of Kets" begin

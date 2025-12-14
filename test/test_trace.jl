@@ -36,12 +36,12 @@
         @test isequal(ptrace(𝒪⊗ℒ + 𝒫⊗ℒ, 1), SPartialTrace(𝒪⊗ℒ + 𝒫⊗ℒ, 1))
 
         # tests for ptrace(x::STensorOperator, s)
-        @test isequal(ptrace(A⊗(B⊗C + D⊗E), 1),  tr(A)*(B⊗C) + tr(A)*(D⊗E)) 
+        @test isequal(ptrace(A⊗(B⊗C + D⊗E), 1),  tr(A)*(B⊗C) + tr(A)*(D⊗E))
         @test isequal(ptrace(𝒪⊗A, 1), SPartialTrace(𝒪⊗A, 1))
         @test isequal(ptrace(A⊗B, 1), tr(A)*B)
         @test isequal(ptrace(A⊗B⊗C, 1), tr(A)*(B⊗C))
 
-        # additional tests 
+        # additional tests
         @test isequal(ptrace(exp1, 1), (b₁*k₁)*A + (b₂*k₂)*B)
         @test isequal(basis(ptrace(exp1, 1)), SpinBasis(1//2))
         @test isequal(ptrace(exp1, 2), tr(A)*(k₁*b₁) + tr(B)*(k₂*b₂))

@@ -29,7 +29,7 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Number}},T<:QObj}
+function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Number}, SymbolicUtils.BasicSymbolic},T<:QObj}
     if (isa(c, Number) && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)

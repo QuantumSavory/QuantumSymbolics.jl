@@ -1,7 +1,7 @@
 name = "QuantumSymbolics"
 uuid = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
-authors = ["QuantumSymbolics.jl contributors"]
 version = "0.4.12-dev"
+authors = ["QuantumSymbolics.jl contributors"]
 
 [deps]
 Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
@@ -18,6 +18,11 @@ Gabs = "0eb812ee-a11f-4f5e-b8d4-bb8a44f06f50"
 QuantumClifford = "0525e862-1e90-11e9-3e4d-1b39d7109de1"
 QuantumOpticsBase = "4f57444f-1401-5e15-980d-4471b28d5678"
 QuantumToolbox = "6c2fb7c5-b903-41d2-bc5e-5a7c320b9fab"
+
+[sources]
+QuantumInterface = {path = "../QuantumInterface.jl"}
+SymbolicUtils = {path = "../SymbolicUtils.jl"}
+TermInterface = {path = "../TermInterface.jl"}
 
 [extensions]
 GabsExt = "Gabs"
@@ -36,7 +41,7 @@ QuantumClifford = "0.9.4, 0.10"
 QuantumInterface = "0.4.1"
 QuantumOpticsBase = "0.5.6"
 QuantumToolbox = "0.34.0"
-SymbolicUtils = "3.13"
-Symbolics = "6"
+SymbolicUtils = "4.9"
+Symbolics = "7.2"
 TermInterface = "2"
 julia = "1.10"
