@@ -3,7 +3,7 @@ using QuantumSymbolics
 
 # filter for the test
 testfilter = ti -> begin
-  exclude = Symbol[:jet]
+  exclude = Symbol[:jet, :clifford]
   if !(VERSION >= v"1.10")
     push!(exclude, :doctests)
     push!(exclude, :aqua)

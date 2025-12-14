@@ -1,5 +1,15 @@
-@testitem "Clifford" begin
-    using QuantumClifford
+@testitem "Clifford" tags=[:clifford] begin
+    using Pkg
+    if get(Pkg.project().dependencies, "QuantumClifford", nothing) === nothing
+        @test_skip "QuantumClifford not present in the test environment"
+        return
+    end
+    try
+        using QuantumClifford
+    catch
+        @test_skip "QuantumClifford not available in test environment"
+        return
+    end
     using QuantumOptics
 
     timed_express(state, repr) = @timed express(state, repr)

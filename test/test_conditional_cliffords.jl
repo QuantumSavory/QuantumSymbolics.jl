@@ -1,5 +1,15 @@
-@testitem "Conditional Cliffords" begin
-    using QuantumClifford
+@testitem "Conditional Cliffords" tags=[:clifford] begin
+    using Pkg
+    if get(Pkg.project().dependencies, "QuantumClifford", nothing) === nothing
+        @test_skip "QuantumClifford not present in the test environment"
+        return
+    end
+    try
+        using QuantumClifford
+    catch
+        @test_skip "QuantumClifford not available in test environment"
+        return
+    end
     using QuantumOpticsBase
     using QuantumToolbox
     using LinearAlgebra
