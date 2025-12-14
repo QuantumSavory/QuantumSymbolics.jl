@@ -1,4 +1,5 @@
 [deps]
+AnythingLLMDocs = "333fe5f5-19c9-4863-8caf-c9193e7dba62"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
 PrettyPrint = "8162dcfd-2161-5ef2-ae6c-7681170c5f98"
