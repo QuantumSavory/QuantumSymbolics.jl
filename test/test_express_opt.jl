@@ -2,12 +2,14 @@
     import QuantumClifford
     import QuantumOptics
 
+    timed_express(state) = @timed express(state)
+
     state = 1im*X2⊗Z1+2*Y1⊗(Z2+X2)+StabilizerState("XZ YY")
     express(state)
     express(state)
     state = 1im*X1⊗Z2+2*Y2⊗(Z1+X1)+StabilizerState("YX ZZ")
-    nocache = @timed express(state)
-    withcache = @timed express(state)
+    nocache = timed_express(state)
+    withcache = timed_express(state)
     !Sys.isapple() && @test nocache.time > 10*withcache.time
     @test withcache.bytes == 0
     @test nocache.value ≈ withcache.value ≈ express(1im*X1⊗Z2+2*Y2⊗(Z1+X1)+StabilizerState("YX ZZ"))
@@ -18,8 +20,8 @@
     state2 = deepcopy(state)
     express(state)
     express(state)
-    nocache = @timed express(state2)
-    withcache = @timed express(state2)
+    nocache = timed_express(state2)
+    withcache = timed_express(state2)
     !Sys.isapple() && @test nocache.time > 20*withcache.time
     @test withcache.bytes == 0
     @test nocache.value ≈ withcache.value ≈ express(state2)
