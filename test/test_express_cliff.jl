@@ -2,6 +2,8 @@
     using QuantumClifford
     using QuantumOptics
 
+    timed_express(state, repr) = @timed express(state, repr)
+
     state = StabilizerState(S"ZZ XX")
     state = SProjector(state)*0.5 + 0.5*MixedState(state)
     state2 = deepcopy(state)
@@ -9,8 +11,8 @@
     express(state, CliffordRepr())
     express(state2)
     express(state2)
-    nocache = @timed express(state2, CliffordRepr())
-    withcache = @timed express(state2, CliffordRepr())
+    nocache = timed_express(state2, CliffordRepr())
+    withcache = timed_express(state2, CliffordRepr())
     @test nocache.time > 2*withcache.time
     @test withcache.bytes <= 200
     results = Set([express(state2, CliffordRepr()) for i in 1:20])
