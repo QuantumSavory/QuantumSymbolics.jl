@@ -1,9 +1,10 @@
 using Symbolics
-import Symbolics: simplify,Term
+import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
+import SymbolicUtils: _isone, flatten_term, isnotflat, term
+import SymbolicUtils.Rewriters: Chain, Fixpoint
 using TermInterface
-import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
+import TermInterface: isexpr, head, iscall, children, operation, arguments, metadata, maketerm, sorted_arguments
 import MacroTools
 import MacroTools: namify, @capture
 
@@ -98,13 +99,14 @@ end
 # Basic Types
 ##
 
+abstract type QSymbolic{T} end
 const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator}
-const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
+const SymQObj = QSymbolic{<:QObj}
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
 hash((typeof(x),symbollabel(x),basis(x)), h)
-maketerm(::Type{<:SymQObj}, f, a, m) = f(a...)
+maketerm(::Type{<:QSymbolic}, f, a, m) = f(a...)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y
@@ -122,12 +124,29 @@ function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
         false
     end
 end
-Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
-Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
 propsequal(x,y) = all(n->(n==:metadata || isequal(getproperty(x,n),getproperty(y,n))), propertynames(x))
+
+# Scalar algebra for symbolic scalars originating from QuantumSymbolics (e.g. `⟨b||k⟩`, `tr(A)`).
+#
+# We embed them into SymbolicUtils's scalar algebra as `identity(x)` atoms of the appropriate symtype.
+const SymQScalar = QSymbolic{<:Number}
+_scalar_symtype(::QSymbolic{T}) where {T<:Number} = T
+_scalar_symtype(::QSymbolic{Complex}) = Complex{Real}
+_scalarize(x::SymQScalar) = term(identity, x; type=_scalar_symtype(x))
+_scalarize(x::Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic}) = x
+
+Base.:+(x::SymQScalar, y::Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic, SymQScalar}) = _scalarize(x) + _scalarize(y)
+Base.:+(x::Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic}, y::SymQScalar) = _scalarize(x) + _scalarize(y)
+Base.:*(x::SymQScalar, y::Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic, SymQScalar}) = _scalarize(x) * _scalarize(y)
+Base.:*(x::Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic}, y::SymQScalar) = _scalarize(x) * _scalarize(y)
+Base.:-(x::SymQScalar) = -_scalarize(x)
+
+# SymbolicUtils matchers expect `vartype` to exist on matched expression types.
+SymbolicUtils.vartype(::QSymbolic) = SymbolicUtils.TreeReal
+SymbolicUtils.vartype(::Type{<:QSymbolic}) = SymbolicUtils.TreeReal
 
 
 ##

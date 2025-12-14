@@ -6,7 +6,7 @@ using QuantumSymbolics
 using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp,
     XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
-    Symbolic
+    QSymbolic
 import QuantumSymbolics: express, express_nolookup, express_from_cache
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
@@ -23,7 +23,7 @@ const _qc_i₋ = MixedDestabilizer(S"-Y")
 express_nolookup(s::XBasisState, ::CliffordRepr) = (_qc_s₊,_qc_s₋)[s.idx]
 express_nolookup(s::YBasisState, ::CliffordRepr) = (_qc_i₊,_qc_i₋)[s.idx]
 express_nolookup(s::ZBasisState, ::CliffordRepr) = (_qc_l,_qc_h)[s.idx]
-function express_nolookup(s::Symbolic{T}, repr::CliffordRepr) where {T<:Union{AbstractKet,AbstractOperator}}
+function express_nolookup(s::QSymbolic{T}, repr::CliffordRepr) where {T<:Union{AbstractKet,AbstractOperator}}
     if isexpr(s) && operation(s)==⊗
         #operation(s)(express.(arguments(s), (repr,))...) # TODO this does not work because QuantumClifford.⊗ is different from ⊗
         QuantumClifford.tensor(express.(arguments(s), (repr,))...)

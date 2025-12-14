@@ -20,7 +20,7 @@ julia> commutator(A, A)
 𝟎
 ```
 """
-@withmetadata struct SCommutator <: Symbolic{AbstractOperator}
+@withmetadata struct SCommutator <: QSymbolic{AbstractOperator}
     op1
     op2
 end
@@ -30,7 +30,7 @@ arguments(x::SCommutator) = [x.op1, x.op2]
 operation(x::SCommutator) = commutator
 head(x::SCommutator) = :commutator
 children(x::SCommutator) = [:commutator, x.op1, x.op2]
-function commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
+function commutator(o1::QSymbolic{AbstractOperator}, o2::QSymbolic{AbstractOperator})
     if !(samebases(basis(o1),basis(o2)))
         throw(IncompatibleBases())
     else
@@ -38,8 +38,8 @@ function commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperato
         cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)
     end
 end
-commutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
-commutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
+commutator(o1::SZeroOperator, o2::QSymbolic{AbstractOperator}) = SZeroOperator()
+commutator(o1::QSymbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
 commutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
 Base.show(io::IO, x::SCommutator) = print(io, "[$(x.op1),$(x.op2)]")
 basis(x::SCommutator) = basis(x.op1)
@@ -54,7 +54,7 @@ julia> anticommutator(A, B)
 {A,B}
 ```
 """
-@withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
+@withmetadata struct SAnticommutator <: QSymbolic{AbstractOperator}
     op1
     op2
 end
@@ -64,7 +64,7 @@ arguments(x::SAnticommutator) = [x.op1, x.op2]
 operation(x::SAnticommutator) = anticommutator
 head(x::SAnticommutator) = :anticommutator
 children(x::SAnticommutator) = [:anticommutator, x.op1, x.op2]
-function anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperator})
+function anticommutator(o1::QSymbolic{AbstractOperator}, o2::QSymbolic{AbstractOperator})
     if !(samebases(basis(o1),basis(o2)))
         throw(IncompatibleBases())
     else
@@ -72,8 +72,8 @@ function anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOpe
         coeff * SAnticommutator(cleanterms...)
     end
 end
-anticommutator(o1::SZeroOperator, o2::Symbolic{AbstractOperator}) = SZeroOperator()
-anticommutator(o1::Symbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
+anticommutator(o1::SZeroOperator, o2::QSymbolic{AbstractOperator}) = SZeroOperator()
+anticommutator(o1::QSymbolic{AbstractOperator}, o2::SZeroOperator) = SZeroOperator()
 anticommutator(o1::SZeroOperator, o2::SZeroOperator) = SZeroOperator()
 Base.show(io::IO, x::SAnticommutator) = print(io, "{$(x.op1),$(x.op2)}")
 basis(x::SAnticommutator) = basis(x.op1)
@@ -91,7 +91,7 @@ julia> conj(k)
 |k⟩ˣ
 ```
 """
-@withmetadata struct SConjugate{T<:QObj} <: Symbolic{T}
+@withmetadata struct SConjugate{T<:QObj} <: QSymbolic{T}
     obj
 end
 isexpr(::SConjugate) = true
@@ -108,7 +108,7 @@ children(x::SConjugate) = [:conj, x.obj]
 
 Symbolic complex conjugate operation. See also [`SConjugate`](@ref).
 """
-conj(x::Symbolic{T}) where {T<:QObj} = SConjugate{T}(x)
+conj(x::QSymbolic{T}) where {T<:QObj} = SConjugate{T}(x)
 conj(x::SZero) = x
 conj(x::SConjugate) = x.obj
 basis(x::SConjugate) = basis(x.obj)
@@ -131,8 +131,8 @@ Operator(dim=2x2)
  -0.5+0.0im   0.5+0.0im
 ```
 """
-@withmetadata struct SProjector <: Symbolic{AbstractOperator}
-    ket::Symbolic{AbstractKet} # TODO parameterize
+@withmetadata struct SProjector <: QSymbolic{AbstractOperator}
+    ket::QSymbolic{AbstractKet} # TODO parameterize
 end
 isexpr(::SProjector) = true
 iscall(::SProjector) = true
@@ -141,11 +141,11 @@ operation(x::SProjector) = projector
 head(x::SProjector) = :projector
 children(x::SProjector) = [:projector,x.ket]
 """
-    projector(x::Symbolic{AbstractKet})
+    projector(x::QSymbolic{AbstractKet})
 
 Symbolic projection operation. See also [`SProjector`](@ref).
 """
-projector(x::Symbolic{AbstractKet}) = SProjector(x)
+projector(x::QSymbolic{AbstractKet}) = SProjector(x)
 projector(x::SZeroKet) = SZeroOperator()
 basis(x::SProjector) = basis(x.ket)
 function Base.show(io::IO, x::SProjector)
@@ -170,7 +170,7 @@ julia> transpose(k)
 |k⟩ᵀ
 ```
 """
-@withmetadata struct STranspose{T<:QObj} <: Symbolic{T}
+@withmetadata struct STranspose{T<:QObj} <: QSymbolic{T}
     obj
 end
 isexpr(::STranspose) = true
@@ -180,13 +180,13 @@ operation(x::STranspose) = transpose
 head(x::STranspose) = :transpose
 children(x::STranspose) = [:transpose, x.obj]
 """
-    transpose(x::Symbolic{AbstractKet})
-    transpose(x::Symbolic{AbstractBra})
-    transpose(x::Symbolic{AbstractOperator})
+    transpose(x::QSymbolic{AbstractKet})
+    transpose(x::QSymbolic{AbstractBra})
+    transpose(x::QSymbolic{AbstractOperator})
 
 Symbolic transpose operation. See also [`STranspose`](@ref).
 """
-transpose(x::Symbolic{T}) where {T<:Union{AbstractKet,AbstractBra,AbstractOperator}} = STranspose{T}(x)
+transpose(x::QSymbolic{T}) where {T<:Union{AbstractKet,AbstractBra,AbstractOperator}} = STranspose{T}(x)
 transpose(x::SScaled) = x.coeff*transpose(x.obj)
 transpose(x::SAdd) = (+)((transpose(i) for i in arguments(x))...)
 transpose(x::SMulOperator) = (*)((transpose(i) for i in reverse(x.terms))...)
@@ -222,7 +222,7 @@ julia> dagger(U)
 U⁻¹
 ```
 """
-@withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
+@withmetadata struct SDagger{T<:QObj} <: QSymbolic{T}
     obj
 end
 isexpr(::SDagger) = true
@@ -232,23 +232,23 @@ operation(x::SDagger) = dagger
 head(x::SDagger) = :dagger
 children(x::SDagger) = [:dagger, x.obj]
 """
-    dagger(x::Symbolic{AbstractKet})
+    dagger(x::QSymbolic{AbstractKet})
 
 Symbolic adjoint operation. See also [`SDagger`](@ref).
 """
-dagger(x::Symbolic{AbstractKet})= SDagger{AbstractBra}(x)
+dagger(x::QSymbolic{AbstractKet})= SDagger{AbstractBra}(x)
 """
-    dagger(x::Symbolic{AbstractBra})
+    dagger(x::QSymbolic{AbstractBra})
 
 Symbolic adjoint operation. See also [`SDagger`](@ref).
 """
-dagger(x::Symbolic{AbstractBra})= SDagger{AbstractKet}(x)
+dagger(x::QSymbolic{AbstractBra})= SDagger{AbstractKet}(x)
 """
-    dagger(x::Symbolic{AbstractOperator})
+    dagger(x::QSymbolic{AbstractOperator})
 
 Symbolic adjoint operation. See also [`SDagger`](@ref).
 """
-dagger(x::Symbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
+dagger(x::QSymbolic{AbstractOperator}) = SDagger{AbstractOperator}(x)
 dagger(x::SScaled) = conj(x.coeff)*dagger(x.obj)
 dagger(x::SAdd) = (+)((dagger(i) for i in arguments(x))...)
 dagger(x::SMulOperator) = (*)((dagger(i) for i in reverse(x.terms))...)
@@ -286,8 +286,8 @@ julia> tr(k*b)
 ⟨b||k⟩
 ```
 """
-@withmetadata struct STrace <: Symbolic{Complex}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct STrace <: QSymbolic{Complex}
+    op::QSymbolic{AbstractOperator}
 end
 isexpr(::STrace) = true
 iscall(::STrace) = true
@@ -298,11 +298,11 @@ head(x::STrace) = :tr
 children(x::STrace) = [:tr, x.op]
 Base.show(io::IO, x::STrace) = print(io, "tr($(x.op))")
 """
-    tr(x::Symbolic{AbstractOperator})
+    tr(x::QSymbolic{AbstractOperator})
 
 Symbolic trace operation. See also [`STrace`](@ref).
 """
-tr(x::Symbolic{AbstractOperator}) = STrace(x)
+tr(x::QSymbolic{AbstractOperator}) = STrace(x)
 tr(x::SScaled{AbstractOperator}) = x.coeff*tr(x.obj)
 tr(x::SAdd{AbstractOperator}) = (+)((tr(i) for i in arguments(x))...)
 tr(x::SOuterKetBra) = x.bra*x.ket
@@ -349,7 +349,7 @@ julia> ptrace(mixed_state, 2)
 (0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|
 ```
 """
-@withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}
+@withmetadata struct SPartialTrace <: QSymbolic{AbstractOperator}
     obj
     sys::Int
 end
@@ -366,11 +366,11 @@ function basis(x::SPartialTrace)
 end
 Base.show(io::IO, x::SPartialTrace) = print(io, "tr$(x.sys)($(x.obj))")
 """
-    ptrace(x::Symbolic{AbstractOperator})
+    ptrace(x::QSymbolic{AbstractOperator})
 
 Symbolic partial trace operation. See also [`SPartialTrace`](@ref).
 """
-function ptrace(x::Symbolic{AbstractOperator}, s)
+function ptrace(x::QSymbolic{AbstractOperator}, s)
     ex = isexpr(x) ? qexpand(x) : x
     if isa(ex, typeof(x))
         if isa(basis(x), CompositeBasis)
@@ -447,8 +447,8 @@ julia> inv(A)*A
 𝕀
 ```
 """
-@withmetadata struct SInvOperator <: Symbolic{AbstractOperator}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct SInvOperator <: QSymbolic{AbstractOperator}
+    op::QSymbolic{AbstractOperator}
 end
 isexpr(::SInvOperator) = true
 iscall(::SInvOperator) = true
@@ -461,11 +461,11 @@ Base.show(io::IO, x::SInvOperator) = print(io, "$(x.op)⁻¹")
 Base.:(*)(invop::SInvOperator, op::SOperator) = isequal(invop.op, op) ? IdentityOp(basis(op)) : SMulOperator(invop, op)
 Base.:(*)(op::SOperator, invop::SInvOperator) = isequal(op, invop.op) ? IdentityOp(basis(op)) : SMulOperator(op, invop)
 """
-    inv(x::Symbolic{AbstractOperator})
+    inv(x::QSymbolic{AbstractOperator})
 
 Symbolic inverse of an operator. See also [`SInvOperator`](@ref).
 """
-inv(x::Symbolic{AbstractOperator}) = SInvOperator(x)
+inv(x::QSymbolic{AbstractOperator}) = SInvOperator(x)
 
 
 """Exponential of a symbolic operator.
@@ -477,8 +477,8 @@ julia> exp(A)
 exp(A)
 ```
 """
-@withmetadata struct SExpOperator <: Symbolic{AbstractOperator}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct SExpOperator <: QSymbolic{AbstractOperator}
+    op::QSymbolic{AbstractOperator}
 end
 isexpr(::SExpOperator) = true
 iscall(::SExpOperator) = true
@@ -489,11 +489,11 @@ children(x::SExpOperator) = [:exp, x.op]
 basis(x::SExpOperator) = basis(x.op)
 Base.show(io::IO, x::SExpOperator) = print(io, "exp($(x.op))")
 """
-    exp(x::Symbolic{AbstractOperator})
+    exp(x::QSymbolic{AbstractOperator})
 
 Symbolic exponential of an operator. See also [`SExpOperator`](@ref).
 """
-exp(x::Symbolic{AbstractOperator}) = SExpOperator(x)
+exp(x::QSymbolic{AbstractOperator}) = SExpOperator(x)
 
 
 """Vectorization of a symbolic operator.
@@ -508,8 +508,8 @@ julia> vec(A+B)
 |A⟩⟩+|B⟩⟩
 ```
 """
-@withmetadata struct SVec <: Symbolic{AbstractKet}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct SVec <: QSymbolic{AbstractKet}
+    op::QSymbolic{AbstractOperator}
 end
 isexpr(::SVec) = true
 iscall(::SVec) = true
@@ -520,10 +520,10 @@ children(x::SVec) = [:vec, x.op]
 basis(x::SVec) = (⊗)(fill(basis(x.op), length(basis(x.op)))...)
 Base.show(io::IO, x::SVec) = print(io, "|$(x.op)⟩⟩")
 """
-    vec(x::Symbolic{AbstractOperator})
+    vec(x::QSymbolic{AbstractOperator})
 
 Symbolic vector representation of an operator. See also [`SVec`](@ref).
 """
-vec(x::Symbolic{AbstractOperator}) = SVec(x)
+vec(x::QSymbolic{AbstractOperator}) = SVec(x)
 vec(x::SScaled{AbstractOperator}) = x.coeff*vec(x.obj)
 vec(x::SAdd{AbstractOperator}) = (+)((vec(i) for i in arguments(x))...)

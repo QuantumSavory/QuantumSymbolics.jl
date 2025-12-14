@@ -7,7 +7,7 @@ using QuantumSymbolics
 using QuantumInterface
 using QuantumClifford, QuantumOpticsBase
 
-using QuantumSymbolics: @withmetadata, Symbolic, AbstractKet, Metadata
+using QuantumSymbolics: @withmetadata, AbstractKet, Metadata
 
 using QuantumClifford: _T_str
 

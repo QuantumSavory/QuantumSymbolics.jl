@@ -18,7 +18,7 @@ Ket(dim=2)
   0.7071067811865475 + 0.0im
  -0.7071067811865475 + 0.0im
 ```"""
-@withmetadata struct StabilizerState{T} <: Symbolic{AbstractKet} where {T}
+@withmetadata struct StabilizerState{T} <: QSymbolic{AbstractKet} where {T}
     stabilizer::T
 end
 isexpr(::StabilizerState) = false

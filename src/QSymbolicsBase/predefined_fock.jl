@@ -42,8 +42,8 @@ const F₁ = const F1 = FockState(1)
 # Gates and Operators on harmonic oscillators
 ##
 
-abstract type AbstractSingleBosonOp <: Symbolic{AbstractOperator} end
-abstract type AbstractTwoBosonOp <: Symbolic{AbstractOperator} end
+abstract type AbstractSingleBosonOp <: QSymbolic{AbstractOperator} end
+abstract type AbstractTwoBosonOp <: QSymbolic{AbstractOperator} end
 abstract type AbstractSingleBosonGate <: AbstractSingleBosonOp end # TODO maybe an IsUnitaryTrait is a better choice
 abstract type AbstractTwoBosonGate <: AbstractTwoBosonOp end
 isexpr(::AbstractSingleBosonGate) = false

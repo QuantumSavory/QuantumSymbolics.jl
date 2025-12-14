@@ -1,6 +1,6 @@
 export PauliNoiseCPTP, DephasingCPTP, DephasingCPTP, GateCPTP, AttenuatorCPTP, AmplifierCPTP
 
-abstract type NoiseCPTP <: Symbolic{AbstractSuperOperator} end
+abstract type NoiseCPTP <: QSymbolic{AbstractSuperOperator} end
 isexpr(::NoiseCPTP) = false
 basis(x::NoiseCPTP) = x.basis
 
@@ -63,7 +63,7 @@ symbollabel(x::DepolarizationCPTP) = "𝒟ℯ𝓅ℴ𝓁"
 
 """A unitary gate followed by a CPTP map"""
 @withmetadata struct GateCPTP <: NoiseCPTP
-    gate::Symbolic{AbstractOperator}
+    gate::QSymbolic{AbstractOperator}
     cptp::NoiseCPTP
 end
 basis(x::GateCPTP) = basis(x.cptp)

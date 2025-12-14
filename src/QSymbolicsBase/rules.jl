@@ -13,6 +13,36 @@ end
 _isa(T) = x->isa(x,T)
 _vecisa(T) = x->all(_isa(T), x)
 
+"""
+    Prewalk(rw)
+
+Pre-order traversal for TermInterface-compatible trees.
+
+SymbolicUtils.Rewriters.Prewalk only works on `BasicSymbolic`; QuantumSymbolics expressions use
+custom tree types, so we provide a minimal `TermInterface`-based implementation here.
+"""
+function Prewalk(rw)
+    function walk(x)
+        y = rw(x)
+        x = y === nothing ? x : y
+        if iscall(x)
+            args = arguments(x)
+            newargs = Any[]
+            changed = false
+            for a in args
+                a2 = walk(a)
+                push!(newargs, a2)
+                if !(a2 === a || isequal(a2, a))
+                    changed = true
+                end
+            end
+            changed && (x = maketerm(typeof(x), operation(x), newargs, metadata(x)))
+        end
+        return x
+    end
+    return walk
+end
+
 ##
 # Simplification rules
 ## 
@@ -95,8 +125,8 @@ RULES_ANTICOMMUTATOR = [
 
 RULES_FOCK = [
     @rule(~o::_isa(DestroyOp) * ~k::isequal(vac) => SZeroKet()),
-    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx+1])*FockState((~k).idx+1)),
-    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx])*FockState((~k).idx-1)),
+    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => term(sqrt, (~k).idx + 1) * FockState((~k).idx + 1)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => term(sqrt, (~k).idx) * FockState((~k).idx - 1)),
     @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
     @rule(~o::_isa(DestroyOp) * ~k::_isa(CoherentState) => (~k).alpha*(~k)),
     @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(CoherentState) => CoherentState((~k).alpha * exp(-im*(~o).phase))),
@@ -164,8 +194,8 @@ RULES_EXPAND = [
     @rule(+(~~ops) ⊗ ~o1 => +(map(op -> op ⊗ ~o1, ~~ops)...)),
     @rule(~o1 * +(~~ops) => +(map(op -> ~o1 * op, ~~ops)...)),
     @rule(+(~~ops) * ~o1 => +(map(op -> op * ~o1, ~~ops)...)),
-    @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractBra})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractKet})) => *(map(*, ~~ops1, ~~ops2)...)),
-    @rule(⊗(~~ops1::_vecisa(Symbolic{AbstractOperator})) * ⊗(~~ops2::_vecisa(Symbolic{AbstractOperator})) => ⊗(map(*, ~~ops1, ~~ops2)...)),
+    @rule(⊗(~~ops1::_vecisa(QSymbolic{AbstractBra})) * ⊗(~~ops2::_vecisa(QSymbolic{AbstractKet})) => *(map(*, ~~ops1, ~~ops2)...)),
+    @rule(⊗(~~ops1::_vecisa(QSymbolic{AbstractOperator})) * ⊗(~~ops2::_vecisa(QSymbolic{AbstractOperator})) => ⊗(map(*, ~~ops1, ~~ops2)...)),
 ]
 
 # 

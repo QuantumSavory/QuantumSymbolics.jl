@@ -3,7 +3,7 @@
 ##
 
 """Symbolic bra"""
-struct SBra <: Symbolic{AbstractBra}
+struct SBra <: QSymbolic{AbstractBra}
     name::Symbol
     basis::Basis
 end
@@ -30,7 +30,7 @@ macro bra(name)
 end
 
 """Symbolic ket"""
-struct SKet <: Symbolic{AbstractKet}
+struct SKet <: QSymbolic{AbstractKet}
     name::Symbol
     basis::Basis
 end
@@ -57,7 +57,7 @@ macro ket(name)
 end
 
 """Symbolic operator"""
-struct SOperator <: Symbolic{AbstractOperator}
+struct SOperator <: QSymbolic{AbstractOperator}
     name::Symbol
     basis::Basis
 end
@@ -86,7 +86,7 @@ ishermitian(x::SOperator) = false
 isunitary(x::SOperator) = false
 
 """Symbolic Hermitian operator"""
-struct SHermitianOperator <: Symbolic{AbstractOperator}
+struct SHermitianOperator <: QSymbolic{AbstractOperator}
     name::Symbol
     basis::Basis
 end
@@ -96,7 +96,7 @@ ishermitian(::SHermitianOperator) = true
 isunitary(::SHermitianOperator) = false
 
 """Symbolic unitary operator"""
-struct SUnitaryOperator <: Symbolic{AbstractOperator}
+struct SUnitaryOperator <: QSymbolic{AbstractOperator}
     name::Symbol
     basis::Basis
 end
@@ -106,7 +106,7 @@ ishermitian(::SUnitaryOperator) = false
 isunitary(::SUnitaryOperator) = true
 
 """Symbolic Hermitian and unitary operator"""
-struct SHermitianUnitaryOperator <: Symbolic{AbstractOperator}
+struct SHermitianUnitaryOperator <: QSymbolic{AbstractOperator}
     name::Symbol
     basis::Basis
 end
@@ -116,7 +116,7 @@ ishermitian(::SHermitianUnitaryOperator) = true
 isunitary(::SHermitianUnitaryOperator) = true
 
 """Symbolic superoperator"""
-struct SSuperOperator <: Symbolic{AbstractSuperOperator}
+struct SSuperOperator <: QSymbolic{AbstractSuperOperator}
     name::Symbol
     basis::Basis
 end
@@ -141,9 +141,9 @@ Base.show(io::IO, x::SBra) = print(io, "⟨$(symbollabel(x))|")
 Base.show(io::IO, x::Union{SOperator,SHermitianOperator,SUnitaryOperator,SHermitianUnitaryOperator,SSuperOperator}) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::SymQObj) = print(io, symbollabel(x)) # fallback that probably is not great
 
-struct SZero{T<:QObj} <: Symbolic{T} end
+struct SZero{T<:QObj} <: QSymbolic{T} end
 
-function Base.zero(x::Symbolic{T}) where T<:QObj
+function Base.zero(x::QSymbolic{T}) where T<:QObj
     return SZero{T}()
 end
 

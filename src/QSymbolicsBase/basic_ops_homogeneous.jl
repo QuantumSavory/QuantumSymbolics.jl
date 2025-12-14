@@ -19,7 +19,7 @@ julia> 2*A
 2A
 ```
 """
-@withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
+@withmetadata struct SScaled{T<:QObj} <: QSymbolic{T}
     coeff
     obj
 end
@@ -29,7 +29,7 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Number}},T<:QObj}
+function Base.:(*)(c::U, x::QSymbolic{T}) where {U<:Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic, QSymbolic{<:Number}},T<:QObj}
     if (isa(c, Number) && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)
@@ -41,9 +41,9 @@ function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Numb
     end
 end
 
-Base.:(*)(x::Symbolic{T}, c::Number) where {T<:QObj} = c*x
-Base.:(*)(x::Symbolic{T}, y::Symbolic{S}) where {T<:QObj,S<:QObj} = throw(ArgumentError("multiplication between $(typeof(x)) and $(typeof(y)) is not defined; maybe you are looking for a tensor product `tensor`"))
-Base.:(/)(x::Symbolic{T}, c::Number) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
+Base.:(*)(x::QSymbolic{T}, c::Number) where {T<:QObj} = c*x
+Base.:(*)(x::QSymbolic{T}, y::QSymbolic{S}) where {T<:QObj,S<:QObj} = throw(ArgumentError("multiplication between $(typeof(x)) and $(typeof(y)) is not defined; maybe you are looking for a tensor product `tensor`"))
+Base.:(/)(x::QSymbolic{T}, c::Number) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}
@@ -104,7 +104,7 @@ julia> k₁ + k₂
 |k₁⟩+|k₂⟩
 ```
 """
-@withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
+@withmetadata struct SAdd{T<:QObj} <: QSymbolic{T}
     dict
     _set_precomputed
     _arguments_precomputed
@@ -120,7 +120,7 @@ arguments(x::SAdd) = x._arguments_precomputed
 operation(x::SAdd) = +
 head(x::SAdd) = :+
 children(x::SAdd) = [:+; x._arguments_precomputed]
-function Base.:(+)(x::Symbolic{T}, xs::Vararg{Symbolic{T}, N}) where {T<:QObj, N}
+function Base.:(+)(x::QSymbolic{T}, xs::Vararg{QSymbolic{T}, N}) where {T<:QObj, N}
     xs = (x, xs...)
     xs = collect(xs)
     f = first(xs)
@@ -155,7 +155,7 @@ julia> A*B
 AB
 ```
 """
-@withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
+@withmetadata struct SMulOperator <: QSymbolic{AbstractOperator}
     terms
 end
 isexpr(::SMulOperator) = true
@@ -164,7 +164,7 @@ arguments(x::SMulOperator) = x.terms
 operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
-function Base.:(*)(x::Symbolic{AbstractOperator}, xs::Vararg{Symbolic{AbstractOperator}, N}) where {N}
+function Base.:(*)(x::QSymbolic{AbstractOperator}, xs::Vararg{QSymbolic{AbstractOperator}, N}) where {N}
     xs = (x, xs...)
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
@@ -199,7 +199,7 @@ julia> A ⊗ B
 A⊗B
 ```
 """
-@withmetadata struct STensor{T<:QObj} <: Symbolic{T}
+@withmetadata struct STensor{T<:QObj} <: QSymbolic{T}
     terms
 end
 isexpr(::STensor) = true
@@ -208,7 +208,7 @@ arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
 head(x::STensor) = :⊗
 children(x::STensor) = [:⊗; x.terms]
-function ⊗(xs::Symbolic{T}...) where {T<:QObj}
+function ⊗(xs::QSymbolic{T}...) where {T<:QObj}
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
         terms = flattenop(⊗, collect(xs))
