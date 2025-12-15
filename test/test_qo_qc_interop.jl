@@ -1,15 +1,5 @@
-@testitem "QuantumOptics QuantumClifford Interop" tags=[:clifford] begin
-    using Pkg
-    if get(Pkg.project().dependencies, "QuantumClifford", nothing) === nothing
-        @test_skip "QuantumClifford not present in the test environment"
-        return
-    end
-    try
-        using QuantumClifford: @S_str, random_stabilizer
-    catch
-        @test_skip "QuantumClifford not available in test environment"
-        return
-    end
+@testitem "QuantumOptics QuantumClifford Interop" begin
+    using QuantumClifford: @S_str, random_stabilizer
     using QuantumOpticsBase
     using LinearAlgebra
     #using QuantumOpticsExt: _l0, _l1, _s₊, _s₋, _i₊, _i₋

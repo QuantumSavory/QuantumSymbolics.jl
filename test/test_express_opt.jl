@@ -1,4 +1,4 @@
-@testitem "Express opt" tags=[:clifford] begin
+@testitem "Express opt" begin
     import QuantumClifford
     import QuantumOptics
 
