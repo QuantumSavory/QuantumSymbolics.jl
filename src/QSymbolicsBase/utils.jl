@@ -36,22 +36,24 @@ end
 
 function countmap_flatten(samples, flattenadd, flattenmul)
     counts = Dict{Any,Any}()
+    # Helper to add coefficients, avoiding issues with symbolic types
+    add_coef(existing, new) = existing == 0 ? new : existing + new
     for s in samples
         if s isa flattenadd
             for (term,coef) in pairs(s.dict)
-                counts[term] = get(counts, term, 0)+coef
+                counts[term] = add_coef(get(counts, term, 0), coef)
             end
         elseif s isa flattenmul
             coef, term = arguments(s)
             if term isa flattenadd
                 for (_term,_coef) in pairs(term.dict)
-                    counts[_term] = get(counts, _term, 0)+coef*_coef
+                    counts[_term] = add_coef(get(counts, _term, 0), coef*_coef)
                 end
             else
-                counts[term] = get(counts, term, 0)+coef
+                counts[term] = add_coef(get(counts, term, 0), coef)
             end
         else
-            counts[s] = get(counts, s, 0)+1
+            counts[s] = add_coef(get(counts, s, 0), 1)
         end
     end
     for (term,coef) in pairs(counts)

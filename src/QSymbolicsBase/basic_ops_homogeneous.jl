@@ -44,6 +44,19 @@ end
 Base.:(*)(x::Symbolic{T}, c::Number) where {T<:QObj} = c*x
 Base.:(*)(x::Symbolic{T}, y::Symbolic{S}) where {T<:QObj,S<:QObj} = throw(ArgumentError("multiplication between $(typeof(x)) and $(typeof(y)) is not defined; maybe you are looking for a tensor product `tensor`"))
 Base.:(/)(x::Symbolic{T}, c::Number) where {T<:QObj} = iszero(c) ? throw(DomainError(c,"cannot divide QSymbolics expressions by zero")) : (1/c)*x
+# Arithmetic for Symbolic{<:Number} types (like SBraKet, STrace) - creates symbolic terms
+Base.:(*)(c::Number, x::Symbolic{<:Number}) = iszero(c) ? zero(c) : (_isone(c) ? x : term(*, c, x))
+Base.:(*)(x::Symbolic{<:Number}, c::Number) = c * x
+Base.:(*)(x::Symbolic{<:Number}, y::Symbolic{<:Number}) = term(*, x, y)
+Base.:(*)(x::SymbolicUtils.BasicSymbolic, y::Symbolic{<:Number}) = term(*, x, y)
+Base.:(*)(x::Symbolic{<:Number}, y::SymbolicUtils.BasicSymbolic) = term(*, x, y)
+Base.:(+)(x::Symbolic{<:Number}, y::Symbolic{<:Number}) = term(+, x, y)
+Base.:(+)(x::SymbolicUtils.BasicSymbolic, y::Symbolic{<:Number}) = term(+, x, y)
+Base.:(+)(x::Symbolic{<:Number}, y::SymbolicUtils.BasicSymbolic) = term(+, x, y)
+Base.:(+)(x::Symbolic{<:Number}, y::Number) = iszero(y) ? x : term(+, x, y)
+Base.:(+)(x::Number, y::Symbolic{<:Number}) = y + x
+Base.:(+)(x::Number, y::SymbolicUtils.BasicSymbolic) = iszero(x) ? y : term(+, x, y)
+Base.:(+)(x::SymbolicUtils.BasicSymbolic, y::Number) = y + x
 basis(x::SScaled) = basis(x.obj)
 
 const SScaledKet = SScaled{AbstractKet}

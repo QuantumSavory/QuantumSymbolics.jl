@@ -101,6 +101,20 @@ function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet})
         coeff == 1 ? SBraKet(cleanterms...) : coeff*SBraKet(cleanterms...)
     end
 end
+# Special case for tensor products of bras and kets: (b₁⊗b₂)*(k₁⊗k₂) = (b₁*k₁)*(b₂*k₂)
+function Base.:(*)(b::STensorBra, k::STensorKet)
+    bras = arguments(b)
+    kets = arguments(k)
+    if length(bras) != length(kets)
+        throw(ArgumentError("tensor product dimensions must match"))
+    end
+    coeff_b, clean_bras = prefactorscalings(bras)
+    coeff_k, clean_kets = prefactorscalings(kets)
+    coeff = coeff_b * coeff_k
+    inner_products = [b_i * k_i for (b_i, k_i) in zip(clean_bras, clean_kets)]
+    result = length(inner_products) == 1 ? first(inner_products) : reduce(*, inner_products)
+    coeff == 1 ? result : coeff * result
+end
 Base.:(*)(b::SZeroBra, k::Symbolic{AbstractKet}) = 0
 Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0

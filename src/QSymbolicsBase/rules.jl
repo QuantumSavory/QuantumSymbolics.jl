@@ -197,6 +197,8 @@ A|k₁⟩+A|k₂⟩
 function qexpand(s)
     if QuantumSymbolics.isexpr(s)
         Fixpoint(Prewalk(Chain(RULES_EXPAND)))(s)
+    elseif s isa SymbolicUtils.BasicSymbolic
+        s  # Already a symbolic scalar expression, nothing to expand
     else
         error("Object $(s) of type $(typeof(s)) is not an expression.")
     end

@@ -1,5 +1,5 @@
 @testitem "Fock" begin
-    using Symbolics: Term
+    using SymbolicUtils: term
     state1 = FockState(1)
     state2 = FockState(2)
     cstate = CoherentState(im)
@@ -13,8 +13,8 @@
 
     @testset "ladder and number operators" begin
         @test isequal(qsimplify(Destroy*vac, rewriter=qsimplify_fock), SZeroKet())
-        @test isequal(qsimplify(Create*state1, rewriter=qsimplify_fock), Term(sqrt, [2])*state2)
-        @test isequal(qsimplify(Destroy*state2, rewriter=qsimplify_fock), Term(sqrt, [2])*state1)
+        @test isequal(qsimplify(Create*state1, rewriter=qsimplify_fock), term(sqrt, 2)*state2)
+        @test isequal(qsimplify(Destroy*state2, rewriter=qsimplify_fock), term(sqrt, 2)*state1)
         @test isequal(qsimplify(N*state2, rewriter=qsimplify_fock), 2*state2)
         @test isequal(qsimplify(Destroy*cstate, rewriter=qsimplify_fock), im*cstate)
     end
