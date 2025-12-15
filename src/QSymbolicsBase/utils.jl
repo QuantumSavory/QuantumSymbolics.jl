@@ -5,7 +5,7 @@ function prefactorscalings(xs)
         if isa(x, SScaled)
             coeff *= x.coeff
             push!(terms, x.obj)
-        elseif isa(x, Union{Number, Symbolic{Number}})
+        elseif isa(x, Union{Number, Symbolics.Num, SymbolicUtils.BasicSymbolic, QSymbolic{<:Number}})
             coeff *= x
         else
             push!(terms,x)
@@ -18,7 +18,7 @@ function flattenop(f, terms)
     newterms = []
     for obj in terms
         if isexpr(obj) && operation(obj) === f
-            append!(newterms, arguments(obj))
+            append!(newterms, flattenop(f, arguments(obj)))
         else
             push!(newterms, obj)
         end

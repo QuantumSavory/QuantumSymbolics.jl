@@ -217,7 +217,7 @@ julia> @op A; @ket k;
 julia> ex = 2*A + projector(k)
 2A+𝐏[|k⟩]
 
-julia> substitute(ex, Dict([A => X, k => X1]))
+julia> QuantumSymbolics.Symbolics.substitute(ex, Dict([A => QuantumSymbolics.X, k => QuantumSymbolics.X1]))
 2X+𝐏[|X₁⟩]
 ```
 

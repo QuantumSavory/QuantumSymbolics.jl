@@ -11,7 +11,7 @@ julia> A*k
 A|k⟩
 ```
 """
-@withmetadata struct SApplyKet <: Symbolic{AbstractKet}
+@withmetadata struct SApplyKet <: QSymbolic{AbstractKet}
     op
     ket
 end
@@ -21,7 +21,7 @@ arguments(x::SApplyKet) = [x.op,x.ket]
 operation(x::SApplyKet) = *
 head(x::SApplyKet) = :*
 children(x::SApplyKet) = [:*,x.op,x.ket]
-function Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet})
+function Base.:(*)(op::QSymbolic{AbstractOperator}, k::QSymbolic{AbstractKet})
     if !(samebases(basis(op),basis(k)))
         throw(IncompatibleBases())
     else
@@ -29,8 +29,8 @@ function Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet})
         coeff*SApplyKet(cleanterms...)
     end
 end
-Base.:(*)(op::SZeroOperator, k::Symbolic{AbstractKet}) = SZeroKet()
-Base.:(*)(op::Symbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
+Base.:(*)(op::SZeroOperator, k::QSymbolic{AbstractKet}) = SZeroKet()
+Base.:(*)(op::QSymbolic{AbstractOperator}, k::SZeroKet) = SZeroKet()
 Base.:(*)(op::SZeroOperator, k::SZeroKet) = SZeroKet()
 function Base.show(io::IO, x::SApplyKet) 
     str_func = x -> x isa SAdd || x isa STensorOperator ? "("*string(x)*")" : string(x)
@@ -47,7 +47,7 @@ julia> b*A
 ⟨b|A
 ```
 """
-@withmetadata struct SApplyBra <: Symbolic{AbstractBra}
+@withmetadata struct SApplyBra <: QSymbolic{AbstractBra}
     bra
     op
 end
@@ -57,7 +57,7 @@ arguments(x::SApplyBra) = [x.bra,x.op]
 operation(x::SApplyBra) = *
 head(x::SApplyBra) = :*
 children(x::SApplyBra) = [:*,x.bra,x.op]
-function Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator}) 
+function Base.:(*)(b::QSymbolic{AbstractBra}, op::QSymbolic{AbstractOperator}) 
     if !(samebases(basis(b),basis(op)))
         throw(IncompatibleBases())
     else
@@ -65,8 +65,8 @@ function Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator})
         coeff*SApplyBra(cleanterms...)
     end
 end
-Base.:(*)(b::SZeroBra, op::Symbolic{AbstractOperator}) = SZeroBra()
-Base.:(*)(b::Symbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
+Base.:(*)(b::SZeroBra, op::QSymbolic{AbstractOperator}) = SZeroBra()
+Base.:(*)(b::QSymbolic{AbstractBra}, op::SZeroOperator) = SZeroBra()
 Base.:(*)(b::SZeroBra, op::SZeroOperator) = SZeroBra()
 function Base.show(io::IO, x::SApplyBra) 
     str_func = x -> x isa SAdd || x isa STensorOperator ? "("*string(x)*")" : string(x)
@@ -83,7 +83,7 @@ julia> b*k
 ⟨b||k⟩
 ```
 """
-@withmetadata struct SBraKet <: Symbolic{Complex}
+@withmetadata struct SBraKet <: QSymbolic{Complex}
     bra
     ket
 end
@@ -93,7 +93,7 @@ arguments(x::SBraKet) = [x.bra,x.ket]
 operation(x::SBraKet) = *
 head(x::SBraKet) = :*
 children(x::SBraKet) = [:*,x.bra,x.ket]
-function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet}) 
+function Base.:(*)(b::QSymbolic{AbstractBra}, k::QSymbolic{AbstractKet}) 
     if !(samebases(basis(b),basis(k)))
         throw(IncompatibleBases())
     else
@@ -101,8 +101,8 @@ function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet})
         coeff == 1 ? SBraKet(cleanterms...) : coeff*SBraKet(cleanterms...)
     end
 end
-Base.:(*)(b::SZeroBra, k::Symbolic{AbstractKet}) = 0
-Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
+Base.:(*)(b::SZeroBra, k::QSymbolic{AbstractKet}) = 0
+Base.:(*)(b::QSymbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
@@ -118,7 +118,7 @@ julia> k*b
 |k⟩⟨b|
 ```
 """
-@withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
+@withmetadata struct SOuterKetBra <: QSymbolic{AbstractOperator}
     ket
     bra
 end
@@ -128,7 +128,7 @@ arguments(x::SOuterKetBra) = [x.ket,x.bra]
 operation(x::SOuterKetBra) = *
 head(x::SOuterKetBra) = :*
 children(x::SOuterKetBra) = [:*,x.ket,x.bra]
-function Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra})
+function Base.:(*)(k::QSymbolic{AbstractKet}, b::QSymbolic{AbstractBra})
     if !(samebases(basis(k),basis(b)))
         throw(IncompatibleBases())
     else
@@ -136,8 +136,8 @@ function Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra})
         coeff*SOuterKetBra(cleanterms...)
     end
 end
-Base.:(*)(k::SZeroKet, b::Symbolic{AbstractBra}) = SZeroOperator()
-Base.:(*)(k::Symbolic{AbstractKet}, b::SZeroBra) = SZeroOperator()
+Base.:(*)(k::SZeroKet, b::QSymbolic{AbstractBra}) = SZeroOperator()
+Base.:(*)(k::QSymbolic{AbstractKet}, b::SZeroBra) = SZeroOperator()
 Base.:(*)(k::SZeroKet, b::SZeroBra) = SZeroOperator()
 Base.show(io::IO, x::SOuterKetBra) = begin print(io, x.ket); print(io, x.bra) end
 basis(x::SOuterKetBra) = basis(x.ket)

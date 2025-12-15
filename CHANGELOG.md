@@ -4,6 +4,7 @@
 
 - Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
 - Add QuantumToolbox extension for state vector translations.
+- Bump compats for TermInterface (v2), SymbolicUtils (v4.9), and Symbolics (v7.2), and migrate quantum expression types to a local `QSymbolic{T}` tree implementing TermInterface.
 
 ## v0.4.11 - 2025-06-22
 

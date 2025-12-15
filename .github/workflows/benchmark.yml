@@ -24,8 +24,23 @@ jobs:
         run: |
           julia -e '
             using BenchmarkCI
-            BenchmarkCI.judge(baseline = "origin/main")
-            BenchmarkCI.displayjudgement()
+            try
+              BenchmarkCI.judge(baseline = "origin/main")
+              BenchmarkCI.displayjudgement()
+            catch err
+              workspace = BenchmarkCI.DEFAULT_WORKSPACE
+              mkpath(workspace)
+              target = joinpath(workspace, "result-target.json")
+              baseline = joinpath(workspace, "result-baseline.json")
+              open(joinpath(workspace, "baseline-error.txt"), "w") do io
+                showerror(io, err, catch_backtrace())
+              end
+              if isfile(target) && !isfile(baseline)
+                @warn "BenchmarkCI baseline failed; proceeding without comparison" exception=(err, catch_backtrace())
+              else
+                rethrow()
+              end
+            end
             '
 
       # generate and record the benchmark result as markdown
@@ -33,12 +48,34 @@ jobs:
         run: |
           body=$(julia -e '
           using BenchmarkCI
+          using PkgBenchmark
 
           let
-              judgement = BenchmarkCI._loadjudge(BenchmarkCI.DEFAULT_WORKSPACE)
               title = "Benchmark Result"
-              ciresult = BenchmarkCI.CIResult(; judgement, title)
-              BenchmarkCI.printcommentmd(stdout::IO, ciresult)
+              workspace = BenchmarkCI.DEFAULT_WORKSPACE
+              target = joinpath(workspace, "result-target.json")
+              baseline = joinpath(workspace, "result-baseline.json")
+              baseline_error = joinpath(workspace, "baseline-error.txt")
+              if isfile(target) && isfile(baseline)
+                  judgement = BenchmarkCI._loadjudge(workspace)
+                  ciresult = BenchmarkCI.CIResult(; judgement, title)
+                  BenchmarkCI.printcommentmd(stdout::IO, ciresult)
+              else
+                  println("## $title")
+                  println()
+                  println("Baseline benchmarks could not be run for comparison.")
+                  if isfile(baseline_error)
+                      println()
+                      println("<details><summary>baseline error</summary>")
+                      println()
+                      println("```")
+                      print(read(baseline_error, String))
+                      println()
+                      println("```")
+                      println()
+                      println("</details>")
+                  end
+              end
           end
           ')
           body="${body//'%'/'%25'}"

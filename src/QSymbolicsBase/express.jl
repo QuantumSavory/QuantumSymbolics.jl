@@ -6,8 +6,6 @@
  
 export express, express_nolookup, consistent_representation
 
-import SymbolicUtils: Symbolic
-
 """
     express(s, repr::AbstractRepresentation=QuantumOpticsRepr()[, use::AbstractUse])
 
@@ -39,7 +37,7 @@ julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsObservable())
 + X
 ```
 """
-function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse)
+function express(state::QSymbolic, repr::AbstractRepresentation, use::AbstractUse)
     md = metadata(state)
     isnothing(md) && return express_from_cache(express_nolookup(state, repr, use))
     if haskey(md.express_cache,(repr,use))
