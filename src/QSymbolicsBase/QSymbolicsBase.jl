@@ -148,6 +148,23 @@ Base.:-(x::SymQScalar) = -_scalarize(x)
 SymbolicUtils.vartype(::QSymbolic) = SymbolicUtils.TreeReal
 SymbolicUtils.vartype(::Type{<:QSymbolic}) = SymbolicUtils.TreeReal
 
+# Enable `Symbolics.substitute`/`SymbolicUtils.substitute` on QuantumSymbolics expression trees.
+function (s::SymbolicUtils.Substituter{Fold})(ex::QSymbolic) where {Fold}
+    haskey(s.dict, ex) && return s.dict[ex]
+    iscall(ex) || return ex
+
+    args = arguments(ex)
+    newargs = Any[]
+    sizehint!(newargs, length(args))
+    changed = false
+    for a in args
+        a2 = s(a)
+        push!(newargs, a2)
+        changed |= !(a2 === a || isequal(a2, a))
+    end
+    changed ? maketerm(typeof(ex), operation(ex), newargs, metadata(ex)) : ex
+end
+
 
 ##
 # Utilities
