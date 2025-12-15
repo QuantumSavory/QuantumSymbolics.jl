@@ -2,7 +2,6 @@ using Revise # for interactive work on docs
 push!(LOAD_PATH,"../src/")
 
 using Documenter
-using DocumenterCitations
 using AnythingLLMDocs
 using QuantumSymbolics
 using QuantumInterface
@@ -22,12 +21,10 @@ function main()
         options = EmbedOptions(),
     )
 
-    bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"), style=:authoryear)
     assets = Any["assets/init.js"]
     append!(assets, anythingllm_assets)
 
     makedocs(
-    plugins=[bib],
     doctest = false,
     clean = true,
     sitename = "QuantumSymbolics.jl",
