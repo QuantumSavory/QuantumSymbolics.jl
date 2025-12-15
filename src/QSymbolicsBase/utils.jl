@@ -1,3 +1,21 @@
+# Substitute method for Symbolic types (SymbolicUtils.substitute only works for BasicSymbolic)
+function SymbolicUtils.substitute(expr::Symbolic, dict::AbstractDict; fold=nothing)
+    # Check if expr itself is in the dict
+    haskey(dict, expr) && return dict[expr]
+    # If not an expression (leaf node), return as-is
+    isexpr(expr) || return expr
+    # Recursively substitute in arguments
+    args = arguments(expr)
+    new_args = [SymbolicUtils.substitute(a, dict) for a in args]
+    # If nothing changed, return original
+    if all(isequal(a, na) for (a, na) in zip(args, new_args))
+        return expr
+    end
+    # Reconstruct the expression
+    op = operation(expr)
+    op(new_args...)
+end
+
 function prefactorscalings(xs)
     terms = []
     coeff = 1::Any

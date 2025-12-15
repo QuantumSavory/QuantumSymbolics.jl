@@ -186,7 +186,9 @@ function Base.:(*)(x::Symbolic{AbstractOperator}, xs::Vararg{Symbolic{AbstractOp
         else
             terms = flattenop(*, collect(xs))
             coeff, cleanterms = prefactorscalings(terms)
-            coeff * SMulOperator(cleanterms)
+            # Flatten again after extracting scalings, as cleanterms may contain nested SMulOperator
+            finalterms = flattenop(*, cleanterms)
+            coeff * SMulOperator(finalterms)
         end
     else
         SZeroOperator()
