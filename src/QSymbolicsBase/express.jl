@@ -3,7 +3,7 @@
 #
 # The main function is `express`, which takes a quantum object and a representation and returns an expression of the object in that representation.
 ##
- 
+
 export express, express_nolookup, consistent_representation
 
 import SymbolicUtils: Symbolic

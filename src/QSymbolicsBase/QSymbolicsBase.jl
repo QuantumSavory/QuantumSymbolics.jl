@@ -1,11 +1,19 @@
 using Symbolics
-import Symbolics: simplify,Term
+import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
+using SymbolicUtils.Rewriters: Walk, PassThrough
+import SymbolicUtils: _isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments,vartype,symtype,TreeReal,term
 using TermInterface
-import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
+import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm,sorted_arguments
 import MacroTools
 import MacroTools: namify, @capture
+
+# Create our own Symbolic abstract type hierarchy since SymbolicUtils no longer exports one
+"""
+Abstract type for all symbolic quantum objects. The type parameter `T` indicates
+the kind of quantum object (AbstractBra, AbstractKet, AbstractOperator, etc.).
+"""
+abstract type Symbolic{T} end
 
 using LinearAlgebra
 import LinearAlgebra: eigvecs,ishermitian,conj,transpose,inv,exp,vec,tr
@@ -57,7 +65,7 @@ export SymQObj,QObj,
 
 # TODO: move this to QuantumInterface
 """Representation using kets, bras, density matrices, and superoperators governed by `QuantumToolbox.jl`."""
-Base.@kwdef struct QuantumToolboxRepr <: AbstractRepresentation 
+Base.@kwdef struct QuantumToolboxRepr <: AbstractRepresentation
     cutoff::Int = 2
 end
 
@@ -105,6 +113,59 @@ Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
 hash((typeof(x),symbollabel(x),basis(x)), h)
 maketerm(::Type{<:SymQObj}, f, a, m) = f(a...)
+
+# Implement vartype and symtype for compatibility with SymbolicUtils rule system
+# We use TreeReal as our vartype since quantum symbolic objects don't use
+# the standard scalar algebra simplifications
+SymbolicUtils.vartype(::Symbolic) = SymbolicUtils.TreeReal
+SymbolicUtils.vartype(::Type{<:Symbolic}) = SymbolicUtils.TreeReal
+SymbolicUtils.symtype(::Symbolic{T}) where {T} = T
+
+# Implement Walk (used by Prewalk/Postwalk) for our Symbolic types
+# This is required for the SymbolicUtils rewriter system to traverse our expression trees
+function (p::Walk{ord, C, F, M, false})(x::Symbolic) where {ord, C, F, M}
+    if iscall(x)
+        # Apply rewrite rule for pre-order traversal
+        if ord === :pre
+            result = p.rw(x)
+            if result !== nothing
+                x = result
+            end
+        end
+
+        # Recursively walk arguments if still a call expression and passes filter
+        if iscall(x) && p.filter(x)
+            args = arguments(x)
+            op = PassThrough(p)
+            new_args = similar(args)
+            changed = false
+            for i in eachindex(args)
+                arg = args[i]
+                newarg = op(arg)
+                new_args[i] = newarg
+                if !isequal(arg, newarg)
+                    changed = true
+                end
+            end
+            if changed
+                x = p.maketerm(typeof(x), operation(x), new_args, metadata(x))
+            end
+        end
+
+        # Apply rewrite rule for post-order traversal
+        if ord === :post
+            result = p.rw(x)
+            if result !== nothing
+                return result
+            end
+        end
+        return x
+    else
+        # For non-call expressions, just try the rewrite rule
+        result = p.rw(x)
+        return result !== nothing ? result : x
+    end
+end
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
     if X==Y

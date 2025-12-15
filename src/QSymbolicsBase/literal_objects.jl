@@ -163,3 +163,5 @@ basis(x::SZero) = nothing
 
 Base.show(io::IO, x::SZero) = print(io, symbollabel(x))
 Base.iszero(x::SymQObj) = isa(x, SZero)
+Base.iszero(x::Symbolic{<:Number}) = false  # Symbolic numbers like SBraKet, STrace are not known to be zero
+Base.iszero(x::SymbolicUtils.BasicSymbolic) = false  # Symbolic expressions are not known to be zero

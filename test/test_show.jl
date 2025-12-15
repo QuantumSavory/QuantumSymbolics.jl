@@ -17,7 +17,7 @@
         @test repr(b₁ + b₂) == "⟨b₁|+⟨b₂|"
         @test repr(A + B) == "A+B"
     end
-    
+
     @testset "symbolic application products" begin
         @test repr(A * k₁) == "A|k₁⟩"
         @test repr(b₁ * A) == "⟨b₁|A"
@@ -51,7 +51,7 @@
         @test repr((1 + im) * (b₁ ⊗ b₂)) == "(1 + 1im)⟨b₁|⟨b₂|"
         @test repr((1 + im) * (A ⊗ B)) == "(1 + 1im)A⊗B"
     end
-    
+
     @testset "symbolic inner and outer products" begin
         @test repr(b₁ * k₁) == "⟨b₁||k₁⟩"
         @test repr(k₁ * b₁) == "|k₁⟩⟨b₁|"

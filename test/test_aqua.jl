@@ -1,6 +1,6 @@
 @testitem "Aqua" tags=[:aqua] begin
     using Aqua
-    
+
     # Add any new types needed to QObj, or here if QObj if not appropriate.
     # Add types from elsewhere in the ecosystem here or preferably to QObj
     own_types = [Base.uniontypes(QObj)...,AbstractRepresentation,AbstractUse,]
