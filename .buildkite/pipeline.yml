@@ -49,3 +49,21 @@ steps:
     matrix:
       setup:
         PACKAGE: ["QuantumSavory"]
+
+  - label: "Downstream Dev Tests - {{matrix.PACKAGE}}"
+    plugins:
+      - JuliaCI/julia#v1:
+          version: "1"
+          compiled_size_limit: 10737418240 # 10GiB
+    command:
+      - echo "Julia depot path $${JULIA_DEPOT_PATH}"
+      - echo "TERM=$${TERM} | PYTHON=$${PYTHON} | PYCALL_DEBUG_BUILD=$${PYCALL_DEBUG_BUILD}"
+      - julia --project=$(mktemp -d) -e '
+        using Pkg;
+        pkg"dev .";
+        Pkg.dev("{{matrix.PACKAGE}}");
+        Pkg.build("{{matrix.PACKAGE}}");
+        Pkg.test("{{matrix.PACKAGE}}");'
+    matrix:
+      setup:
+        PACKAGE: ["QuantumSavory"]
