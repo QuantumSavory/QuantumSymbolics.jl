@@ -1,9 +1,19 @@
 using Symbolics
-import Symbolics: simplify,Term
+import Symbolics: simplify
 using SymbolicUtils
-import SymbolicUtils: Symbolic,_isone,flatten_term,isnotflat,Chain,Fixpoint,Prewalk,sorted_arguments
+import SymbolicUtils: _isone
+using SymbolicUtils.Rewriters
 using TermInterface
-import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm
+import TermInterface: isexpr,head,iscall,children,operation,arguments,metadata,maketerm,sorted_arguments
+
+"""Local abstract type replacing the removed `SymbolicUtils.Symbolic{T}`.
+All QuantumSymbolics concrete types subtype this."""
+abstract type Symbolic{T} end
+
+# SymbolicUtils v4 matchers call vartype() on matched terms.
+# Define a fallback so our types work with @rule pattern matching.
+SymbolicUtils.vartype(::Symbolic) = SymbolicUtils.SymReal
+
 import MacroTools
 import MacroTools: namify, @capture
 
@@ -124,6 +134,79 @@ function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
 end
 Base.isequal(::SymQObj, ::Symbolic{Complex}) = false
 Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
+
+##
+# Scalar symbolic arithmetic for Symbolic{Complex} types (STrace, SBraKet).
+# In SymbolicUtils v3, these inherited arithmetic from Symbolic{<:Number}.
+# Now we define minimal wrapper types.
+##
+
+const SymScalar = Symbolic{Complex}
+
+"""Symbolic scaled scalar expression: `coeff * obj` where obj is a `Symbolic{Complex}`."""
+struct SScaledComplex <: Symbolic{Complex}
+    coeff
+    obj
+end
+isexpr(::SScaledComplex) = true
+iscall(::SScaledComplex) = true
+arguments(x::SScaledComplex) = [x.coeff, x.obj]
+operation(::SScaledComplex) = *
+head(::SScaledComplex) = :*
+children(x::SScaledComplex) = [:*, x.coeff, x.obj]
+metadata(::SScaledComplex) = nothing
+maketerm(::Type{SScaledComplex}, f, a, m) = f(a...)
+Base.show(io::IO, x::SScaledComplex) = print(io, "($(x.coeff))$(x.obj)")
+Base.hash(x::SScaledComplex, h::UInt) = hash((head(x), x.coeff, x.obj), h)
+Base.isequal(x::SScaledComplex, y::SScaledComplex) = isequal(x.coeff, y.coeff) && isequal(x.obj, y.obj)
+
+"""Symbolic sum of scalar expressions."""
+struct SAddComplex <: Symbolic{Complex}
+    terms
+end
+isexpr(::SAddComplex) = true
+iscall(::SAddComplex) = true
+arguments(x::SAddComplex) = x.terms
+operation(::SAddComplex) = +
+head(::SAddComplex) = :+
+children(x::SAddComplex) = [:+; x.terms]
+metadata(::SAddComplex) = nothing
+maketerm(::Type{SAddComplex}, f, a, m) = f(a...)
+Base.show(io::IO, x::SAddComplex) = print(io, join(map(string, x.terms), "+"))
+Base.hash(x::SAddComplex, h::UInt) = hash((:+, Set(x.terms)), h)
+Base.isequal(x::SAddComplex, y::SAddComplex) = Set(x.terms) == Set(y.terms)
+
+"""Symbolic product of scalar expressions."""
+struct SMulComplex <: Symbolic{Complex}
+    terms
+end
+isexpr(::SMulComplex) = true
+iscall(::SMulComplex) = true
+arguments(x::SMulComplex) = x.terms
+operation(::SMulComplex) = *
+head(::SMulComplex) = :*
+children(x::SMulComplex) = [:*; x.terms]
+metadata(::SMulComplex) = nothing
+maketerm(::Type{SMulComplex}, f, a, m) = f(a...)
+Base.show(io::IO, x::SMulComplex) = print(io, join(map(string, x.terms), "*"))
+Base.hash(x::SMulComplex, h::UInt) = hash((:*, x.terms), h)
+Base.isequal(x::SMulComplex, y::SMulComplex) = isequal(x.terms, y.terms)
+
+# Arithmetic for Symbolic{Complex}
+Base.:(*)(c::Number, x::SymScalar) = iszero(c) ? 0 : (isone(c) ? x : SScaledComplex(c, x))
+Base.:(*)(x::SymScalar, c::Number) = c * x
+Base.:(*)(x::SymScalar, y::SymScalar) = SMulComplex([x, y])
+Base.:(+)(x::SymScalar, y::SymScalar) = SAddComplex([x, y])
+Base.:(+)(x::SymScalar, ys::Vararg{SymScalar}) = SAddComplex([x, ys...])
+Base.:(+)(c::Number, x::SymScalar) = iszero(c) ? x : SAddComplex([c, x])
+Base.:(+)(x::SymScalar, c::Number) = c + x
+Base.:(-)(x::SymScalar) = (-1) * x
+Base.:(-)(x::SymScalar, y::SymScalar) = x + (-y)
+# SymScalar values are symbolic and never concretely zero or one
+Base.iszero(::SymScalar) = false
+Base.isone(::SymScalar) = false
+
+# Allow Symbolic{Complex} as coefficient in quantum SScaled (handled by the Union dispatch in basic_ops_homogeneous.jl)
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case

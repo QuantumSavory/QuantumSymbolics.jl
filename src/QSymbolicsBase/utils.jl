@@ -5,7 +5,7 @@ function prefactorscalings(xs)
         if isa(x, SScaled)
             coeff *= x.coeff
             push!(terms, x.obj)
-        elseif isa(x, Union{Number, Symbolic{Number}})
+        elseif isa(x, Union{Number, SymbolicUtils.BasicSymbolic, Symbolic{Complex}})
             coeff *= x
         else
             push!(terms,x)

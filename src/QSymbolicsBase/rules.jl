@@ -95,8 +95,8 @@ RULES_ANTICOMMUTATOR = [
 
 RULES_FOCK = [
     @rule(~o::_isa(DestroyOp) * ~k::isequal(vac) => SZeroKet()),
-    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx+1])*FockState((~k).idx+1)),
-    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => Term(sqrt,[(~k).idx])*FockState((~k).idx-1)),
+    @rule(~o::_isa(CreateOp) * ~k::_isa(FockState) => SymbolicUtils.term(sqrt, (~k).idx+1)*FockState((~k).idx+1)),
+    @rule(~o::_isa(DestroyOp) * ~k::_isa(FockState) => SymbolicUtils.term(sqrt, (~k).idx)*FockState((~k).idx-1)),
     @rule(~o::_isa(NumberOp) * ~k::_isa(FockState) => (~k).idx*(~k)),
     @rule(~o::_isa(DestroyOp) * ~k::_isa(CoherentState) => (~k).alpha*(~k)),
     @rule(~o::_isa(PhaseShiftOp) * ~k::_isa(CoherentState) => CoherentState((~k).alpha * exp(-im*(~o).phase))),
@@ -112,6 +112,52 @@ RULES_FOCK = [
 RULES_SIMPLIFY = [RULES_PAULI; RULES_COMMUTATOR; RULES_ANTICOMMUTATOR; RULES_FOCK]
 
 ##
+# Custom tree walker for QuantumSymbolics types
+# SymbolicUtils v4's Prewalk/Postwalk only walk BasicSymbolic trees.
+# Our types are not BasicSymbolic, so we need our own walker.
+##
+
+"""Apply a rewriter in pre-order to a QuantumSymbolics expression tree."""
+function _prewalk(rw, x)
+    y = rw(x)
+    if !isnothing(y)
+        x = y
+    end
+    if isexpr(x) && iscall(x)
+        args = arguments(x)
+        newargs = map(a -> _prewalk(rw, a), args)
+        # Always reconstruct through maketerm to ensure proper normalization
+        # (e.g., flattening of associative operations like * and ⊗).
+        return maketerm(typeof(x), operation(x), newargs, metadata(x))
+    end
+    return x
+end
+
+"""Apply a rewriter repeatedly in pre-order until no changes occur."""
+function _fixpoint_prewalk(rw, x)
+    while true
+        y = _prewalk(rw, x)
+        isequal(x, y) && return x
+        x = y
+    end
+end
+
+"""Recursively substitute subexpressions in a QuantumSymbolics expression tree."""
+function _substitute(expr, dict)
+    haskey(dict, expr) && return dict[expr]
+    if isexpr(expr) && iscall(expr)
+        args = arguments(expr)
+        newargs = map(a -> _substitute(a, dict), args)
+        return maketerm(typeof(expr), operation(expr), newargs, metadata(expr))
+    end
+    return expr
+end
+
+# Extend SymbolicUtils.substitute for our Symbolic types so that
+# `Symbolics.substitute` (which re-exports it) works on quantum expressions.
+SymbolicUtils.substitute(expr::Symbolic, dict; kwargs...) = _substitute(expr, dict)
+
+##
 # Simplification rewriters
 ##
 
@@ -123,9 +169,9 @@ qsimplify_fock = Chain(RULES_FOCK)
 """
     qsimplify(s; rewriter=nothing)
 
-Manually simplify a symbolic expression of quantum objects. 
+Manually simplify a symbolic expression of quantum objects.
 
-If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression. 
+If the keyword `rewriter` is not specified, then `qsimplify` will apply every defined rule to the expression.
 For performance or single-purpose motivations, the user has the option to define a specific rewriter for `qsimplify` to apply to the expression.
 The defined rewriters for simplification are the following objects:
     - `qsimplify_pauli`
@@ -144,9 +190,9 @@ julia> qsimplify(anticommutator(σˣ, σˣ), rewriter=qsimplify_anticommutator)
 function qsimplify(s; rewriter=nothing)
     if QuantumSymbolics.isexpr(s)
         if isnothing(rewriter)
-            Fixpoint(Prewalk(Chain(RULES_SIMPLIFY)))(s)
+            _fixpoint_prewalk(Chain(RULES_SIMPLIFY), s)
         else
-            Fixpoint(Prewalk(rewriter))(s)
+            _fixpoint_prewalk(rewriter, s)
         end
     else
         error("Object $(s) of type $(typeof(s)) is not an expression.")
@@ -196,7 +242,7 @@ A|k₁⟩+A|k₂⟩
 """
 function qexpand(s)
     if QuantumSymbolics.isexpr(s)
-        Fixpoint(Prewalk(Chain(RULES_EXPAND)))(s)
+        _fixpoint_prewalk(Chain(RULES_EXPAND), s)
     else
         error("Object $(s) of type $(typeof(s)) is not an expression.")
     end
