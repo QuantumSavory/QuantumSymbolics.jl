@@ -1,19 +1,51 @@
 env:
-  CODECOV_TOKEN: c078b8d5-ad2b-4c0d-a5c7-ac8266f699bc
-  JULIA_NUM_THREADS: auto
-  
+  CODECOV_TOKEN: 6dfc8e6b-e2fe-4715-be78-a8d1c61bfb17
+  JULIA_NUM_THREADS: auto,auto
+  PYTHON: ""
+  PYCALL_DEBUG_BUILD: yes
+
 steps:
-  - label: "CI Buildkite"
+  - label: "Tests - {{matrix.LABEL}}"
     plugins:
       - JuliaCI/julia#v1:
           version: "1"
-      - QuantumSavory/julia-xvfb#v1:
-      - JuliaCI/julia-test#v1: ~
+          compiled_size_limit: 10737418240 # 10GiB
+      - JuliaCI/julia-test#v1:
       - JuliaCI/julia-coverage#v1:
           codecov: true
-    command: |
-      julia -e '
-        using Pkg
-        Pkg.add("QuantumSavory")
-        Pkg.build("QuantumSavory")
-        Pkg.test("QuantumSavory")'
+          dirs: './src,./ext'
+    commands:
+      - echo "Julia depot path $${JULIA_DEPOT_PATH}"
+      - echo "TERM=$${TERM} | PYTHON=$${PYTHON} | PYCALL_DEBUG_BUILD=$${PYCALL_DEBUG_BUILD}"
+    env:
+      JET_TEST: "{{matrix.JET_TEST}}"
+    agents:
+      queue: "{{matrix.QUEUE}}"
+    matrix:
+      setup:
+        LABEL: ["base tests"]
+        QUEUE: ["default"]
+        JET_TEST: ["false"]
+      adjustments:
+        - with:
+            LABEL: "JET"
+            QUEUE: default
+            JET_TEST: true
+  
+  - label: "Downstream Tests - {{matrix.PACKAGE}}"
+    plugins:
+      - JuliaCI/julia#v1:
+          version: "1"
+          compiled_size_limit: 10737418240 # 10GiB
+    command:
+      - echo "Julia depot path $${JULIA_DEPOT_PATH}"
+      - echo "TERM=$${TERM} | PYTHON=$${PYTHON} | PYCALL_DEBUG_BUILD=$${PYCALL_DEBUG_BUILD}"
+      - julia --project=$(mktemp -d) -e '
+        using Pkg;
+        pkg"dev .";
+        Pkg.add("{{matrix.PACKAGE}}");
+        Pkg.build("{{matrix.PACKAGE}}");
+        Pkg.test("{{matrix.PACKAGE}}");'
+    matrix:
+      setup:
+        PACKAGE: ["QuantumSavory"]
