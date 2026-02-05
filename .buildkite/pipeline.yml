@@ -61,7 +61,7 @@ steps:
       - julia --project=$(mktemp -d) -e '
         using Pkg;
         pkg"dev .";
-        Pkg.dev("{{matrix.PACKAGE}}");
+        Pkg.develop("{{matrix.PACKAGE}}");
         Pkg.build("{{matrix.PACKAGE}}");
         Pkg.test("{{matrix.PACKAGE}}");'
     matrix:
