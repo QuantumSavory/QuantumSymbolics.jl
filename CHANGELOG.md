@@ -1,9 +1,10 @@
 # News
 
-## v0.4.12 - dev
+## v0.4.12 - 2026-02-06
 
 - Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
 - Add QuantumToolbox extension for state vector translations.
+- Bump QuantumClifford compat to include 0.11.
 
 ## v0.4.11 - 2025-06-22
 
