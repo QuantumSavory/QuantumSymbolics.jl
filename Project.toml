@@ -1,7 +1,7 @@
 name = "QuantumSymbolics"
 uuid = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 authors = ["QuantumSymbolics.jl contributors"]
-version = "0.4.12-dev"
+version = "0.4.12"
 
 [workspace]
 projects = ["benchmark", "docs"]
