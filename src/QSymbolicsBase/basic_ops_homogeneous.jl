@@ -29,8 +29,8 @@ arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, Symbolic{<:Number}},T<:QObj}
-    if (isa(c, Number) && iszero(c)) || iszero(x)
+function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, SymbolicUtils.BasicSymbolic, Symbolic{Complex}},T<:QObj}
+    if (c isa Number && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)
         x

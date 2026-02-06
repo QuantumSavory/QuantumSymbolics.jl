@@ -343,10 +343,10 @@ julia> mixed_state = (A⊗(k*b)) + ((k*b)⊗B)
 (A⊗|k⟩⟨b|)+(|k⟩⟨b|⊗B)
 
 julia> ptrace(mixed_state, 1)
-(0 + ⟨b||k⟩)B+(tr(A))|k⟩⟨b|
+(tr(A))|k⟩⟨b|+(⟨b||k⟩)B
 
 julia> ptrace(mixed_state, 2)
-(0 + ⟨b||k⟩)A+(tr(B))|k⟩⟨b|
+(tr(B))|k⟩⟨b|+(⟨b||k⟩)A
 ```
 """
 @withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}

@@ -7,20 +7,6 @@ using BenchmarkTools
 const SUITE = BenchmarkGroup()
 @ket k1; @ket k2; @bra b1; @bra b2; @op A; @op B; @op C;
 
-# Time to import and first usage of simple operations
-SUITE["latency"] = BenchmarkGroup(["slow"])
-load_command = `julia --quiet --project=./ --eval="using QuantumSymbolics"`
-ttfx_command = `
-    julia --quiet --project=./ --eval="""
-        using QuantumSymbolics;
-        @ket k1; @op A;
-        A * commutator(A,X) * k1
-    """`
-SUITE["latency"]["using"] = @benchmarkable run(load_command) samples=3 seconds=15
-SUITE["latency"]["ttf_operation"] = @benchmarkable run(ttfx_command) samples=3 seconds=15
-SUITE["latency"]["ttf_simplify"] = @benchmarkable qsimplify(X*Y) samples=1 evals=1
-
-
 # Symbolic object creation
 SUITE["creation"] = BenchmarkGroup(["symbolic"])
 SUITE["creation"]["ket"] = @benchmarkable @ket _k

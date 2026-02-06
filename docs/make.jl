@@ -3,6 +3,7 @@ push!(LOAD_PATH,"../src/")
 
 using Documenter
 using DocumenterCitations
+using AnythingLLMDocs
 using QuantumSymbolics
 using QuantumInterface
 using LinearAlgebra
@@ -10,7 +11,20 @@ using LinearAlgebra
 DocMeta.setdocmeta!(QuantumSymbolics, :DocTestSetup, :(using QuantumSymbolics, QuantumOptics, QuantumClifford, QuantumInterface, LinearAlgebra); recursive=true)
 
 function main()
+    doc_modules = [QuantumSymbolics, QuantumInterface]
+    api_base="https://anythingllm.krastanov.org/api/v1"
+    anythingllm_assets = integrate_anythingllm(
+        "QuantumSymbolics",
+        doc_modules,
+        @__DIR__,
+        api_base;
+        repo = "github.com/QuantumSavory/QuantumSymbolics.jl.git",
+        options = EmbedOptions(),
+    )
+
     bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"), style=:authoryear)
+    assets = Any["assets/init.js"]
+    append!(assets, anythingllm_assets)
 
     makedocs(
     plugins=[bib],
@@ -18,9 +32,9 @@ function main()
     clean = true,
     sitename = "QuantumSymbolics.jl",
     format = Documenter.HTML(
-        assets=["assets/init.js"]
+        assets=assets
     ),
-    modules = [QuantumSymbolics, QuantumInterface],
+    modules = doc_modules,
     checkdocs = :exports,
     warnonly = false,
     authors = "Stefan Krastanov",
