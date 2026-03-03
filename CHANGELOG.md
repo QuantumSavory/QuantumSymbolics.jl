@@ -1,5 +1,9 @@
 # News
 
+## v0.4.13 - 2026-03-03
+
+- The H gate was missing a `CliffordRepr` `express`
+
 ## v0.4.12 - 2026-02-06
 
 - Add Gabs extension for numerical translations of symbolic Gaussian states and operators.
