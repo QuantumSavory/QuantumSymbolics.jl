@@ -1,5 +1,10 @@
 # News
 
+## v0.4.14 - 2026-03-03
+
+- Move `QCGateSequence` and related Clifford `apply!` helpers into `QuantumCliffordExt`.
+- Add regression tests for tensor-operator `apply!` dispatch in `CliffordRepr`.
+
 ## v0.4.13 - 2026-03-03
 
 - The H gate was missing a `CliffordRepr` `express`

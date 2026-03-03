@@ -84,4 +84,6 @@ function express_nolookup(x::MixedState, ::CliffordRepr)
 end
 express_nolookup(x::SProjector, repr::CliffordRepr) = express_nolookup(x.ket, repr)
 
+include("should_upstream.jl")
+
 end

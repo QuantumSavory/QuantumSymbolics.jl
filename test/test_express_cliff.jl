@@ -45,4 +45,16 @@
         isequal(express(σʸ, CR, UseOp), sY)
         isequal(express(σᶻ, CR, UseOp), sZ)
     end
+
+    @testset "Clifford tensor operation apply regression" begin
+        gate = express(σˣ⊗σᶻ, CR, UseOp)
+        state = QuantumClifford.tensor(MixedDestabilizer(S"Z"), MixedDestabilizer(S"X"))
+        indices = [1, 2]
+        QuantumClifford.apply!(state, indices, gate)
+
+        @test isempty(indices)
+        @test QuantumClifford.expect(P"ZI", state) ≈ -1
+        @test QuantumClifford.expect(P"IX", state) ≈ -1
+        @test isequal(projector(Stabilizer(S"X")), projector(StabilizerState(S"X")))
+    end
 end
