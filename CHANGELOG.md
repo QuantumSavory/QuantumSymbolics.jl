@@ -2,8 +2,7 @@
 
 ## v0.4.14 - 2026-03-03
 
-- Move `QCGateSequence` and related Clifford `apply!` helpers into `QuantumCliffordExt`.
-- Add regression tests for tensor-operator `apply!` dispatch in `CliffordRepr`.
+- Improvements and regression tests for `tensor` of operators when expressed in `CliffordRepr` (depending on the newly added private `QCGateSequence` in `QuantumCliffordExt`).
 
 ## v0.4.13 - 2026-03-03
 

@@ -84,6 +84,34 @@ function express_nolookup(x::MixedState, ::CliffordRepr)
 end
 express_nolookup(x::SProjector, repr::CliffordRepr) = express_nolookup(x.ket, repr)
 
-include("should_upstream.jl")
+struct QCGateSequence <: QuantumClifford.AbstractSymbolicOperator
+    gates # TODO constructor that flattens nested QCGateSequence
+end
+
+function QuantumClifford.apply!(
+    state::QuantumClifford.MixedDestabilizer,
+    indices::AbstractVector{Int},
+    gseq::QCGateSequence,
+)
+    for g in gseq.gates[end:-1:begin]
+        apply_popindex!(state, indices, g)
+    end
+    state
+end
+
+apply_popindex!(
+    state,
+    indices::AbstractVector{Int},
+    g::Type{<:QuantumClifford.AbstractSingleQubitOperator},
+) = QuantumClifford.apply!(state, g(pop!(indices)::Int))
+
+apply_popindex!(
+    state,
+    indices::AbstractVector{Int},
+    g::Type{<:QuantumClifford.AbstractTwoQubitOperator},
+) = QuantumClifford.apply!(state, g(pop!(indices)::Int, pop!(indices)::Int))
+
+QuantumInterface.projector(state::QuantumClifford.Stabilizer) =
+    QuantumInterface.projector(StabilizerState(sta
 
 end
