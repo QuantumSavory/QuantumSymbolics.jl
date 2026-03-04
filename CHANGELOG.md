@@ -1,5 +1,9 @@
 # News
 
+## v0.4.14 - 2026-03-03
+
+- Improvements and regression tests for `tensor` of operators when expressed in `CliffordRepr` (depending on the newly added private `QCGateSequence` in `QuantumCliffordExt`).
+
 ## v0.4.13 - 2026-03-03
 
 - The H gate was missing a `CliffordRepr` `express`

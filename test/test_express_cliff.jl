@@ -45,4 +45,19 @@
         isequal(express(σʸ, CR, UseOp), sY)
         isequal(express(σᶻ, CR, UseOp), sZ)
     end
+
+    @testset "Projector on stab state" begin
+        @test isequal(projector(Stabilizer(S"X")), projector(StabilizerState(S"X")))
+    end
+
+    @testset "Clifford tensor operation apply" begin
+        gate = express(σˣ⊗σᶻ, CR, UseOp)
+        state = MixedDestabilizer(S"ZI IX")
+        indices = [1, 2]
+        apply!(state, indices, gate)
+
+        @test isempty(indices)
+        @test expect(P"ZI", state) ≈ -1
+        @test expect(P"IX", state) ≈ -1
+    end
 end
