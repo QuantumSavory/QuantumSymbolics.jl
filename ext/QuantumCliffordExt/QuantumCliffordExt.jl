@@ -112,6 +112,6 @@ apply_popindex!(
 ) = QuantumClifford.apply!(state, g(pop!(indices)::Int, pop!(indices)::Int))
 
 QuantumInterface.projector(state::QuantumClifford.Stabilizer) =
-    QuantumInterface.projector(StabilizerState(sta
+    QuantumInterface.projector(StabilizerState(state))
 
 end
