@@ -59,7 +59,7 @@ julia> express(σʸ, CliffordRepr(), UseAsOperation())
 sY
 ```
 
-Another edge case is translations with `QuantumOpticsRepr`, where we can additionally define a finite cutoff for bosonic states and operators, as discussed in the [quantum harmonic oscillators page](@ref Quantum-Harmonic-Oscillators). The default cutoff for such objects is 2, however a different cutoff can be specified by passing an integer to `QuantumOpticsRepr` in an `express` call. Let us see an example with the number operator:
+Another edge case is translations with `QuantumOpticsRepr`, where we can additionally define a finite cutoff for bosonic states and operators, as discussed in the [quantum harmonic oscillators page](@ref Quantum-Harmonic-Oscillators). The default cutoff for such objects is 2, however a different cutoff can be specified by passing an integer to `QuantumOpticsRepr` in an `express` call. We can also set the lazy parameter so that the conversion (as done by the express API) should preferentially create LazyTensor and LazySum objects. These semi-symbolic semi-numeric objects are particularly convenient for avoiding redundant computation or the creation of particularly large objects. Let us see an example with the number operator:
 
 ```jldoctest
 julia> express(N) |> dense
