@@ -18,11 +18,9 @@ steps:
           codecov: true
 
   - label: "General Tests (alpha)"
-    env:
-      JULIA_NUM_THREADS: "2"
     plugins:
       - JuliaCI/julia#v1:
-          version: "https://julialang-s3.julialang.org/bin/linux/x64/1.13/julia-1.13.0-beta3-linux-x86_64.tar.gz"
+          version: "nightly"
           compiled_size_limit: 10737418240 # 10GiB
       - JuliaCI/julia-test#v1:
           test_args: "general"
