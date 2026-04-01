@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Anticommutator" begin
 
     @op A; @op B;

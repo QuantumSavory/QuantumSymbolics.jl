@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Superop" begin
     using LinearAlgebra
     using QuantumOptics

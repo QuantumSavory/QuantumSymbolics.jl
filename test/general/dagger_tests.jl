@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Dagger" begin
     using QuantumInterface: AbstractOperator
 

@@ -1,3 +1,7 @@
+using Test
+using QuantumSymbolics
+using QuantumClifford
+
 @testset "Clifford" begin
     using QuantumClifford
     using QuantumOptics

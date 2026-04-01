@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Express opt" begin
     import QuantumClifford
     import QuantumOptics

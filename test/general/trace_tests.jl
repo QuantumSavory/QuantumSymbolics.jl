@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Trace" begin
 
     @bra b₁; @bra b₂;

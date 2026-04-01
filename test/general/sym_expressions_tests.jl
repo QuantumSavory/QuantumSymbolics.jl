@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Sym expressions" begin
     @test +(Z1) == Z1
     @test +(Z) == Z

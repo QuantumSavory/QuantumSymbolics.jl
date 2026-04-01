@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Test throwing" begin
     using QuantumOptics
     using QuantumInterface: IncompatibleBases

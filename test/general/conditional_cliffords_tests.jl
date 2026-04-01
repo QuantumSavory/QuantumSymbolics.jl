@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Conditional Cliffords" begin
     using QuantumClifford
     using QuantumOpticsBase

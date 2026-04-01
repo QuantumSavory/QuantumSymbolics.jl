@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Aqua" begin
     using Aqua
     

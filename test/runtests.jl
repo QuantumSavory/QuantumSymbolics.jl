@@ -31,14 +31,7 @@ filter!(testsuite) do (name, _)
     endswith(name, "_tests")
 end
 
-init_code = quote
-    using Test
-    using QuantumSymbolics
-    using QuantumClifford: @P_str, @S_str
-    using QuantumSymbolics: Metadata, @withmetadata
-end
-
-if !isempty(VERSION.prerelease)
+if !isempty(VERSION.prerelease) || get(ENV, "QUANTUMSAVORY_DOWNGRADE_TEST", "") == "true"
     delete!(testsuite, "general/aqua_tests")
 end
 
@@ -54,5 +47,5 @@ if jet_only
     include(JET_TEST_PATH)
 else
     using QuantumSymbolics
-    runtests(QuantumSymbolics, args; testsuite, init_code, test_worker)
+    runtests(QuantumSymbolics, args; testsuite, test_worker)
 end

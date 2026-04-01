@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Doctests" begin
     using Documenter
     using QuantumOptics

@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Outer Product" begin
     using QuantumOpticsBase
 

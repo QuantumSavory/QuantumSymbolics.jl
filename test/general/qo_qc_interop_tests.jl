@@ -1,3 +1,7 @@
+using Test
+using QuantumSymbolics
+using QuantumClifford: @S_str, random_stabilizer
+
 @testset "QuantumOptics QuantumClifford Interop" begin
     using QuantumClifford: @S_str, random_stabilizer
     using QuantumOpticsBase

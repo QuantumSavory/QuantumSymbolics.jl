@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Test qo" begin
     using QuantumOptics
     using QuantumSymbolics

@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Commutator" begin
     @op A; @op B;
 

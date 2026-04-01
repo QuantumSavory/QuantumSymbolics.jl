@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics: Metadata, @withmetadata
+
 @testset "Test metadata decoration" begin
     using QuantumSymbolics: Metadata, @withmetadata
     

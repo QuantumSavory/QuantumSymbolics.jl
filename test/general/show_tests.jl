@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Base show methods" begin
     @op A; @op B;
     @superop S;

@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Misc linear algebra" begin
     @op A; @op B;
     O = SZeroOperator()

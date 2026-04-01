@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Test qo gaussian" begin
     using LinearAlgebra: diagm
     using QuantumOptics

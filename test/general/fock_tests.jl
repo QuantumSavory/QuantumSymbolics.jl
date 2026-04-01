@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Fock" begin
     using SymbolicUtils: term
     state1 = FockState(1)

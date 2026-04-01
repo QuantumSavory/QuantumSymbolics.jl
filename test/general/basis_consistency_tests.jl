@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Basis consistency" begin
     using QuantumOptics
 

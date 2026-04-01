@@ -1,3 +1,6 @@
+using Test
+using QuantumSymbolics
+
 @testset "Gabs objects" begin
     using QuantumSymbolics
     using Gabs
