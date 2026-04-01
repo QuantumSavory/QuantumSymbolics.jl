@@ -1,5 +1,9 @@
 # News
 
+## v0.4.16 - 2026-04-01
+
+- Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.
+
 ## v0.4.15 - 2026-03-19
 
 - `QuantumOpticsRepr` support for BosonicThermalState, PhaseShiftOp, BeamSplitterOp, TwoSqueezedState, TwoSqueezeOp

@@ -1,7 +1,7 @@
 module QuantumCliffordExt
 
 using QuantumInterface
-using QuantumInterface: AbstractKet, AbstractOperator, CompositeBasis
+using QuantumInterface: AbstractKet, AbstractOperator, AbstractSuperOperator, CompositeBasis
 using QuantumSymbolics
 using QuantumSymbolics: HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate,
     XBasisState, YBasisState, ZBasisState, MixedState, IdentityOp,
@@ -97,6 +97,22 @@ function QuantumClifford.apply!(
         apply_popindex!(state, indices, g)
     end
     state
+end
+
+function QuantumClifford.apply!(
+    r::QuantumClifford.Register,
+    indices::Base.AbstractVecOrTuple{Int},
+    operation::Symbolic{AbstractOperator},
+)
+    QuantumClifford.apply!(r, indices, express(operation, CliffordRepr(), UseAsOperation()))
+end
+
+function QuantumClifford.apply!(
+    r::QuantumClifford.Register,
+    indices::Base.AbstractVecOrTuple{Int},
+    operation::Symbolic{AbstractSuperOperator},
+)
+    QuantumClifford.apply!(r, indices, express(operation, CliffordRepr(), UseAsOperation()))
 end
 
 apply_popindex!(

@@ -19,17 +19,13 @@ steps:
       - echo "TERM=$${TERM} | PYTHON=$${PYTHON} | PYCALL_DEBUG_BUILD=$${PYCALL_DEBUG_BUILD}"
     env:
       JET_TEST: "{{matrix.JET_TEST}}"
-    agents:
-      queue: "{{matrix.QUEUE}}"
     matrix:
       setup:
         LABEL: ["base tests"]
-        QUEUE: ["default"]
         JET_TEST: ["false"]
       adjustments:
         - with:
             LABEL: "JET"
-            QUEUE: default
             JET_TEST: true
   
   - label: "Downstream Tests - {{matrix.PACKAGE}}"

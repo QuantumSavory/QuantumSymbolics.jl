@@ -60,4 +60,16 @@
         @test expect(P"ZI", state) ≈ -1
         @test expect(P"IX", state) ≈ -1
     end
+
+    @testset "Clifford register symbolic apply" begin
+        symbolic_reg = QuantumClifford.Register(copy(express(Z1, CR)))
+        explicit_reg = QuantumClifford.Register(copy(express(Z1, CR)))
+
+        apply!(symbolic_reg, (1,), QuantumSymbolics.X)
+        apply!(explicit_reg, (1,), express(QuantumSymbolics.X, CR, UseOp))
+
+        @test symbolic_reg == explicit_reg
+        @test expect(P"Z", symbolic_reg.stab) ≈ -1
+        @test_throws MethodError apply!(symbolic_reg, (1,), QuantumSymbolics.X; time=0.0)
+    end
 end
