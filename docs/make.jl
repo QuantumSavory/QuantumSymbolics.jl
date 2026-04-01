@@ -49,7 +49,10 @@ function main()
     )
 
     deploydocs(
-        repo = "github.com/QuantumSavory/QuantumSymbolics.jl.git"
+        repo = "github.com/QuantumSavory/QuantumSymbolics.jl.git",
+        devbranch = "main",
+        deploy_config = Documenter.Buildkite(),
+        push_preview = true
     )
 end
 

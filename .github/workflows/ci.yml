@@ -48,18 +48,3 @@ jobs:
         with:
           files: lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1'
-      - uses: julia-actions/cache@v3
-      - uses: julia-actions/julia-buildpkg@v1
-      - uses: julia-actions/julia-docdeploy@v1
-        env:
-          GKSwstype: nul # Fix for Plots with GR backend.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ANYTHINGLLM_API_KEY: ${{ secrets.ANYTHINGLLM_API_KEY }}
