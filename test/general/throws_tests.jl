@@ -1,4 +1,4 @@
-@testitem "Test throwing" begin
+@testset "Test throwing" begin
     using QuantumOptics
     using QuantumInterface: IncompatibleBases
 

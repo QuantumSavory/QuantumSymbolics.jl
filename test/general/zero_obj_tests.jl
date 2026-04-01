@@ -1,4 +1,4 @@
-@testitem "Zero operator" begin
+@testset "Zero operator" begin
     A = SOperator(:A, SpinBasis(1//2))
     k = SKet(:k, SpinBasis(1//2))
     b = SBra(:b, SpinBasis(1//2))

@@ -1,4 +1,4 @@
-@testitem "Basis consistency" begin
+@testset "Basis consistency" begin
     using QuantumOptics
 
     @test express(Z*Z1) == express(Z1)

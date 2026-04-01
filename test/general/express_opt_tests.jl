@@ -1,4 +1,4 @@
-@testitem "Express opt" begin
+@testset "Express opt" begin
     import QuantumClifford
     import QuantumOptics
 

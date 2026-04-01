@@ -1,4 +1,4 @@
-@testitem "Anticommutator" begin
+@testset "Anticommutator" begin
 
     @op A; @op B;
 

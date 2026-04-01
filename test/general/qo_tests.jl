@@ -1,8 +1,8 @@
-@testitem "Test qo" begin
+@testset "Test qo" begin
     using QuantumOptics
     using QuantumSymbolics
     #using QuantumOpticsExt: LazyPrePost
-    const LazyPrePost = Base.get_extension(QuantumSymbolics, :QuantumOpticsExt).LazyPrePost
+    LazyPrePost = Base.get_extension(QuantumSymbolics, :QuantumOpticsExt).LazyPrePost
 
     bs = GenericBasis(2),GenericBasis(2)
     op0 = Operator(bs...,rand(2,2))

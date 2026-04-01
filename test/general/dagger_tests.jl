@@ -1,4 +1,4 @@
-@testitem "Dagger" begin
+@testset "Dagger" begin
     using QuantumInterface: AbstractOperator
 
     @bra b₁; @bra b₂;

@@ -1,4 +1,4 @@
-@testitem "Outer Product" begin
+@testset "Outer Product" begin
     using QuantumOpticsBase
 
     @test isequal(L1*dagger(L0), SOuterKetBra(L1,dagger(L0)))

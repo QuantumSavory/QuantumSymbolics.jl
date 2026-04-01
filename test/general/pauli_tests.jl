@@ -1,4 +1,4 @@
-@testitem "Test Pauli" begin
+@testset "Test Pauli" begin
     @testset "simplify errors" begin
         @test_throws ErrorException qsimplify(X)
     end

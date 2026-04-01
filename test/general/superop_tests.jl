@@ -1,4 +1,4 @@
-@testitem "Superop" begin
+@testset "Superop" begin
     using LinearAlgebra
     using QuantumOptics
 

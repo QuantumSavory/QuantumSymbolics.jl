@@ -1,4 +1,4 @@
-@testitem "Misc linear algebra" begin
+@testset "Misc linear algebra" begin
     @op A; @op B;
     O = SZeroOperator()
 

@@ -1,4 +1,4 @@
-@testitem "Base show methods" begin
+@testset "Base show methods" begin
     @op A; @op B;
     @superop S;
     @bra b₁; @bra b₂;

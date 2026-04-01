@@ -1,4 +1,4 @@
-@testitem "Trace" begin
+@testset "Trace" begin
 
     @bra b₁; @bra b₂;
     @ket k₁; @ket k₂;

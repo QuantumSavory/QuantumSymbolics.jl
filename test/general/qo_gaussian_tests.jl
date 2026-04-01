@@ -1,4 +1,4 @@
-@testitem "Test qo gaussian" begin
+@testset "Test qo gaussian" begin
     using LinearAlgebra: diagm
     using QuantumOptics
     using QuantumSymbolics

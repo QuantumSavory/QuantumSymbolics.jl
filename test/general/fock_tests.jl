@@ -1,4 +1,4 @@
-@testitem "Fock" begin
+@testset "Fock" begin
     using SymbolicUtils: term
     state1 = FockState(1)
     state2 = FockState(2)

@@ -1,4 +1,4 @@
-@testitem "QuantumToolbox objects" begin
+@testset "QuantumToolbox objects" begin
     using QuantumSymbolics
     using QuantumToolbox
 

@@ -1,4 +1,4 @@
-@testitem "Clifford" begin
+@testset "Clifford" begin
     using QuantumClifford
     using QuantumOptics
 

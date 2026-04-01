@@ -1,4 +1,4 @@
-@testitem "Gabs and QuantumOptics Gaussian interop" begin
+@testset "Gabs and QuantumOptics Gaussian interop" begin
     using Gabs
     using QuantumOptics
     using QuantumSymbolics

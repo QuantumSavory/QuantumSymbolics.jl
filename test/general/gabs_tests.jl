@@ -1,4 +1,4 @@
-@testitem "Gabs objects" begin
+@testset "Gabs objects" begin
     using QuantumSymbolics
     using Gabs
 

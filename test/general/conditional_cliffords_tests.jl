@@ -1,4 +1,4 @@
-@testitem "Conditional Cliffords" begin
+@testset "Conditional Cliffords" begin
     using QuantumClifford
     using QuantumOpticsBase
     using QuantumToolbox

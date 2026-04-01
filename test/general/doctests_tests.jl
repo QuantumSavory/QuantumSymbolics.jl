@@ -1,4 +1,4 @@
-@testitem "Doctests" tags=[:doctests] begin
+@testset "Doctests" begin
     using Documenter
     using QuantumOptics
     using QuantumClifford

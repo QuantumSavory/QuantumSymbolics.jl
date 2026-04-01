@@ -1,4 +1,6 @@
-@testitem "JET checks" tags=[:jet] begin
+using Test
+
+@testset "JET checks" begin
     using JET
     using QuantumOptics, QuantumClifford # to load the extensions
     using Test

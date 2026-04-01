@@ -1,4 +1,4 @@
-@testitem "Test metadata decoration" begin
+@testset "Test metadata decoration" begin
     using QuantumSymbolics: Metadata, @withmetadata
     
     @withmetadata struct Foo1

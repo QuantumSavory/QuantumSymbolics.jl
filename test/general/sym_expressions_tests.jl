@@ -1,4 +1,4 @@
-@testitem "Sym expressions" begin
+@testset "Sym expressions" begin
     @test +(Z1) == Z1
     @test +(Z) == Z
     @test isequal(Z1 - Z2, Z1 + (-Z2))
