@@ -1,4 +1,7 @@
-@testitem "Dagger" begin
+using Test
+using QuantumSymbolics
+
+@testset "Dagger" begin
     using QuantumInterface: AbstractOperator
 
     @bra b₁; @bra b₂;

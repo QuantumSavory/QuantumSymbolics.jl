@@ -1,4 +1,7 @@
-@testitem "Commutator" begin
+using Test
+using QuantumSymbolics
+
+@testset "Commutator" begin
     @op A; @op B;
 
     @testset "symbolic commutator tests" begin

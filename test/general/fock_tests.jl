@@ -1,4 +1,7 @@
-@testitem "Fock" begin
+using Test
+using QuantumSymbolics
+
+@testset "Fock" begin
     using SymbolicUtils: term
     state1 = FockState(1)
     state2 = FockState(2)

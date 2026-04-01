@@ -1,4 +1,7 @@
-@testitem "Aqua" tags=[:aqua] begin
+using Test
+using QuantumSymbolics
+
+@testset "Aqua" begin
     using Aqua
     
     # Add any new types needed to QObj, or here if QObj if not appropriate.

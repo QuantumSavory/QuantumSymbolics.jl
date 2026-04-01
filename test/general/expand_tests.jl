@@ -1,4 +1,7 @@
-@testitem "Expand" begin
+using Test
+using QuantumSymbolics
+
+@testset "Expand" begin
     @bra b₁; @bra b₂; @bra b₃;
     @ket k₁; @ket k₂; @ket k₃;
 
