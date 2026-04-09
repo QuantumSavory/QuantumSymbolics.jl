@@ -43,12 +43,34 @@ const _ad₂ = create(_bf2)
 const _a₂ = destroy(_bf2)
 const _n₂ = number(_bf2)
 
-express_nolookup(::HGate, ::QuantumOpticsRepr) = _hadamard
-express_nolookup(::XGate, ::QuantumOpticsRepr) = _x
-express_nolookup(::YGate, ::QuantumOpticsRepr) = _y
-express_nolookup(::ZGate, ::QuantumOpticsRepr) = _z
-express_nolookup(::CPHASEGate, ::QuantumOpticsRepr) = _cphase
-express_nolookup(::CNOTGate, ::QuantumOpticsRepr) = _cnot
+const lazy_σ₊ = LazyPrePost(_σ₊, _σ₊)
+const lazy_σ₋ = LazyPrePost(_σ₋, _σ₋)
+const lazy_id = LazyPrePost(_id, _id)
+const lazy_x  = LazyPrePost(_x, _x)
+const lazy_y  = LazyPrePost(_y, _y)
+const lazy_z  = LazyPrePost(_z, _z)
+const lazy_hadamard = LazyPrePost(_hadamard, _hadamard)
+
+const lazy_cnot   = LazyPrePost(_cnot, _cnot)
+const lazy_cphase = LazyPrePost(_cphase, _cphase)
+const lazy_phase  = LazyPrePost(_phase, _phase)
+const lazy_iphase = LazyPrePost(_iphase, _iphase)
+
+const lazy_a₂   = LazyPrePost(_a₂, _a₂)
+const lazy_ad₂  = LazyPrePost(_ad₂, _ad₂)
+const lazy_n₂   = LazyPrePost(_n₂, _n₂)
+
+const lazy_s₊ = LazySuperSum(_b2, [1/√2, 1/√2], [_l0, _l1])
+const lazy_s₋ = LazySuperSum(_b2, [1/√2, -1/√2], [_l0, _l1])
+const lazy_i₊ = LazySuperSum(_b2, [1/√2, 1im/√2], [_l0, _l1])
+const lazy_i₋ = LazySuperSum(_b2, [1/√2, -1im/√2], [_l0, _l1])
+
+express_nolookup(::HGate, repr::QuantumOpticsRepr) = repr.lazy ? lazy_hadamard : _hadamard
+express_nolookup(::XGate, repr::QuantumOpticsRepr) = repr.lazy ? lazy_x : _x
+express_nolookup(::YGate, repr::QuantumOpticsRepr) = repr.lazy ? lazy_y : _y
+express_nolookup(::ZGate, repr::QuantumOpticsRepr) = repr.lazy ? lazy_z : _z
+express_nolookup(::CPHASEGate, repr::QuantumOpticsRepr) = repr.lazy ? lazy_cphase : _cphase
+express_nolookup(::CNOTGate, repr::QuantumOpticsRepr) = repr.lazy ? lazy_cnot : _cnot
 
 const xyzopdict = Dict(:X=>_x, :Y=>_y, :Z=>_z)
 const xyzstatedict = Dict(:X=>(_s₊,_s₋),:Y=>(_i₊,_i₋),:Z=>(_l0,_l1))
@@ -64,12 +86,12 @@ for control in (:X, :Y, :Z)
     end
 end
 
-express_nolookup(::PauliM, ::QuantumOpticsRepr) = _σ₋
-express_nolookup(::PauliP, ::QuantumOpticsRepr) = _σ₊
+express_nolookup(::PauliM, repr::QuantumOpticsRepr) = repr.lazy ? lazy_σ₊ : _σ₋
+express_nolookup(::PauliP, repr::QuantumOpticsRepr) = repr.lazy ? lazy_σ₊ : _σ₊
 
-express_nolookup(s::XBasisState, ::QuantumOpticsRepr) = (_s₊,_s₋)[s.idx]
-express_nolookup(s::YBasisState, ::QuantumOpticsRepr) = (_i₊,_i₋)[s.idx]
-express_nolookup(s::ZBasisState, ::QuantumOpticsRepr) = (_l0,_l1)[s.idx]
+express_nolookup(s::XBasisState, repr::QuantumOpticsRepr) = repr.lazy ? (lazy_s₊, lazy_s₋)[s.idx] : (_s₊, _s₋)[s.idx]
+express_nolookup(s::YBasisState, repr::QuantumOpticsRepr) = repr.lazy ? (lazy_i₊, lazy_i₋)[s.idx] : (_i₊, _i₋)[s.idx]
+express_nolookup(s::ZBasisState, repr::QuantumOpticsRepr) = repr.lazy ? (lazy_l0, lazy_l1)[s.idx] : (_l0, _l1)[s.idx]
 
 function finite_basis(s,r)
     if isfinite(length(basis(s)))
