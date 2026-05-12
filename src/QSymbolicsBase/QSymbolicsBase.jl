@@ -144,9 +144,9 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 const SymScalar = Symbolic{Complex}
 
 """Symbolic scaled scalar expression: `coeff * obj` where obj is a `Symbolic{Complex}`."""
-struct SScaledComplex <: Symbolic{Complex}
-    coeff
-    obj
+struct SScaledComplex{C,O<:SymScalar} <: Symbolic{Complex}
+    coeff::C
+    obj::O
 end
 isexpr(::SScaledComplex) = true
 iscall(::SScaledComplex) = true
@@ -155,14 +155,14 @@ operation(::SScaledComplex) = *
 head(::SScaledComplex) = :*
 children(x::SScaledComplex) = [:*, x.coeff, x.obj]
 metadata(::SScaledComplex) = nothing
-maketerm(::Type{SScaledComplex}, f, a, m) = f(a...)
+maketerm(::Type{<:SScaledComplex}, f, a, m) = f(a...)
 Base.show(io::IO, x::SScaledComplex) = print(io, "($(x.coeff))$(x.obj)")
 Base.hash(x::SScaledComplex, h::UInt) = hash((head(x), x.coeff, x.obj), h)
 Base.isequal(x::SScaledComplex, y::SScaledComplex) = isequal(x.coeff, y.coeff) && isequal(x.obj, y.obj)
 
 """Symbolic sum of scalar expressions."""
-struct SAddComplex <: Symbolic{Complex}
-    terms
+struct SAddComplex{T<:AbstractVector} <: Symbolic{Complex}
+    terms::T
 end
 isexpr(::SAddComplex) = true
 iscall(::SAddComplex) = true
@@ -171,14 +171,14 @@ operation(::SAddComplex) = +
 head(::SAddComplex) = :+
 children(x::SAddComplex) = [:+; x.terms]
 metadata(::SAddComplex) = nothing
-maketerm(::Type{SAddComplex}, f, a, m) = f(a...)
+maketerm(::Type{<:SAddComplex}, f, a, m) = f(a...)
 Base.show(io::IO, x::SAddComplex) = print(io, join(map(string, x.terms), "+"))
 Base.hash(x::SAddComplex, h::UInt) = hash((:+, Set(x.terms)), h)
 Base.isequal(x::SAddComplex, y::SAddComplex) = Set(x.terms) == Set(y.terms)
 
 """Symbolic product of scalar expressions."""
-struct SMulComplex <: Symbolic{Complex}
-    terms
+struct SMulComplex{T<:AbstractVector} <: Symbolic{Complex}
+    terms::T
 end
 isexpr(::SMulComplex) = true
 iscall(::SMulComplex) = true
@@ -187,7 +187,7 @@ operation(::SMulComplex) = *
 head(::SMulComplex) = :*
 children(x::SMulComplex) = [:*; x.terms]
 metadata(::SMulComplex) = nothing
-maketerm(::Type{SMulComplex}, f, a, m) = f(a...)
+maketerm(::Type{<:SMulComplex}, f, a, m) = f(a...)
 Base.show(io::IO, x::SMulComplex) = print(io, join(map(string, x.terms), "*"))
 Base.hash(x::SMulComplex, h::UInt) = hash((:*, x.terms), h)
 Base.isequal(x::SMulComplex, y::SMulComplex) = isequal(x.terms, y.terms)

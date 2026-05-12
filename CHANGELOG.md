@@ -1,5 +1,9 @@
 # News
 
+## unreleased
+
+- Concretely type scalar expression wrappers and Fock-space numeric symbolic fields.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.
