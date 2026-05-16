@@ -29,6 +29,12 @@ using QuantumSymbolics: Metadata, @withmetadata
     end
     @test Foo4{Int}(2, 3).metadata isa Metadata
 
+    @withmetadata struct Foo4a{T<:Int, S<:Integer} <: Integer
+        a::T
+        b::S
+    end
+    @test Foo4a{Int,Int8}(2, Int8(3)).metadata isa Metadata
+
     @withmetadata struct Foo5 <: Integer
         a
     end

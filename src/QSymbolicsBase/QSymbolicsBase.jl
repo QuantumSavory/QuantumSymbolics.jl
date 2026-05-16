@@ -86,8 +86,12 @@ macro withmetadata(strct)
     ex = quote $strct end
     if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
+        param_names = namify.(params)
         args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
+        constructor = :(
+            $struct_name{$(param_names...)}($(args...)) where {$(param_names...)} =
+                new{$(param_names...)}($((args..., :(Metadata()))...))
+        )
     elseif @capture(ex, struct T_ fields__ end)
         struct_name = namify(T)
         args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))

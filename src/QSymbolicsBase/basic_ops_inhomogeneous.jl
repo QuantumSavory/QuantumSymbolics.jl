@@ -11,10 +11,17 @@ julia> A*k
 A|k⟩
 ```
 """
-@withmetadata struct SApplyKet <: Symbolic{AbstractKet}
-    op
-    ket
+@withmetadata struct SApplyKet{
+    O<:Symbolic{AbstractOperator},
+    K<:Symbolic{AbstractKet}
+} <: Symbolic{AbstractKet}
+    op::O
+    ket::K
 end
+SApplyKet(
+    op::O,
+    ket::K
+) where {O<:Symbolic{AbstractOperator},K<:Symbolic{AbstractKet}} = SApplyKet{O,K}(op, ket)
 isexpr(::SApplyKet) = true
 iscall(::SApplyKet) = true
 arguments(x::SApplyKet) = [x.op,x.ket]
@@ -47,10 +54,17 @@ julia> b*A
 ⟨b|A
 ```
 """
-@withmetadata struct SApplyBra <: Symbolic{AbstractBra}
-    bra
-    op
+@withmetadata struct SApplyBra{
+    B<:Symbolic{AbstractBra},
+    O<:Symbolic{AbstractOperator}
+} <: Symbolic{AbstractBra}
+    bra::B
+    op::O
 end
+SApplyBra(
+    bra::B,
+    op::O
+) where {B<:Symbolic{AbstractBra},O<:Symbolic{AbstractOperator}} = SApplyBra{B,O}(bra, op)
 isexpr(::SApplyBra) = true
 iscall(::SApplyBra) = true
 arguments(x::SApplyBra) = [x.bra,x.op]
@@ -83,10 +97,17 @@ julia> b*k
 ⟨b||k⟩
 ```
 """
-@withmetadata struct SBraKet <: Symbolic{Complex}
-    bra
-    ket
+@withmetadata struct SBraKet{
+    B<:Symbolic{AbstractBra},
+    K<:Symbolic{AbstractKet}
+} <: Symbolic{Complex}
+    bra::B
+    ket::K
 end
+SBraKet(
+    bra::B,
+    ket::K
+) where {B<:Symbolic{AbstractBra},K<:Symbolic{AbstractKet}} = SBraKet{B,K}(bra, ket)
 isexpr(::SBraKet) = true
 iscall(::SBraKet) = true
 arguments(x::SBraKet) = [x.bra,x.ket]
@@ -106,7 +127,7 @@ Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
-maketerm(::Type{SBraKet}, f, a, m) = f(a...)
+maketerm(::Type{<:SBraKet}, f, a, m) = f(a...)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
 """Symbolic outer product of a ket and a bra.
@@ -118,10 +139,17 @@ julia> k*b
 |k⟩⟨b|
 ```
 """
-@withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
-    ket
-    bra
+@withmetadata struct SOuterKetBra{
+    K<:Symbolic{AbstractKet},
+    B<:Symbolic{AbstractBra}
+} <: Symbolic{AbstractOperator}
+    ket::K
+    bra::B
 end
+SOuterKetBra(
+    ket::K,
+    bra::B
+) where {K<:Symbolic{AbstractKet},B<:Symbolic{AbstractBra}} = SOuterKetBra{K,B}(ket, bra)
 isexpr(::SOuterKetBra) = true
 iscall(::SOuterKetBra) = true
 arguments(x::SOuterKetBra) = [x.ket,x.bra]
