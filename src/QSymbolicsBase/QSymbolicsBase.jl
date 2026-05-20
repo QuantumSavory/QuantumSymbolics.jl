@@ -86,18 +86,29 @@ macro withmetadata(strct)
     ex = quote $strct end
     if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
-        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
+        args = [namify(i) for i in fields if !MacroTools.isexpr(i, String, :string)]
+        param_names = namify.(params)
+        inferred_params = [:(typeof($arg)) for arg in args]
+        constructor = :($struct_name{$(param_names...)}($(args...)) where {$(params...)} = new{$(param_names...)}($((args..., :(Metadata()))...)))
+        outer_constructor = length(param_names) > 1 && length(param_names) == length(args) ?
+            :($struct_name($(args...)) = $struct_name{$(inferred_params...)}($(args...))) :
+            nothing
     elseif @capture(ex, struct T_ fields__ end)
         struct_name = namify(T)
-        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
+        args = [namify(i) for i in fields if !MacroTools.isexpr(i, String, :string)]
         constructor = :($struct_name($(args...)) = new($((args..., :(Metadata()))...)))
+        outer_constructor = nothing
     else @capture(ex, struct T_ end)
         struct_name = namify(T)
         constructor = :($struct_name() = new($:(Metadata())))
+        outer_constructor = nothing
     end
     struct_args = strct.args[end].args
-    push!(struct_args, constructor, :(metadata::Metadata))
+    if outer_constructor === nothing
+        push!(struct_args, constructor, :(metadata::Metadata))
+    else
+        push!(struct_args, constructor, outer_constructor, :(metadata::Metadata))
+    end
     esc(quote
     Base.@__doc__ $strct
     metadata(x::$struct_name)=x.metadata

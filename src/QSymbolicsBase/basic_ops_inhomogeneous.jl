@@ -11,9 +11,9 @@ julia> A*k
 A|k⟩
 ```
 """
-@withmetadata struct SApplyKet <: Symbolic{AbstractKet}
-    op
-    ket
+@withmetadata struct SApplyKet{O<:Symbolic{AbstractOperator},K<:Symbolic{AbstractKet}} <: Symbolic{AbstractKet}
+    op::O
+    ket::K
 end
 isexpr(::SApplyKet) = true
 iscall(::SApplyKet) = true
@@ -47,9 +47,9 @@ julia> b*A
 ⟨b|A
 ```
 """
-@withmetadata struct SApplyBra <: Symbolic{AbstractBra}
-    bra
-    op
+@withmetadata struct SApplyBra{B<:Symbolic{AbstractBra},O<:Symbolic{AbstractOperator}} <: Symbolic{AbstractBra}
+    bra::B
+    op::O
 end
 isexpr(::SApplyBra) = true
 iscall(::SApplyBra) = true
@@ -83,9 +83,9 @@ julia> b*k
 ⟨b||k⟩
 ```
 """
-@withmetadata struct SBraKet <: Symbolic{Complex}
-    bra
-    ket
+@withmetadata struct SBraKet{B<:Symbolic{AbstractBra},K<:Symbolic{AbstractKet}} <: Symbolic{Complex}
+    bra::B
+    ket::K
 end
 isexpr(::SBraKet) = true
 iscall(::SBraKet) = true
@@ -106,7 +106,7 @@ Base.:(*)(b::Symbolic{AbstractBra}, k::SZeroKet) = 0
 Base.:(*)(b::SZeroBra, k::SZeroKet) = 0
 Base.show(io::IO, x::SBraKet) = begin print(io,x.bra); print(io,x.ket) end
 Base.hash(x::SBraKet, h::UInt) = hash((head(x), arguments(x)), h)
-maketerm(::Type{SBraKet}, f, a, m) = f(a...)
+maketerm(::Type{<:SBraKet}, f, a, m) = f(a...)
 Base.isequal(x::SBraKet, y::SBraKet) = isequal(x.bra, y.bra) && isequal(x.ket, y.ket)
 
 """Symbolic outer product of a ket and a bra.
@@ -118,9 +118,9 @@ julia> k*b
 |k⟩⟨b|
 ```
 """
-@withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
-    ket
-    bra
+@withmetadata struct SOuterKetBra{K<:Symbolic{AbstractKet},B<:Symbolic{AbstractBra}} <: Symbolic{AbstractOperator}
+    ket::K
+    bra::B
 end
 isexpr(::SOuterKetBra) = true
 iscall(::SOuterKetBra) = true
