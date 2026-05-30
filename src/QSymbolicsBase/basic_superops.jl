@@ -16,9 +16,10 @@ julia> K*ρ
 A₁ρA₁†+A₂ρA₂†+A₃ρA₃†
 ```
 """
-@withmetadata struct KrausRepr <: Symbolic{AbstractSuperOperator}
-    krausops
+@withmetadata struct KrausRepr{K<:AbstractVector{<:Symbolic{AbstractOperator}}} <: Symbolic{AbstractSuperOperator}
+    krausops::K
 end
+KrausRepr(krausops::K) where {K<:AbstractVector{<:Symbolic{AbstractOperator}}} = KrausRepr{K}(krausops)
 isexpr(::KrausRepr) = true
 iscall(::KrausRepr) = true
 arguments(x::KrausRepr) = x.krausops
@@ -46,10 +47,11 @@ julia> S*A
 S[A]
 ```
 """
-@withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
-    sop
-    op
+@withmetadata struct SSuperOpApply{S<:Symbolic{AbstractSuperOperator},O<:Symbolic{AbstractOperator}} <: Symbolic{AbstractOperator}
+    sop::S
+    op::O
 end
+SSuperOpApply(sop::S, op::O) where {S<:Symbolic{AbstractSuperOperator},O<:Symbolic{AbstractOperator}} = SSuperOpApply{S,O}(sop,op)
 isexpr(::SSuperOpApply) = true
 iscall(::SSuperOpApply) = true
 arguments(x::SSuperOpApply) = [x.sop,x.op]

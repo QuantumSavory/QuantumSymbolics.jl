@@ -36,4 +36,13 @@ using QuantumSymbolics: Metadata, @withmetadata
 
     @withmetadata struct Foo6 <: Integer end
     @test Foo6().metadata isa Metadata
+
+    @withmetadata struct Foo7{A<:Integer,B<:AbstractString} <: Number
+        a::A
+        b::B
+    end
+    foo7 = Foo7{Int,String}(2, "hi")
+    @test foo7.metadata isa Metadata
+    @test fieldtype(typeof(foo7), :a) === Int
+    @test fieldtype(typeof(foo7), :b) === String
 end

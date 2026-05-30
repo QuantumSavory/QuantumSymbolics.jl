@@ -58,6 +58,11 @@ using QuantumSymbolics
         @test isequal(S*k, S*projector(k))
         @test isequal(K*O, A*O*dagger(A) + B*O*dagger(B) + C*O*dagger(C))
         @test isequal(K*k, A*projector(k)*dagger(A) + B*projector(k)*dagger(B) + C*projector(k)*dagger(C))
+
+        applied = S*O
+        @test isconcretetype(fieldtype(typeof(K), :krausops))
+        @test fieldtype(typeof(applied), :sop) === typeof(S)
+        @test fieldtype(typeof(applied), :op) === typeof(O)
     end
 
     # TODO
