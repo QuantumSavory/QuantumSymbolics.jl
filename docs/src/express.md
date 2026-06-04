@@ -48,7 +48,51 @@ tp = σˣ⊗σʸ
 express(tp*bellstate)
 ```
 
-## Examples of Edge Cases
+## Lazy QuantumOptics Output
+
+By default, `express(x, QuantumOpticsRepr())` eagerly converts symbolic expressions to full operator matrices. This can be memory-intensive for large systems since all intermediate matrices are materialized.
+
+For preserving symbolic structure, pass `lazy=true` to emit [`QuantumOpticsBase.LazySum`](https://github.com/qojulia/QuantumOpticsBase.jl), [`LazyProduct`](https://github.com/qojulia/QuantumOpticsBase.jl), and [`LazyTensor`](https://github.com/qojulia/QuantumOpticsBase.jl) objects instead:
+
+```jldoctest
+julia> r_lazy = QuantumOpticsRepr(lazy=true)
+QuantumOpticsRepr(cutoff=2, lazy=true)
+
+julia> op = tensor(σˣ, 𝕀) + tensor(𝕀, σᶻ);
+
+julia> lazy_op = express(op, r_lazy)
+LazySum(CompositeBasis{Spin(1/2), Spin(1/2)}([Spin(1/2), Spin(1/2)]), CompositeBasis{Spin(1/2), Spin(1/2)}([Spin(1/2), Spin(1/2)}), ComplexF64[1.0, 1.0], ([σˣ ⊗ 𝕀, 𝕀 ⊗ σᶻ],))
+
+julia> dense(lazy_op) ≈ express(op)  # compare with eager
+true
+```
+
+This is particularly useful for Hamiltonians written as sums of local tensor-product terms:
+
+```jldoctest
+julia> H = -0.5*(tensor(σᶻ, 𝕀) + tensor(𝕀, σᶻ)) - 0.1*tensor(σˣ, σˣ);
+
+julia> H_lazy = express(H, QuantumOpticsRepr(lazy=true))
+LazySum(CompositeBasis{Spin(1/2), Spin(1/2)}([Spin(1/2), Spin(1/2)}), CompositeBasis{Spin(1/2), Spin(1/2)}([Spin(1/2), Spin(1/2)}), ComplexF64[-0.5, -0.5, -0.1], ([σᶻ ⊗ 𝕀, 𝕀 ⊗ σᶻ, σˣ ⊗ σˣ],))
+
+julia> dense(H_lazy) ≈ express(H)  # verify numerical equivalence
+true
+```
+
+The `lazy=true` option does not affect Fock-space operators, which always apply the specified `cutoff`:
+
+```jldoctest
+julia> express(N̂, QuantumOpticsRepr(cutoff=4, lazy=true)) |> dense
+Operator(dim=5x5)
+  basis: Fock(cutoff=4)
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  1.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  2.0+0.0im  0.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
+ 0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
+```
+
+
 For Pauli operators, additional flexibility is given for translations to the Clifford formalism. Users have the option to convert a multi-qubit Pauli operator to an observable or operation with instances of `UseAsObservable` and `UseAsOperation`, respectively. Take the Pauli operator $Y$, for example, which in `QuantumSymbolics` is the constants `Y` or `σʸ`:
 
 ```jldoctest

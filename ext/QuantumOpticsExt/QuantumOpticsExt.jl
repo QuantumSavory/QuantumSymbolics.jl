@@ -102,4 +102,7 @@ express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ke
 
 include("should_upstream.jl")
 
+# Lazy operator support
+include("lazy_operators.jl")
+
 end
