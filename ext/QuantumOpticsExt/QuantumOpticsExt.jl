@@ -105,19 +105,21 @@ express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ke
 express_nolookup(x::SScaledOperator, r::QuantumOpticsRepr) =
     arguments(x)[1] * express(arguments(x)[2], r)
 
+_is_lazy(r::QuantumOpticsRepr) = hasproperty(r, :lazy) && getproperty(r, :lazy)
+
 function express_nolookup(x::SAddOperator, r::QuantumOpticsRepr)
     ops = Tuple(express(arg, r) for arg in arguments(x))
-    return r.lazy ? LazySum(ops...) : +(ops...)
+    return _is_lazy(r) ? LazySum(ops...) : +(ops...)
 end
 
 function express_nolookup(x::SMulOperator, r::QuantumOpticsRepr)
     ops = Tuple(express(arg, r) for arg in arguments(x))
-    return r.lazy ? LazyProduct(ops...) : *(ops...)
+    return _is_lazy(r) ? LazyProduct(ops...) : *(ops...)
 end
 
 function express_nolookup(x::STensorOperator, r::QuantumOpticsRepr)
     ops = Tuple(express(arg, r) for arg in arguments(x))
-    if !r.lazy
+    if !_is_lazy(r)
         return (⊗)(ops...)
     end
 
@@ -128,12 +130,12 @@ end
 
 function express_nolookup(x::SCommutator, r::QuantumOpticsRepr)
     a, b = Tuple(express(arg, r) for arg in arguments(x))
-    return r.lazy ? LazyProduct(a, b) - LazyProduct(b, a) : a * b - b * a
+    return _is_lazy(r) ? LazyProduct(a, b) - LazyProduct(b, a) : a * b - b * a
 end
 
 function express_nolookup(x::SAnticommutator, r::QuantumOpticsRepr)
     a, b = Tuple(express(arg, r) for arg in arguments(x))
-    return r.lazy ? LazyProduct(a, b) + LazyProduct(b, a) : a * b + b * a
+    return _is_lazy(r) ? LazyProduct(a, b) + LazyProduct(b, a) : a * b + b * a
 end
 
 include("should_upstream.jl")
