@@ -10,6 +10,8 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockState,
     MixedState, IdentityOp,
+    SAddOperator, SScaledOperator, SMulOperator, STensorOperator,
+    SCommutator, SAnticommutator,
     qubit_basis
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
@@ -99,6 +101,40 @@ express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasi
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])
 
 express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ket, r), express(s.bra, r))
+
+express_nolookup(x::SScaledOperator, r::QuantumOpticsRepr) =
+    arguments(x)[1] * express(arguments(x)[2], r)
+
+function express_nolookup(x::SAddOperator, r::QuantumOpticsRepr)
+    ops = Tuple(express(arg, r) for arg in arguments(x))
+    return r.lazy ? LazySum(ops...) : +(ops...)
+end
+
+function express_nolookup(x::SMulOperator, r::QuantumOpticsRepr)
+    ops = Tuple(express(arg, r) for arg in arguments(x))
+    return r.lazy ? LazyProduct(ops...) : *(ops...)
+end
+
+function express_nolookup(x::STensorOperator, r::QuantumOpticsRepr)
+    ops = Tuple(express(arg, r) for arg in arguments(x))
+    if !r.lazy
+        return (⊗)(ops...)
+    end
+
+    basis_l = (⊗)((op.basis_l for op in ops)...)
+    basis_r = (⊗)((op.basis_r for op in ops)...)
+    return LazyTensor(basis_l, basis_r, collect(1:length(ops)), ops)
+end
+
+function express_nolookup(x::SCommutator, r::QuantumOpticsRepr)
+    a, b = Tuple(express(arg, r) for arg in arguments(x))
+    return r.lazy ? LazyProduct(a, b) - LazyProduct(b, a) : a * b - b * a
+end
+
+function express_nolookup(x::SAnticommutator, r::QuantumOpticsRepr)
+    a, b = Tuple(express(arg, r) for arg in arguments(x))
+    return r.lazy ? LazyProduct(a, b) + LazyProduct(b, a) : a * b + b * a
+end
 
 include("should_upstream.jl")
 
