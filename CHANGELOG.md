@@ -1,5 +1,9 @@
 # News
 
+## [Unreleased]
+
+- Add lazy QuantumOptics conversion for sums, products, and tensor products when using `QuantumOpticsRepr(lazy=true)`.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.
