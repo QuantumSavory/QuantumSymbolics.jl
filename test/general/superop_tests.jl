@@ -56,6 +56,10 @@ using QuantumSymbolics
         @test isequal(S*SZeroOperator(), SZeroOperator())
         @test isequal(S*SZeroKet(), SZeroOperator())
         @test isequal(S*k, S*projector(k))
+        @test K.krausops isa Tuple{SOperator,SOperator,SOperator}
+        @test fieldtype(typeof(K), :krausops) == Tuple{SOperator,SOperator,SOperator}
+        @test fieldtype(typeof(S*O), :sop) == SSuperOperator
+        @test fieldtype(typeof(S*O), :op) == SOperator
         @test isequal(K*O, A*O*dagger(A) + B*O*dagger(B) + C*O*dagger(C))
         @test isequal(K*k, A*projector(k)*dagger(A) + B*projector(k)*dagger(B) + C*projector(k)*dagger(C))
     end

@@ -16,16 +16,17 @@ julia> K*ρ
 A₁ρA₁†+A₂ρA₂†+A₃ρA₃†
 ```
 """
-@withmetadata struct KrausRepr <: Symbolic{AbstractSuperOperator}
-    krausops
+@withmetadata struct KrausRepr{Ops<:Tuple{Vararg{Symbolic{AbstractOperator}}}} <: Symbolic{AbstractSuperOperator}
+    krausops::Ops
 end
+KrausRepr(krausops::Ops) where {Ops<:Tuple{Vararg{Symbolic{AbstractOperator}}}} = KrausRepr{Ops}(krausops)
 isexpr(::KrausRepr) = true
 iscall(::KrausRepr) = true
 arguments(x::KrausRepr) = x.krausops
 operation(x::KrausRepr) = kraus
 head(x::KrausRepr) = :kraus
-children(x::KrausRepr) = [:kraus; x.krausops]
-kraus(xs::Symbolic{AbstractOperator}...) = KrausRepr(collect(xs))
+children(x::KrausRepr) = [:kraus, x.krausops...]
+kraus(xs::Symbolic{AbstractOperator}...) = KrausRepr(xs)
 basis(x::KrausRepr) = basis(first(x.krausops))
 Base.:(*)(sop::KrausRepr, op::Symbolic{AbstractOperator}) = (+)((i*op*dagger(i) for i in sop.krausops)...)
 Base.:(*)(sop::KrausRepr, k::Symbolic{AbstractKet}) = (+)((i*SProjector(k)*dagger(i) for i in sop.krausops)...)
@@ -46,10 +47,11 @@ julia> S*A
 S[A]
 ```
 """
-@withmetadata struct SSuperOpApply <: Symbolic{AbstractOperator}
-    sop
-    op
+@withmetadata struct SSuperOpApply{S<:Symbolic{AbstractSuperOperator},O<:Symbolic{AbstractOperator}} <: Symbolic{AbstractOperator}
+    sop::S
+    op::O
 end
+SSuperOpApply(sop::S, op::O) where {S<:Symbolic{AbstractSuperOperator},O<:Symbolic{AbstractOperator}} = SSuperOpApply{S,O}(sop, op)
 isexpr(::SSuperOpApply) = true
 iscall(::SSuperOpApply) = true
 arguments(x::SSuperOpApply) = [x.sop,x.op]
