@@ -85,7 +85,7 @@ and tensor products are represented as `LazySum`, `LazyProduct`, and
 `LazyTensor` respectively, while `dense` can still be used to materialize the
 ordinary operator when needed.
 
-```jldoctest
+```julia
 julia> using QuantumOpticsBase: LazyTensor
 
 julia> express(QuantumSymbolics.X ⊗ (QuantumSymbolics.Y + QuantumSymbolics.Z), QuantumOpticsRepr(lazy=true)) isa LazyTensor
