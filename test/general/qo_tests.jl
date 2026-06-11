@@ -27,3 +27,38 @@ using QuantumSymbolics
     @test embed(b,b,[1],l2)*opt0 ≈ (spre(op21)*spost(op22)*op0)⊗op0a⊗op0b
     @test embed(b,b,[1],l2+l3)*opt0 ≈ (spre(op21)*spost(op22)*op0 + spre(op31)*spost(op32)*op0)⊗op0a⊗op0b
 end
+
+@testset "Lazy QuantumOpticsRepr" begin
+    using QuantumOpticsBase
+
+    repr = QuantumOpticsRepr(lazy=true)
+
+    sum_expr = X + 2Y + Z
+    lazy_sum = express(sum_expr, repr)
+    @test lazy_sum isa LazySum
+    @test length(lazy_sum.operators) == 3
+    @test dense(lazy_sum) ≈ express(sum_expr)
+
+    product_expr = X * (Y + Z)
+    lazy_product = express(product_expr, repr)
+    @test lazy_product isa LazyProduct
+    @test lazy_product.operators[2] isa LazySum
+    @test dense(lazy_product) ≈ express(product_expr)
+
+    tensor_expr = X ⊗ Y ⊗ Z
+    lazy_tensor = express(tensor_expr, repr)
+    @test lazy_tensor isa LazyTensor
+    @test length(lazy_tensor.operators) == 3
+    @test dense(lazy_tensor) ≈ express(tensor_expr)
+
+    nested_tensor_expr = X ⊗ (Y + Z)
+    nested_lazy_tensor = express(nested_tensor_expr, repr)
+    @test nested_lazy_tensor isa LazyTensor
+    @test all(op -> op isa DataOperator, nested_lazy_tensor.operators)
+    @test dense(nested_lazy_tensor) ≈ express(nested_tensor_expr)
+
+    @test express(3 * product_expr, repr) isa LazyProduct
+    @test express(3 * product_expr, repr).factor == 3
+    @test express(3 * tensor_expr, repr) isa LazyTensor
+    @test express(3 * tensor_expr, repr).factor == 3
+end
