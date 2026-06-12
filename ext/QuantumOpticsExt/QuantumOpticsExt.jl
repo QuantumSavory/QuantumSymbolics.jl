@@ -10,7 +10,9 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockState,
     MixedState, IdentityOp,
-    qubit_basis
+    qubit_basis,
+    SAddOperator, SScaledOperator, SMulOperator, STensorOperator,
+    SCommutator, SAnticommutator
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
@@ -101,5 +103,77 @@ express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasi
 express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ket, r), express(s.bra, r))
 
 include("should_upstream.jl")
+
+##
+# Lazy express methods for QuantumOpticsRepr(lazy=true)
+#
+# When lazy=true, composite operator expressions (sums, products, tensor products)
+# are expressed using LazySum, LazyProduct, and LazyTensor instead of eager dense
+# operators. Individual (leaf) operators are still expressed eagerly.
+##
+
+# Symbolic operator addition → LazySum
+function express_nolookup(x::SAddOperator, r::QuantumOpticsRepr)
+    r.lazy || return +(express.(arguments(x), (r,))...)
+    factors = ComplexF64[]
+    ops = []
+    for a in arguments(x)
+        if a isa SScaledOperator
+            push!(factors, ComplexF64(a.coeff))
+            push!(ops, express(a.obj, r))
+        else
+            push!(factors, one(ComplexF64))
+            push!(ops, express(a, r))
+        end
+    end
+    LazySum(factors, ops)
+end
+
+# Symbolic operator multiplication → LazyProduct
+function express_nolookup(x::SMulOperator, r::QuantumOpticsRepr)
+    r.lazy || return *(express.(arguments(x), (r,))...)
+    expressed = Tuple(express.(arguments(x), (r,)))
+    LazyProduct(expressed)
+end
+
+# Symbolic tensor product of operators → LazyTensor
+function express_nolookup(x::STensorOperator, r::QuantumOpticsRepr)
+    r.lazy || return ⊗(express.(arguments(x), (r,))...)
+    args = arguments(x)
+    expressed = [express(t, r) for t in args]
+    bl = tensor([op.basis_l for op in expressed]...)
+    br = tensor([op.basis_r for op in expressed]...)
+    # Only include non-identity subsystems for efficient LazyTensor
+    indices = Int[]
+    nontrivial = []
+    for (i, (sym_arg, num_op)) in enumerate(zip(args, expressed))
+        if !(sym_arg isa IdentityOp)
+            push!(indices, i)
+            push!(nontrivial, num_op)
+        end
+    end
+    if isempty(nontrivial)
+        return identityoperator(bl)
+    end
+    LazyTensor(bl, br, indices, Tuple(nontrivial))
+end
+
+# Symbolic commutator [A, B] = AB - BA → LazySum of LazyProducts
+function express_nolookup(x::SCommutator, r::QuantumOpticsRepr)
+    r.lazy || return commutator(express(x.op1, r), express(x.op2, r))
+    a = express(x.op1, r)
+    b = express(x.op2, r)
+    LazySum([one(ComplexF64), -one(ComplexF64)],
+            [LazyProduct(a, b), LazyProduct(b, a)])
+end
+
+# Symbolic anticommutator {A, B} = AB + BA → LazySum of LazyProducts
+function express_nolookup(x::SAnticommutator, r::QuantumOpticsRepr)
+    r.lazy || return anticommutator(express(x.op1, r), express(x.op2, r))
+    a = express(x.op1, r)
+    b = express(x.op2, r)
+    LazySum([one(ComplexF64), one(ComplexF64)],
+            [LazyProduct(a, b), LazyProduct(b, a)])
+end
 
 end

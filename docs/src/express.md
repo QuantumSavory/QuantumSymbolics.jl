@@ -78,3 +78,35 @@ Operator(dim=5x5)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```
+
+## Lazy operator output
+
+By default, [`express`](@ref) with `QuantumOpticsRepr` eagerly computes dense numerical operators. For large composite systems, this can be expensive. Passing `lazy=true` preserves the structure of symbolic expressions by producing lazy operator types from `QuantumOpticsBase` instead:
+
+- Symbolic sums produce [`LazySum`](https://docs.qojulia.org/api/#QuantumOpticsBase.LazySum)
+- Symbolic products produce [`LazyProduct`](https://docs.qojulia.org/api/#QuantumOpticsBase.LazyProduct)
+- Symbolic tensor products produce [`LazyTensor`](https://docs.qojulia.org/api/#QuantumOpticsBase.LazyTensor)
+
+```@example 3
+using QuantumSymbolics, QuantumOptics # hide
+r_lazy = QuantumOpticsRepr(lazy=true)
+
+# A simple Hamiltonian: X⊗I + I⊗Z
+ham = tensor(X, IdentityOp(X)) + tensor(IdentityOp(X), Z)
+
+lazy_ham = express(ham, r_lazy)
+```
+
+The lazy result can be converted to a dense operator with `dense`, which agrees numerically with the eager version:
+
+```@example 3
+eager_ham = express(ham, QuantumOpticsRepr())
+isapprox(dense(lazy_ham), eager_ham)
+```
+
+The `cutoff` option still applies to Fock-space objects when `lazy=true`:
+
+```@example 3
+r_lazy4 = QuantumOpticsRepr(cutoff=4, lazy=true)
+express(N, r_lazy4) |> dense
+```
