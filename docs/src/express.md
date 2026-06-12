@@ -78,3 +78,16 @@ Operator(dim=5x5)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```
+
+Operator expressions can also be converted to lazy QuantumOptics operators by
+passing `QuantumOpticsRepr(lazy=true)`. In this mode, symbolic sums, products,
+and tensor products are represented as `LazySum`, `LazyProduct`, and
+`LazyTensor` respectively, while `dense` can still be used to materialize the
+ordinary operator when needed.
+
+```julia
+julia> using QuantumOpticsBase: LazyTensor
+
+julia> express(QuantumSymbolics.X ⊗ (QuantumSymbolics.Y + QuantumSymbolics.Z), QuantumOpticsRepr(lazy=true)) isa LazyTensor
+true
+```
