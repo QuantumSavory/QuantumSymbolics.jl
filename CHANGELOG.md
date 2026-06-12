@@ -1,5 +1,10 @@
 # News
 
+## v0.4.17 - 2026-06-08
+
+- Add lazy `QuantumOpticsRepr` expression support for symbolic operator sums,
+  products, tensor products, commutators, and anticommutators.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.
