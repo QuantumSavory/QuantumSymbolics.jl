@@ -1,5 +1,9 @@
 # News
 
+## v0.4.17 - 2026-06-14
+
+- Add a `lazy=true` option to `QuantumOpticsRepr`. When set, `express` returns `LazySum`, `LazyProduct`, and `LazyTensor` for symbolic operator sums, products, and tensor products (and lazy sums of products for commutators and anticommutators) instead of materializing dense matrices. Requires QuantumInterface 0.4.3.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.
