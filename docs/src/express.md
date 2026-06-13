@@ -78,3 +78,30 @@ Operator(dim=5x5)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```
+
+## Lazy Operator Output
+
+By default `QuantumOpticsRepr` materializes dense or sparse matrices. For expressions that
+carry useful structure, such as a Hamiltonian written as a sum of local tensor-product
+terms, passing `lazy=true` instead builds the lazy operators of `QuantumOpticsBase`. Symbolic
+sums, products, and tensor products are translated to `LazySum`, `LazyProduct`, and
+`LazyTensor`, which postpone the matrix construction (commutators and anticommutators become
+lazy sums of products):
+
+```julia
+julia> H = σˣ⊗σˣ + σʸ⊗σʸ;
+
+julia> lazy = express(H, QuantumOpticsRepr(lazy=true))
+LazySum(...)
+
+julia> lazy isa LazySum
+true
+
+julia> dense(lazy) ≈ express(H, QuantumOpticsRepr()) # agrees with the eager conversion
+true
+```
+
+The bosonic cutoff still applies, so `QuantumOpticsRepr(cutoff=4, lazy=true)` keeps the
+finite Fock dimension for each factor. A tensor factor that itself spans several subsystems
+cannot be placed in a `LazyTensor`, and that tensor product falls back to the eager
+construction.

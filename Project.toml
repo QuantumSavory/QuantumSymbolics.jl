@@ -1,7 +1,7 @@
 name = "QuantumSymbolics"
 uuid = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 authors = ["QuantumSymbolics.jl contributors"]
-version = "0.4.16"
+version = "0.4.17"
 
 [workspace]
 projects = ["benchmark", "docs"]
@@ -36,10 +36,16 @@ LinearAlgebra = "1.9"
 MacroTools = "0.5.13"
 PrecompileTools = "1.2"
 QuantumClifford = "0.9.4, 0.10, 0.11"
-QuantumInterface = "0.4.1"
+QuantumInterface = "0.4.3"
 QuantumOpticsBase = "0.5.6"
 QuantumToolbox = "0.34.0, 0.43, 0.47"
 SymbolicUtils = "4.17"
 Symbolics = "7.13"
 TermInterface = "2"
 julia = "1.10"
+
+# Temporary bridge while the `lazy` field of `QuantumOpticsRepr` is unreleased: resolve
+# QuantumInterface from the branch that adds it. Remove once QuantumInterface 0.4.3 is
+# registered; the `[compat]` entry above already pins the required version.
+[sources]
+QuantumInterface = {url = "https://github.com/GrovyleX/QuantumInterface.jl", rev = "lazy-quantumopticsrepr"}
