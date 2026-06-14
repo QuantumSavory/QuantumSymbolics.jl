@@ -4,7 +4,7 @@ using QuantumInterface, QuantumOpticsBase
 using QuantumInterface: samebases
 using QuantumSymbolics
 using QuantumSymbolics:
-    HGate, XGate, YGate, ZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
+    HGate, XGate, YGate, ZGate, RotXGate, RotYGate, RotZGate, CPHASEGate, CNOTGate, PauliP, PauliM,
     XCXGate, XCYGate, XCZGate, YCXGate, YCYGate, YCZGate, ZCXGate, ZCYGate, ZCZGate,
     XBasisState, YBasisState, ZBasisState,
     NumberOp, CreateOp, DestroyOp,
@@ -31,6 +31,9 @@ const _z = sigmaz(_b2)
 const _x = sigmax(_b2)
 const _y = sigmay(_b2)
 const _hadamard = (sigmaz(_b2)+sigmax(_b2))/√2
+_rotx(θ) = cos(θ/2)*_id - im*sin(θ/2)*_x
+_roty(θ) = cos(θ/2)*_id - im*sin(θ/2)*_y
+_rotz(θ) = cos(θ/2)*_id - im*sin(θ/2)*_z
 const _cnot = _l00⊗_id + _l11⊗_x
 const _cphase = _l00⊗_id + _l11⊗_z
 const _phase = _l00 + im*_l11
@@ -47,6 +50,9 @@ express_nolookup(::HGate, ::QuantumOpticsRepr) = _hadamard
 express_nolookup(::XGate, ::QuantumOpticsRepr) = _x
 express_nolookup(::YGate, ::QuantumOpticsRepr) = _y
 express_nolookup(::ZGate, ::QuantumOpticsRepr) = _z
+express_nolookup(g::RotXGate, ::QuantumOpticsRepr) = _rotx(g.θ)
+express_nolookup(g::RotYGate, ::QuantumOpticsRepr) = _roty(g.θ)
+express_nolookup(g::RotZGate, ::QuantumOpticsRepr) = _rotz(g.θ)
 express_nolookup(::CPHASEGate, ::QuantumOpticsRepr) = _cphase
 express_nolookup(::CNOTGate, ::QuantumOpticsRepr) = _cnot
 
