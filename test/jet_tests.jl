@@ -8,6 +8,5 @@ using Test
 
     rep = JET.report_package(QuantumSymbolics, target_modules=[QuantumSymbolics])
     @show rep
-    @test_broken length(JET.get_reports(rep)) == 0
-    @test length(JET.get_reports(rep)) <= 6
+    @test length(JET.get_reports(rep)) == 0
 end

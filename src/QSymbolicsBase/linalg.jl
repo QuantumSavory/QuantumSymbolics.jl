@@ -21,8 +21,8 @@ julia> commutator(A, A)
 ```
 """
 @withmetadata struct SCommutator <: Symbolic{AbstractOperator}
-    op1
-    op2
+    op1::Symbolic{AbstractOperator}
+    op2::Symbolic{AbstractOperator}
 end
 isexpr(::SCommutator) = true
 iscall(::SCommutator) = true
@@ -55,8 +55,8 @@ julia> anticommutator(A, B)
 ```
 """
 @withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
-    op1
-    op2
+    op1::Symbolic{AbstractOperator}
+    op2::Symbolic{AbstractOperator}
 end
 isexpr(::SAnticommutator) = true
 iscall(::SAnticommutator) = true
@@ -92,7 +92,7 @@ julia> conj(k)
 ```
 """
 @withmetadata struct SConjugate{T<:QObj} <: Symbolic{T}
-    obj
+    obj::Symbolic{T}
 end
 isexpr(::SConjugate) = true
 iscall(::SConjugate) = true
@@ -171,7 +171,7 @@ julia> transpose(k)
 ```
 """
 @withmetadata struct STranspose{T<:QObj} <: Symbolic{T}
-    obj
+    obj::Symbolic{T}
 end
 isexpr(::STranspose) = true
 iscall(::STranspose) = true
@@ -223,7 +223,7 @@ U⁻¹
 ```
 """
 @withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
-    obj
+    obj::SymQObj
 end
 isexpr(::SDagger) = true
 iscall(::SDagger) = true
@@ -350,7 +350,7 @@ julia> ptrace(mixed_state, 2)
 ```
 """
 @withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}
-    obj
+    obj::Symbolic{AbstractOperator}
     sys::Int
 end
 isexpr(::SPartialTrace) = true
