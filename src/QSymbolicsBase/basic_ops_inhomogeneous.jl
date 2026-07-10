@@ -11,9 +11,9 @@ julia> A*k
 A|k⟩
 ```
 """
-@withmetadata struct SApplyKet <: Symbolic{AbstractKet}
-    op
-    ket
+@withmetadata struct SApplyKet{O, K} <: Symbolic{AbstractKet}
+    op::O
+    ket::K
 end
 isexpr(::SApplyKet) = true
 iscall(::SApplyKet) = true
@@ -47,9 +47,9 @@ julia> b*A
 ⟨b|A
 ```
 """
-@withmetadata struct SApplyBra <: Symbolic{AbstractBra}
-    bra
-    op
+@withmetadata struct SApplyBra{B, O} <: Symbolic{AbstractBra}
+    bra::B
+    op::O
 end
 isexpr(::SApplyBra) = true
 iscall(::SApplyBra) = true
@@ -83,9 +83,9 @@ julia> b*k
 ⟨b||k⟩
 ```
 """
-@withmetadata struct SBraKet <: Symbolic{Complex}
-    bra
-    ket
+@withmetadata struct SBraKet{B, K} <: Symbolic{Complex}
+    bra::B
+    ket::K
 end
 isexpr(::SBraKet) = true
 iscall(::SBraKet) = true
@@ -118,9 +118,9 @@ julia> k*b
 |k⟩⟨b|
 ```
 """
-@withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
-    ket
-    bra
+@withmetadata struct SOuterKetBra{K, B} <: Symbolic{AbstractOperator}
+    ket::K
+    bra::B
 end
 isexpr(::SOuterKetBra) = true
 iscall(::SOuterKetBra) = true

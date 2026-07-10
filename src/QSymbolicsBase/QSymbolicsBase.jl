@@ -87,7 +87,8 @@ macro withmetadata(strct)
     if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
         args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
+        where_params = [namify(p) for p in params]
+        constructor = :($struct_name{$(where_params...)}($(args...)) where {$(params...)} = new{$(where_params...)}($((args..., :(Metadata()))...)))
     elseif @capture(ex, struct T_ fields__ end)
         struct_name = namify(T)
         args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
@@ -144,9 +145,9 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 const SymScalar = Symbolic{Complex}
 
 """Symbolic scaled scalar expression: `coeff * obj` where obj is a `Symbolic{Complex}`."""
-struct SScaledComplex <: Symbolic{Complex}
-    coeff
-    obj
+struct SScaledComplex{C,O} <: Symbolic{Complex}
+    coeff::C
+    obj::O
 end
 isexpr(::SScaledComplex) = true
 iscall(::SScaledComplex) = true
@@ -161,8 +162,8 @@ Base.hash(x::SScaledComplex, h::UInt) = hash((head(x), x.coeff, x.obj), h)
 Base.isequal(x::SScaledComplex, y::SScaledComplex) = isequal(x.coeff, y.coeff) && isequal(x.obj, y.obj)
 
 """Symbolic sum of scalar expressions."""
-struct SAddComplex <: Symbolic{Complex}
-    terms
+struct SAddComplex{T} <: Symbolic{Complex}
+    terms::T
 end
 isexpr(::SAddComplex) = true
 iscall(::SAddComplex) = true
@@ -177,8 +178,8 @@ Base.hash(x::SAddComplex, h::UInt) = hash((:+, Set(x.terms)), h)
 Base.isequal(x::SAddComplex, y::SAddComplex) = Set(x.terms) == Set(y.terms)
 
 """Symbolic product of scalar expressions."""
-struct SMulComplex <: Symbolic{Complex}
-    terms
+struct SMulComplex{T} <: Symbolic{Complex}
+    terms::T
 end
 isexpr(::SMulComplex) = true
 iscall(::SMulComplex) = true
