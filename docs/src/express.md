@@ -78,3 +78,30 @@ Operator(dim=5x5)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```
+
+`QuantumOpticsRepr` also supports an opt-in lazy conversion mode. With
+`lazy=true`, symbolic operator sums, products, and tensor products preserve
+their structure using `QuantumOpticsBase` lazy operators instead of eagerly
+materializing the full operator.
+
+```@example 3
+using QuantumSymbolics, QuantumOptics # hide
+op = (X ⊗ I) + (I ⊗ Z)
+if hasproperty(QuantumOpticsRepr(), :lazy)
+    lazy_op = express(op, QuantumOpticsRepr(lazy=true))
+    typeof(lazy_op)
+else
+    "lazy QuantumOpticsRepr requires a QuantumInterface version with lazy keyword support"
+end
+```
+
+The lazy result is numerically equivalent to the default eager conversion once
+it is materialized.
+
+```@example 3
+if @isdefined(lazy_op)
+    dense(lazy_op) ≈ express(op, QuantumOpticsRepr())
+else
+    true
+end
+```
