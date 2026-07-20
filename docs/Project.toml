@@ -13,6 +13,7 @@ Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
 
 [compat]
+AnythingLLMDocs = "0.1.0"
 DocumenterCitations = "1.4.1"
 PrettyPrint = "0.2.0"
 QuantumSymbolics = "0.4.16"
