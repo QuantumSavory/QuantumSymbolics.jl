@@ -11,3 +11,6 @@ QuantumOpticsBase = "4f57444f-1401-5e15-980d-4471b28d5678"
 QuantumSymbolics = "efa7fd63-0460-4890-beb7-be1bbdfbaeae"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
+
+[compat]
+QuantumOptics = "1.2.6"
