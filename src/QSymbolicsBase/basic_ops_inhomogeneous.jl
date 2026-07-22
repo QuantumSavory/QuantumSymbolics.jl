@@ -12,8 +12,8 @@ A|k⟩
 ```
 """
 @withmetadata struct SApplyKet <: Symbolic{AbstractKet}
-    op
-    ket
+    op::Symbolic{AbstractOperator}
+    ket::Symbolic{AbstractKet}
 end
 isexpr(::SApplyKet) = true
 iscall(::SApplyKet) = true
@@ -48,8 +48,8 @@ julia> b*A
 ```
 """
 @withmetadata struct SApplyBra <: Symbolic{AbstractBra}
-    bra
-    op
+    bra::Symbolic{AbstractBra}
+    op::Symbolic{AbstractOperator}
 end
 isexpr(::SApplyBra) = true
 iscall(::SApplyBra) = true
@@ -84,8 +84,8 @@ julia> b*k
 ```
 """
 @withmetadata struct SBraKet <: Symbolic{Complex}
-    bra
-    ket
+    bra::Symbolic{AbstractBra}
+    ket::Symbolic{AbstractKet}
 end
 isexpr(::SBraKet) = true
 iscall(::SBraKet) = true
@@ -119,8 +119,8 @@ julia> k*b
 ```
 """
 @withmetadata struct SOuterKetBra <: Symbolic{AbstractOperator}
-    ket
-    bra
+    ket::Symbolic{AbstractKet}
+    bra::Symbolic{AbstractBra}
 end
 isexpr(::SOuterKetBra) = true
 iscall(::SOuterKetBra) = true

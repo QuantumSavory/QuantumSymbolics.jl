@@ -59,9 +59,9 @@ express_nolookup(op::SScaledOperator, r::CliffordRepr, u::UseAsObservable) = arg
 express_nolookup(x::SMulOperator,     r::CliffordRepr, u::UseAsObservable) = (*)((express(t,r,u) for t in arguments(x))...)
 express_nolookup(op, ::CliffordRepr, ::UseAsObservable) = error("Can not convert $(op) into a `PauliOperator`, which is the only observable that can be computed for QuantumClifford objects. Consider defining `express_nolookup(op, ::CliffordRepr, ::UseAsObservable)::PauliOperator` for this object.")
 
-struct QCRandomSampler # TODO specify types
-    operators # union of QCRandomSampler and MixedDestabilizer
-    weights
+struct QCRandomSampler{O<:AbstractVector,W<:AbstractVector}
+    operators::O # union of QCRandomSampler and MixedDestabilizer
+    weights::W
 end
 function express_nolookup(x::SAddOperator, repr::CliffordRepr)
     weights = collect(values(x.dict))
@@ -84,8 +84,8 @@ function express_nolookup(x::MixedState, ::CliffordRepr)
 end
 express_nolookup(x::SProjector, repr::CliffordRepr) = express_nolookup(x.ket, repr)
 
-struct QCGateSequence <: QuantumClifford.AbstractSymbolicOperator
-    gates # TODO constructor that flattens nested QCGateSequence
+struct QCGateSequence{G<:AbstractVector} <: QuantumClifford.AbstractSymbolicOperator
+    gates::G # TODO constructor that flattens nested QCGateSequence
 end
 
 function QuantumClifford.apply!(

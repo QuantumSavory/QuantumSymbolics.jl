@@ -20,8 +20,8 @@ julia> 2*A
 ```
 """
 @withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
-    coeff
-    obj
+    coeff::Union{Number,SymbolicUtils.BasicSymbolic,Symbolic{Complex}}
+    obj::Symbolic{T}
 end
 isexpr(::SScaled) = true
 iscall(::SScaled) = true
@@ -105,14 +105,14 @@ julia> k₁ + k₂
 ```
 """
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
-    dict
-    _set_precomputed
-    _arguments_precomputed
+    dict::Dict{Any,Any}
+    _set_precomputed::Set{Any}
+    _arguments_precomputed::Vector{Any}
 end
 function SAdd{S}(d) where S
     isempty(d) && return SZero{S}()
-    terms = [c*obj for (obj,c) in d]
-    length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
+    terms = Any[c*obj for (obj,c) in d]
+    length(d)==1 ? first(terms) : SAdd{S}(Dict{Any,Any}(d),Set{Any}(terms),terms)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -156,8 +156,9 @@ AB
 ```
 """
 @withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
-    terms
+    terms::Vector{Any}
 end
+SMulOperator(term::Symbolic{AbstractOperator}, terms::Symbolic{AbstractOperator}...) = SMulOperator(Any[term, terms...])
 isexpr(::SMulOperator) = true
 iscall(::SMulOperator) = true
 arguments(x::SMulOperator) = x.terms
@@ -200,7 +201,7 @@ A⊗B
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
-    terms
+    terms::Vector{Any}
 end
 isexpr(::STensor) = true
 iscall(::STensor) = true

@@ -1,5 +1,9 @@
 # News
 
+## Unreleased
+
+- Concretely type core symbolic struct fields and add regression coverage for untyped package-owned fields.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.

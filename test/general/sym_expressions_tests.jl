@@ -1,5 +1,6 @@
 using Test
 using QuantumSymbolics
+using TermInterface: arguments, maketerm, metadata, operation
 
 @testset "Sym expressions" begin
     @test +(Z1) == Z1
@@ -25,4 +26,21 @@ using QuantumSymbolics
     @test isequal(A+B-A+B, 2B)
     @test isequal(2A-3B+2(A+B), 4A-B)
     @test isequal(2A-3B+2(A+2B), 4A+B)
+
+    @testset "typed symbolic operation reconstruction" begin
+        trace_a = tr(A)
+        trace_b = tr(B)
+
+        for scalar_expr in (2 * trace_a, trace_a + trace_b, trace_a * trace_b)
+            rebuilt = maketerm(
+                typeof(scalar_expr),
+                operation(scalar_expr),
+                arguments(scalar_expr),
+                metadata(scalar_expr),
+            )
+            @test isequal(rebuilt, scalar_expr)
+        end
+
+        @test isequal(SMulOperator(A, B), A * B)
+    end
 end

@@ -40,23 +40,23 @@ Operator(dim=2x2)
  0.0+0.0im  0.5+0.0im
 ```"""
 @withmetadata struct PauliNoiseCPTP <: NoiseCPTP
-    px
-    py
-    pz
+    px::Real
+    py::Real
+    pz::Real
 end
 basis(x::PauliNoiseCPTP) = SpinBasis(1//2)
 symbollabel(x::PauliNoiseCPTP) = "𝒫"
 
 """Single-qubit dephasing CPTP map"""
 @withmetadata struct DephasingCPTP <: NoiseCPTP
-    p
+    p::Real
 end
 basis(x::DephasingCPTP) = SpinBasis(1//2)
 symbollabel(x::DephasingCPTP) = "𝒟𝓅𝒽"
 
 """Single-qubit depolarization CPTP map"""
 @withmetadata struct DepolarizationCPTP <: NoiseCPTP
-    p
+    p::Real
     basis::Basis
 end
 symbollabel(x::DepolarizationCPTP) = "𝒟ℯ𝓅ℴ𝓁"
