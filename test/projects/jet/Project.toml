@@ -1,5 +1,6 @@
 [deps]
 JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
+LoweredCodeUtils = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
 ParallelTestRunner = "d3525ed8-44d0-4b2c-a655-542cee43accc"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 QuantumClifford = "0525e862-1e90-11e9-3e4d-1b39d7109de1"
@@ -9,3 +10,6 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [sources]
 QuantumSymbolics = {path = "../../.."}
+
+[compat]
+LoweredCodeUtils = "=3.5.3"

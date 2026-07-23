@@ -10,7 +10,8 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockState,
     MixedState, IdentityOp,
-    qubit_basis
+    qubit_basis,
+    SAddOperator, SScaledOperator, SMulOperator, STensorOperator
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
 using TermInterface: isexpr, head, operation, arguments, metadata
@@ -42,6 +43,45 @@ const _f1₂ = fockstate(_bf2, 1)
 const _ad₂ = create(_bf2)
 const _a₂ = destroy(_bf2)
 const _n₂ = number(_bf2)
+
+_is_lazy(r::QuantumOpticsRepr) = hasproperty(r, :lazy) && r.lazy
+_express_eager(x, r::QuantumOpticsRepr) = operation(x)(express.(arguments(x), (r,))...)
+_lazytensor_suboperator(op::DataOperator) = op
+_lazytensor_suboperator(op) = dense(op)
+
+function express_nolookup(x::SScaledOperator, r::QuantumOpticsRepr)
+    x.coeff * express(x.obj, r)
+end
+
+function express_nolookup(x::SAddOperator, r::QuantumOpticsRepr)
+    if !_is_lazy(r)
+        return _express_eager(x, r)
+    end
+
+    terms = collect(x.dict)
+    factors = [coeff for (_, coeff) in terms]
+    operators = Tuple(express(obj, r) for (obj, _) in terms)
+    LazySum(factors, operators)
+end
+
+function express_nolookup(x::SMulOperator, r::QuantumOpticsRepr)
+    if !_is_lazy(r)
+        return _express_eager(x, r)
+    end
+
+    LazyProduct(Tuple(express(op, r) for op in arguments(x)))
+end
+
+function express_nolookup(x::STensorOperator, r::QuantumOpticsRepr)
+    if !_is_lazy(r)
+        return _express_eager(x, r)
+    end
+
+    operators = Tuple(_lazytensor_suboperator(express(op, r)) for op in arguments(x))
+    basis_l = tensor((op.basis_l for op in operators)...)
+    basis_r = tensor((op.basis_r for op in operators)...)
+    LazyTensor(basis_l, basis_r, collect(1:length(operators)), operators)
+end
 
 express_nolookup(::HGate, ::QuantumOpticsRepr) = _hadamard
 express_nolookup(::XGate, ::QuantumOpticsRepr) = _x
