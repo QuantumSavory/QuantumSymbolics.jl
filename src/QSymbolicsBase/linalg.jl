@@ -20,9 +20,9 @@ julia> commutator(A, A)
 𝟎
 ```
 """
-@withmetadata struct SCommutator <: Symbolic{AbstractOperator}
-    op1
-    op2
+@withmetadata struct SCommutator{O1, O2} <: Symbolic{AbstractOperator}
+    op1::O1
+    op2::O2
 end
 isexpr(::SCommutator) = true
 iscall(::SCommutator) = true
@@ -54,9 +54,9 @@ julia> anticommutator(A, B)
 {A,B}
 ```
 """
-@withmetadata struct SAnticommutator <: Symbolic{AbstractOperator}
-    op1
-    op2
+@withmetadata struct SAnticommutator{O1, O2} <: Symbolic{AbstractOperator}
+    op1::O1
+    op2::O2
 end
 isexpr(::SAnticommutator) = true
 iscall(::SAnticommutator) = true
@@ -91,8 +91,8 @@ julia> conj(k)
 |k⟩ˣ
 ```
 """
-@withmetadata struct SConjugate{T<:QObj} <: Symbolic{T}
-    obj
+@withmetadata struct SConjugate{T<:QObj, O} <: Symbolic{T}
+    obj::O
 end
 isexpr(::SConjugate) = true
 iscall(::SConjugate) = true
@@ -131,8 +131,8 @@ Operator(dim=2x2)
  -0.5+0.0im   0.5+0.0im
 ```
 """
-@withmetadata struct SProjector <: Symbolic{AbstractOperator}
-    ket::Symbolic{AbstractKet} # TODO parameterize
+@withmetadata struct SProjector{K} <: Symbolic{AbstractOperator}
+    ket::K
 end
 isexpr(::SProjector) = true
 iscall(::SProjector) = true
@@ -170,8 +170,8 @@ julia> transpose(k)
 |k⟩ᵀ
 ```
 """
-@withmetadata struct STranspose{T<:QObj} <: Symbolic{T}
-    obj
+@withmetadata struct STranspose{T<:QObj, O} <: Symbolic{T}
+    obj::O
 end
 isexpr(::STranspose) = true
 iscall(::STranspose) = true
@@ -222,8 +222,8 @@ julia> dagger(U)
 U⁻¹
 ```
 """
-@withmetadata struct SDagger{T<:QObj} <: Symbolic{T}
-    obj
+@withmetadata struct SDagger{T<:QObj, O} <: Symbolic{T}
+    obj::O
 end
 isexpr(::SDagger) = true
 iscall(::SDagger) = true
@@ -286,8 +286,8 @@ julia> tr(k*b)
 ⟨b||k⟩
 ```
 """
-@withmetadata struct STrace <: Symbolic{Complex}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct STrace{O} <: Symbolic{Complex}
+    op::O
 end
 isexpr(::STrace) = true
 iscall(::STrace) = true
@@ -349,8 +349,8 @@ julia> ptrace(mixed_state, 2)
 (tr(B))|k⟩⟨b|+(⟨b||k⟩)A
 ```
 """
-@withmetadata struct SPartialTrace <: Symbolic{AbstractOperator}
-    obj
+@withmetadata struct SPartialTrace{O} <: Symbolic{AbstractOperator}
+    obj::O
     sys::Int
 end
 isexpr(::SPartialTrace) = true
@@ -447,8 +447,8 @@ julia> inv(A)*A
 𝕀
 ```
 """
-@withmetadata struct SInvOperator <: Symbolic{AbstractOperator}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct SInvOperator{O} <: Symbolic{AbstractOperator}
+    op::O
 end
 isexpr(::SInvOperator) = true
 iscall(::SInvOperator) = true
@@ -477,8 +477,8 @@ julia> exp(A)
 exp(A)
 ```
 """
-@withmetadata struct SExpOperator <: Symbolic{AbstractOperator}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct SExpOperator{O} <: Symbolic{AbstractOperator}
+    op::O
 end
 isexpr(::SExpOperator) = true
 iscall(::SExpOperator) = true
@@ -508,8 +508,8 @@ julia> vec(A+B)
 |A⟩⟩+|B⟩⟩
 ```
 """
-@withmetadata struct SVec <: Symbolic{AbstractKet}
-    op::Symbolic{AbstractOperator}
+@withmetadata struct SVec{O} <: Symbolic{AbstractKet}
+    op::O
 end
 isexpr(::SVec) = true
 iscall(::SVec) = true

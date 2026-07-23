@@ -10,9 +10,9 @@ basis(x::NoiseCPTP) = x.basis
 Attenuation CPTP map, defined by the beam splitter rotation parameter `theta`
 and thermal noise parameter `noise`.
 """
-@withmetadata struct AttenuatorCPTP <: NoiseCPTP
-    theta::Real
-    noise::Real
+@withmetadata struct AttenuatorCPTP{T, N} <: NoiseCPTP
+    theta::T
+    noise::N
 end
 basis(x::AttenuatorCPTP) = inf_fock_basis
 symbollabel(x::AttenuatorCPTP) = "𝒜𝓉𝓉"
@@ -23,9 +23,9 @@ symbollabel(x::AttenuatorCPTP) = "𝒜𝓉𝓉"
 Amplification CPTP map, defined by the squeezing amplitude parameter `r`
 and thermal noise parameter `noise`.
 """
-@withmetadata struct AmplifierCPTP <: NoiseCPTP
-    r::Real
-    noise::Real
+@withmetadata struct AmplifierCPTP{R, N} <: NoiseCPTP
+    r::R
+    noise::N
 end
 basis(x::AmplifierCPTP) = inf_fock_basis
 symbollabel(x::AmplifierCPTP) = "𝒜𝓂𝓅"
@@ -39,32 +39,32 @@ Operator(dim=2x2)
  0.5+0.0im  0.0+0.0im
  0.0+0.0im  0.5+0.0im
 ```"""
-@withmetadata struct PauliNoiseCPTP <: NoiseCPTP
-    px
-    py
-    pz
+@withmetadata struct PauliNoiseCPTP{X, Y, Z} <: NoiseCPTP
+    px::X
+    py::Y
+    pz::Z
 end
 basis(x::PauliNoiseCPTP) = SpinBasis(1//2)
 symbollabel(x::PauliNoiseCPTP) = "𝒫"
 
 """Single-qubit dephasing CPTP map"""
-@withmetadata struct DephasingCPTP <: NoiseCPTP
-    p
+@withmetadata struct DephasingCPTP{P} <: NoiseCPTP
+    p::P
 end
 basis(x::DephasingCPTP) = SpinBasis(1//2)
 symbollabel(x::DephasingCPTP) = "𝒟𝓅𝒽"
 
 """Single-qubit depolarization CPTP map"""
-@withmetadata struct DepolarizationCPTP <: NoiseCPTP
-    p
-    basis::Basis
+@withmetadata struct DepolarizationCPTP{P, B} <: NoiseCPTP
+    p::P
+    basis::B
 end
 symbollabel(x::DepolarizationCPTP) = "𝒟ℯ𝓅ℴ𝓁"
 
 """A unitary gate followed by a CPTP map"""
-@withmetadata struct GateCPTP <: NoiseCPTP
-    gate::Symbolic{AbstractOperator}
-    cptp::NoiseCPTP
+@withmetadata struct GateCPTP{G, C} <: NoiseCPTP
+    gate::G
+    cptp::C
 end
 basis(x::GateCPTP) = basis(x.cptp)
 function Base.show(io::IO, x::GateCPTP)

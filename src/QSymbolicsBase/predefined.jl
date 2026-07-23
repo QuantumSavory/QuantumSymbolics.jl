@@ -7,33 +7,33 @@ isexpr(::SpecialKet) = false
 basis(x::SpecialKet) = x.basis
 Base.show(io::IO, x::SpecialKet) = print(io, "|$(symbollabel(x))⟩")
 
-@withmetadata struct XBasisState <: SpecialKet
+@withmetadata struct XBasisState{B} <: SpecialKet
     idx::Int
-    basis::Basis
+    basis::B
 end
 symbollabel(x::XBasisState) = "X$(num_to_sub(x.idx))"
 
-@withmetadata struct YBasisState <: SpecialKet
+@withmetadata struct YBasisState{B} <: SpecialKet
     idx::Int
-    basis::Basis
+    basis::B
 end
 symbollabel(x::YBasisState) = "Y$(num_to_sub(x.idx))"
 
-@withmetadata struct ZBasisState <: SpecialKet
+@withmetadata struct ZBasisState{B} <: SpecialKet
     idx::Int
-    basis::Basis
+    basis::B
 end
 symbollabel(x::ZBasisState) = "Z$(num_to_sub(x.idx))"
 
-@withmetadata struct MomentumEigenState <: SpecialKet
-    p::Number # TODO parameterize
-    basis::Basis
+@withmetadata struct MomentumEigenState{P, B} <: SpecialKet
+    p::P
+    basis::B
 end
 symbollabel(x::MomentumEigenState) = "δₚ($(x.p))"
 
-@withmetadata struct PositionEigenState <: SpecialKet
-    x::Float64 # TODO parameterize
-    basis::Basis
+@withmetadata struct PositionEigenState{X, B} <: SpecialKet
+    x::X
+    basis::B
 end
 symbollabel(x::PositionEigenState) = "δₓ($(x.x))"
 
@@ -66,10 +66,10 @@ basis(::AbstractTwoQubitGate) = qubit_basis⊗qubit_basis
 Base.show(io::IO, x::AbstractSingleQubitOp) = print(io, "$(symbollabel(x))")
 Base.show(io::IO, x::AbstractTwoQubitOp) = print(io, "$(symbollabel(x))")
 
-@withmetadata struct OperatorEmbedding <: Symbolic{AbstractOperator}
-    gate::Symbolic{AbstractOperator} # TODO parameterize
-    indices::Vector{Int}
-    basis::Basis
+@withmetadata struct OperatorEmbedding{G, I, B} <: Symbolic{AbstractOperator}
+    gate::G
+    indices::I
+    basis::B
 end
 isexpr(::OperatorEmbedding) = true
 
@@ -179,8 +179,8 @@ julia> express(MixedState(X1⊗X2), CliffordRepr())
 + _Z
 ```
 """
-@withmetadata struct MixedState <: Symbolic{AbstractOperator}
-    basis::Basis # From QuantumOpticsBase # TODO make QuantumInterface
+@withmetadata struct MixedState{B} <: Symbolic{AbstractOperator}
+    basis::B
 end
 MixedState(x::Symbolic{AbstractKet}) = MixedState(basis(x))
 MixedState(x::Symbolic{AbstractOperator}) = MixedState(basis(x))
@@ -199,8 +199,8 @@ Operator(dim=2x2)
   basis: Spin(1/2)sparse([1, 2], [1, 2], ComplexF64[1.0 + 0.0im, 1.0 + 0.0im], 2, 2)
 ```
 """
-@withmetadata struct IdentityOp <: Symbolic{AbstractOperator}
-    basis::Basis # From QuantumOpticsBase # TODO make QuantumInterface
+@withmetadata struct IdentityOp{B} <: Symbolic{AbstractOperator}
+    basis::B
 end
 IdentityOp(x::Symbolic{AbstractKet}) = IdentityOp(basis(x))
 IdentityOp(x::Symbolic{AbstractOperator}) = IdentityOp(basis(x))

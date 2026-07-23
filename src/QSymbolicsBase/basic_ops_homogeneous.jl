@@ -19,9 +19,9 @@ julia> 2*A
 2A
 ```
 """
-@withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
-    coeff
-    obj
+@withmetadata struct SScaled{T<:QObj, C, O} <: Symbolic{T}
+    coeff::C
+    obj::O
 end
 isexpr(::SScaled) = true
 iscall(::SScaled) = true
@@ -104,10 +104,10 @@ julia> k₁ + k₂
 |k₁⟩+|k₂⟩
 ```
 """
-@withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
-    dict
-    _set_precomputed
-    _arguments_precomputed
+@withmetadata struct SAdd{T<:QObj, D, S, A} <: Symbolic{T}
+    dict::D
+    _set_precomputed::S
+    _arguments_precomputed::A
 end
 function SAdd{S}(d) where S
     isempty(d) && return SZero{S}()
@@ -155,8 +155,8 @@ julia> A*B
 AB
 ```
 """
-@withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
-    terms
+@withmetadata struct SMulOperator{T} <: Symbolic{AbstractOperator}
+    terms::T
 end
 isexpr(::SMulOperator) = true
 iscall(::SMulOperator) = true
@@ -199,8 +199,8 @@ julia> A ⊗ B
 A⊗B
 ```
 """
-@withmetadata struct STensor{T<:QObj} <: Symbolic{T}
-    terms
+@withmetadata struct STensor{T<:QObj, Tr} <: Symbolic{T}
+    terms::Tr
 end
 isexpr(::STensor) = true
 iscall(::STensor) = true
