@@ -1,5 +1,9 @@
 # News
 
+## Unreleased
+
+- Parameterize superoperator expression fields and extend `@withmetadata` to preserve multiple type parameters.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.
