@@ -10,6 +10,7 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockState,
     MixedState, IdentityOp,
+    SAddOperator, SMulOperator, STensorOperator, SCommutator, SAnticommutator,
     qubit_basis
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
@@ -99,6 +100,68 @@ express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasi
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])
 
 express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ket, r), express(s.bra, r))
+
+##
+# Lazy QuantumOptics output, opt-in via `QuantumOpticsRepr(lazy=true)`.
+#
+# The translation follows how structured operators are assembled natively in
+# QuantumOptics.jl: a sum of local tensor terms becomes a `LazySum` of `LazyTensor`s, an
+# operator product becomes a `LazyProduct`, and a (anti)commutator becomes a lazy sum of
+# products. A `LazyTensor` records only the non-trivial factors and leaves identities on the
+# remaining subsystems implicit, so the locality of each term survives the conversion instead
+# of being flattened into a dense matrix. With `lazy` unset, every method reproduces the
+# eager generic conversion verbatim, so the default behaviour is untouched.
+#
+# Scalar prefactors are handled for free: `prefactorscalings` lifts them out of products and
+# tensors at the symbolic level, and the generic fallback then multiplies the resulting lazy
+# operator by the number (`LazySum`, `LazyProduct`, and `LazyTensor` each support that).
+#
+# `lazy` is read through `hasproperty` so the extension still loads, and stays eager, against
+# QuantumInterface releases that predate the field.
+##
+
+_islazy(r::QuantumOpticsRepr) = hasproperty(r, :lazy) && r.lazy
+
+function express_nolookup(s::SAddOperator, r::QuantumOpticsRepr)
+    _islazy(r) || return operation(s)(express.(arguments(s), (r,))...)
+    summands = collect(s.dict) # `obj => coefficient` pairs
+    LazySum([coeff for (_, coeff) in summands], [express(obj, r) for (obj, _) in summands])
+end
+
+function express_nolookup(s::SMulOperator, r::QuantumOpticsRepr)
+    _islazy(r) || return operation(s)(express.(arguments(s), (r,))...)
+    LazyProduct(express.(arguments(s), (r,))...)
+end
+
+function express_nolookup(s::STensorOperator, r::QuantumOpticsRepr)
+    _islazy(r) || return operation(s)(express.(arguments(s), (r,))...)
+    factors = arguments(s)
+    ops = express.(factors, (r,))
+    # A `LazyTensor` factor must live on a single subsystem of the composite basis. A factor
+    # that is itself multipartite (e.g. an expressed two-qubit gate) cannot be placed, so we
+    # keep the eager tensor product for that term.
+    any(o -> o.basis_l isa CompositeBasis || o.basis_r isa CompositeBasis, ops) && return ⊗(ops...)
+    bl = tensor((o.basis_l for o in ops)...)
+    br = tensor((o.basis_r for o in ops)...)
+    # Store only the non-identity factors; `LazyTensor` fills the omitted subsystems with
+    # identities, which is the structure-preserving point of the lazy backend. Identity is
+    # detected on the symbolic `IdentityOp` factor, avoiding a materialized comparison.
+    active = [i for (i, f) in enumerate(factors) if !(f isa IdentityOp)]
+    isempty(active) && return identityoperator(bl)
+    LazyTensor(bl, br, active, (ops[active]...,))
+end
+
+function express_nolookup(s::SCommutator, r::QuantumOpticsRepr)
+    _islazy(r) || return operation(s)(express.(arguments(s), (r,))...)
+    a, b = express(s.op1, r), express(s.op2, r)
+    LazySum([1, -1], [LazyProduct(a, b), LazyProduct(b, a)])
+end
+
+function express_nolookup(s::SAnticommutator, r::QuantumOpticsRepr)
+    _islazy(r) || return operation(s)(express.(arguments(s), (r,))...)
+    a, b = express(s.op1, r), express(s.op2, r)
+    LazySum([1, 1], [LazyProduct(a, b), LazyProduct(b, a)])
+end
 
 include("should_upstream.jl")
 
