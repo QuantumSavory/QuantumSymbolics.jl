@@ -44,6 +44,7 @@ function main()
         "Express Functionality" => "express.md",
         "Qubit Basis Choice" => "qubit_basis.md",
         "Quantum Harmonic Oscillators" => "QHO.md",
+        "Mean-field Equations with QuantumCumulants.jl" => "quantumcumulants.md",
         "API" => "API.md",
     ]
     )
