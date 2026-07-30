@@ -3,11 +3,11 @@
 ##
 
 """Symbolic bra"""
-struct SBra <: Symbolic{AbstractBra}
+struct SBra{B<:Basis} <: Symbolic{AbstractBra}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SBra(name) = SBra(name, qubit_basis)
+SBra(name::Symbol) = SBra(name, qubit_basis)
 
 """
     @bra(name, basis=SpinBasis(1//2))
@@ -30,11 +30,11 @@ macro bra(name)
 end
 
 """Symbolic ket"""
-struct SKet <: Symbolic{AbstractKet}
+struct SKet{B<:Basis} <: Symbolic{AbstractKet}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SKet(name) = SKet(name, qubit_basis)
+SKet(name::Symbol) = SKet(name, qubit_basis)
 
 """
     @ket(name, basis=SpinBasis(1//2))
@@ -57,11 +57,11 @@ macro ket(name)
 end
 
 """Symbolic operator"""
-struct SOperator <: Symbolic{AbstractOperator}
+struct SOperator{B<:Basis} <: Symbolic{AbstractOperator}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SOperator(name) = SOperator(name, qubit_basis)
+SOperator(name::Symbol) = SOperator(name, qubit_basis)
 
 """
     @op(name, basis=SpinBasis(1//2))
@@ -86,41 +86,41 @@ ishermitian(x::SOperator) = false
 isunitary(x::SOperator) = false
 
 """Symbolic Hermitian operator"""
-struct SHermitianOperator <: Symbolic{AbstractOperator}
+struct SHermitianOperator{B<:Basis} <: Symbolic{AbstractOperator}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SHermitianOperator(name) = SHermitianOperator(name, qubit_basis)
+SHermitianOperator(name::Symbol) = SHermitianOperator(name, qubit_basis)
 
 ishermitian(::SHermitianOperator) = true
 isunitary(::SHermitianOperator) = false
 
 """Symbolic unitary operator"""
-struct SUnitaryOperator <: Symbolic{AbstractOperator}
+struct SUnitaryOperator{B<:Basis} <: Symbolic{AbstractOperator}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SUnitaryOperator(name) = SUnitaryOperator(name, qubit_basis)
+SUnitaryOperator(name::Symbol) = SUnitaryOperator(name, qubit_basis)
 
 ishermitian(::SUnitaryOperator) = false
 isunitary(::SUnitaryOperator) = true
 
 """Symbolic Hermitian and unitary operator"""
-struct SHermitianUnitaryOperator <: Symbolic{AbstractOperator}
+struct SHermitianUnitaryOperator{B<:Basis} <: Symbolic{AbstractOperator}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SHermitianUnitaryOperator(name) = SHermitianUnitaryOperator(name, qubit_basis)
+SHermitianUnitaryOperator(name::Symbol) = SHermitianUnitaryOperator(name, qubit_basis)
 
 ishermitian(::SHermitianUnitaryOperator) = true
 isunitary(::SHermitianUnitaryOperator) = true
 
 """Symbolic superoperator"""
-struct SSuperOperator <: Symbolic{AbstractSuperOperator}
+struct SSuperOperator{B<:Basis} <: Symbolic{AbstractSuperOperator}
     name::Symbol
-    basis::Basis
+    basis::B
 end
-SSuperOperator(name) = SSuperOperator(name, qubit_basis)
+SSuperOperator(name::Symbol) = SSuperOperator(name, qubit_basis)
 macro superop(name, basis)
     :($(esc(name)) = SSuperOperator($(Expr(:quote, name)), $(basis)))
 end
