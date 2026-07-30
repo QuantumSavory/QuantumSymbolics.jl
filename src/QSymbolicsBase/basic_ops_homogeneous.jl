@@ -19,17 +19,19 @@ julia> 2*A
 2A
 ```
 """
-@withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
-    coeff
-    obj
+@withmetadata struct SScaled{T<:QObj,C<:SymCoeff,O<:Symbolic{T}} <: Symbolic{T}
+    coeff::C
+    obj::O
 end
+SScaled{T}(coeff::C, obj::O) where {T<:QObj,C<:SymCoeff,O<:Symbolic{T}} = SScaled{T,C,O}(coeff, obj)
+SScaled(coeff::SymCoeff, obj::Symbolic{T}) where {T<:QObj} = SScaled{T}(coeff, obj)
 isexpr(::SScaled) = true
 iscall(::SScaled) = true
 arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, SymbolicUtils.BasicSymbolic, Symbolic{Complex}},T<:QObj}
+function Base.:(*)(c::U, x::Symbolic{T}) where {U<:SymCoeff,T<:QObj}
     if (c isa Number && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)
@@ -95,6 +97,13 @@ function Base.show(io::IO, x::SScaledBra)
     end
 end
 
+"""The mapping from the terms of a symbolic sum to their scalar coefficients.
+
+The values are left as `Any` because a coefficient can be a number, a `SymbolicUtils`
+expression, or one of the scalar symbolic objects of this library (see `SymCoeff`), and
+because they are repeatedly accumulated with `+` and `*`."""
+const SAddDict{T} = Dict{Symbolic{T},Any}
+
 """Addition of quantum objects (kets, operators, or bras).
 
 ```jldoctest
@@ -105,14 +114,14 @@ julia> k₁ + k₂
 ```
 """
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
-    dict
-    _set_precomputed
-    _arguments_precomputed
+    dict::SAddDict{T}
+    _set_precomputed::Set{Symbolic{T}}
+    _arguments_precomputed::Vector{Symbolic{T}}
 end
-function SAdd{S}(d) where S
-    isempty(d) && return SZero{S}()
-    terms = [c*obj for (obj,c) in d]
-    length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
+function SAdd{T}(d) where {T<:QObj}
+    isempty(d) && return SZero{T}()
+    terms = Symbolic{T}[c*obj for (obj,c) in d]
+    length(d)==1 ? first(terms) : SAdd{T}(d,Set(terms),terms)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -155,7 +164,7 @@ AB
 ```
 """
 @withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
-    terms
+    terms::Vector{Symbolic{AbstractOperator}}
 end
 isexpr(::SMulOperator) = true
 iscall(::SMulOperator) = true
@@ -199,7 +208,7 @@ A⊗B
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
-    terms
+    terms::Vector{Symbolic{T}}
 end
 isexpr(::STensor) = true
 iscall(::STensor) = true
