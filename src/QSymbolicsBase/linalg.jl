@@ -34,7 +34,7 @@ function commutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOperato
     if !(samebases(basis(o1),basis(o2)))
         throw(IncompatibleBases())
     else
-        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff, cleanterms = prefactorscalings(Symbolic{AbstractOperator}[o1, o2])
         cleanterms[1] === cleanterms[2] ? SZeroOperator() : coeff * SCommutator(cleanterms...)
     end
 end
@@ -68,7 +68,7 @@ function anticommutator(o1::Symbolic{AbstractOperator}, o2::Symbolic{AbstractOpe
     if !(samebases(basis(o1),basis(o2)))
         throw(IncompatibleBases())
     else
-        coeff, cleanterms = prefactorscalings([o1 o2])
+        coeff, cleanterms = prefactorscalings(Symbolic{AbstractOperator}[o1, o2])
         coeff * SAnticommutator(cleanterms...)
     end
 end

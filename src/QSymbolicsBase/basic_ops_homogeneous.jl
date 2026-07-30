@@ -121,11 +121,10 @@ operation(x::SAdd) = +
 head(x::SAdd) = :+
 children(x::SAdd) = [:+; x._arguments_precomputed]
 function Base.:(+)(x::Symbolic{T}, xs::Vararg{Symbolic{T}, N}) where {T<:QObj, N}
-    xs = (x, xs...)
-    xs = collect(xs)
-    f = first(xs)
-    nonzero_terms = filter!(x->!iszero(x),xs)
-    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SAdd{T}, SScaled{T}))
+    terms = Symbolic{T}[x, xs...]
+    f = first(terms)
+    nonzero_terms = filter!(x->!iszero(x),terms)
+    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SAdd{T}, SScaled{T}, Symbolic{T}))
 end
 basis(x::SAdd) = basis(first(x.dict).first)
 
@@ -165,13 +164,13 @@ operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
 function Base.:(*)(x::Symbolic{AbstractOperator}, xs::Vararg{Symbolic{AbstractOperator}, N}) where {N}
-    xs = (x, xs...)
-    zero_ind = findfirst(x->iszero(x), xs)
+    ops = Symbolic{AbstractOperator}[x, xs...]
+    zero_ind = findfirst(x->iszero(x), ops)
     if isnothing(zero_ind)
-        if any(x->!(samebases(basis(x),basis(first(xs)))),xs)
+        if any(x->!(samebases(basis(x),basis(first(ops)))),ops)
             throw(IncompatibleBases())
         else
-            terms = flattenop(*, collect(xs))
+            terms = flattenop(SMulOperator, ops)
             coeff, cleanterms = prefactorscalings(terms)
             coeff * SMulOperator(cleanterms)
         end
@@ -211,7 +210,7 @@ children(x::STensor) = [:⊗; x.terms]
 function ⊗(xs::Symbolic{T}...) where {T<:QObj}
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
-        terms = flattenop(⊗, collect(xs))
+        terms = flattenop(STensor{T}, Symbolic{T}[xs...])
         coeff, cleanterms = prefactorscalings(terms)
         coeff * STensor{T}(cleanterms)
     else

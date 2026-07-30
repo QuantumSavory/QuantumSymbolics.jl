@@ -25,7 +25,7 @@ function Base.:(*)(op::Symbolic{AbstractOperator}, k::Symbolic{AbstractKet})
     if !(samebases(basis(op),basis(k)))
         throw(IncompatibleBases())
     else
-        coeff, cleanterms = prefactorscalings([op k])
+        coeff, cleanterms = prefactorscalings(Symbolic[op, k])
         coeff*SApplyKet(cleanterms...)
     end
 end
@@ -61,7 +61,7 @@ function Base.:(*)(b::Symbolic{AbstractBra}, op::Symbolic{AbstractOperator})
     if !(samebases(basis(b),basis(op)))
         throw(IncompatibleBases())
     else
-        coeff, cleanterms = prefactorscalings([b op])
+        coeff, cleanterms = prefactorscalings(Symbolic[b, op])
         coeff*SApplyBra(cleanterms...)
     end
 end
@@ -97,7 +97,7 @@ function Base.:(*)(b::Symbolic{AbstractBra}, k::Symbolic{AbstractKet})
     if !(samebases(basis(b),basis(k)))
         throw(IncompatibleBases())
     else
-        coeff, cleanterms = prefactorscalings([b k])
+        coeff, cleanterms = prefactorscalings(Symbolic[b, k])
         coeff == 1 ? SBraKet(cleanterms...) : coeff*SBraKet(cleanterms...)
     end
 end
@@ -132,7 +132,7 @@ function Base.:(*)(k::Symbolic{AbstractKet}, b::Symbolic{AbstractBra})
     if !(samebases(basis(k),basis(b)))
         throw(IncompatibleBases())
     else
-        coeff, cleanterms = prefactorscalings([k b])
+        coeff, cleanterms = prefactorscalings(Symbolic[k, b])
         coeff*SOuterKetBra(cleanterms...)
     end
 end
