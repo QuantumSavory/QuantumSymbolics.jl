@@ -81,27 +81,49 @@ mutable struct Metadata
 end
 Metadata() = Metadata(CacheType())
 
-"""Decorate a struct definition in order to add a metadata dict which would be storing cached `express` results."""
+"""Decorate a struct definition in order to add a metadata dict which would be storing cached `express` results.
+
+The decorated struct gains a trailing `metadata::Metadata` field and an inner constructor that
+takes only the "real" fields and initializes the metadata itself. Type parameters are preserved,
+so `@withmetadata struct Foo{A,B<:Bar} ... end` gets `Foo{A,B}(fields...)`, plus the parameter
+free `Foo(fields...)` whenever every parameter is spelled out as the type of one of the fields.
+
+The constructor is deliberately an inner one: it keeps Julia from generating the default
+constructors, which would otherwise take the metadata as their last argument and clash with the
+constructors that the users of this macro define for their own structs."""
 macro withmetadata(strct)
     ex = quote $strct end
     if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
-        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
-    elseif @capture(ex, struct T_ fields__ end)
+        pnames = map(namify, params) # the bare parameter names, without their `<:` bounds
+        decls = [i for i in fields if !MacroTools.isexpr(i, String, :string)]
+        args = map(namify, decls)
+        constructor = :($struct_name{$(pnames...)}($(args...)) where {$(params...)} = new{$(pnames...)}($(args...), Metadata()))
+        # a parameter given as the whole type of a field can be deduced from the arguments, so
+        # if that is the case for all of them, the parameters need not be spelled out at all
+        fieldof = Dict{Symbol,Symbol}()
+        for d in decls
+            MacroTools.isexpr(d, :(::)) && d.args[2] isa Symbol || continue
+            d.args[2] in pnames && get!(fieldof, d.args[2], d.args[1])
+        end
+        outer = all(p->haskey(fieldof,p), pnames) ?
+            :($struct_name($(args...)) = $struct_name{$((:(typeof($(fieldof[p]))) for p in pnames)...)}($(args...))) :
+            nothing
+    else
+        @capture(ex, struct T_ fields__ end)
         struct_name = namify(T)
-        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name($(args...)) = new($((args..., :(Metadata()))...)))
-    else @capture(ex, struct T_ end)
-        struct_name = namify(T)
-        constructor = :($struct_name() = new($:(Metadata())))
+        args = [namify(i) for i in fields if !MacroTools.isexpr(i, String, :string)]
+        constructor = :($struct_name($(args...)) = new($(args...), Metadata()))
+        outer = nothing
     end
     struct_args = strct.args[end].args
     push!(struct_args, constructor, :(metadata::Metadata))
-    esc(quote
+    out = quote
     Base.@__doc__ $strct
-    metadata(x::$struct_name)=x.metadata
-    end)
+    end
+    isnothing(outer) || push!(out.args, outer)
+    push!(out.args, :(metadata(x::$struct_name)=x.metadata))
+    esc(out)
 end
 
 ##

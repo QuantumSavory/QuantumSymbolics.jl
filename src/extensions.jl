@@ -18,12 +18,10 @@ Ket(dim=2)
   0.7071067811865475 + 0.0im
  -0.7071067811865475 + 0.0im
 ```"""
-@withmetadata struct StabilizerState{T} <: Symbolic{AbstractKet} where {T}
-    stabilizer::T
+@withmetadata struct StabilizerState{T} <: Symbolic{AbstractKet}
+    stabilizer::T # a `QuantumClifford.MixedDestabilizer`, only available when that library is loaded
 end
 isexpr(::StabilizerState) = false
 basis(x::StabilizerState) = SpinBasis(1//2)^nqubits(x.stabilizer)
 symbollabel(x::StabilizerState) = "𝒮$(num_to_sub(nqubits(x.stabilizer)))"
 Base.show(io::IO, x::StabilizerState) = print(io, symbollabel(x))
-
-StabilizerState(s::T) where {T} = StabilizerState{T}(s) # TODO this is necessary because the @withmetadata macro is not very smart
