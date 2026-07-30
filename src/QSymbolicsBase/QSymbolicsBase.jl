@@ -121,7 +121,7 @@ function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
-                (operation(x) === +) ? x._set_precomputed == y._set_precomputed : all(zip(ax,ay)) do xy isequal(xy...) end
+                (operation(x) === +) ? x._set_precomputed == y._set_precomputed : (length(ax)==length(ay) && all(zip(ax,ay)) do xy isequal(xy...) end)
             else
                 false
             end
