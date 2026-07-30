@@ -180,10 +180,16 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 
 const SymScalar = Symbolic{Complex}
 
+"""The scalar coefficients that are allowed to appear in symbolic quantum expressions.
+
+Either a plain number, a `SymbolicUtils`/`Symbolics` scalar expression, or one of the scalar
+symbolic objects of this library (e.g. `SBraKet` or `STrace`)."""
+const SymCoeff = Union{Number,SymbolicUtils.BasicSymbolic,SymScalar}
+
 """Symbolic scaled scalar expression: `coeff * obj` where obj is a `Symbolic{Complex}`."""
-struct SScaledComplex <: Symbolic{Complex}
-    coeff
-    obj
+struct SScaledComplex{C<:SymCoeff,O<:SymScalar} <: Symbolic{Complex}
+    coeff::C
+    obj::O
 end
 isexpr(::SScaledComplex) = true
 iscall(::SScaledComplex) = true
@@ -192,14 +198,14 @@ operation(::SScaledComplex) = *
 head(::SScaledComplex) = :*
 children(x::SScaledComplex) = [:*, x.coeff, x.obj]
 metadata(::SScaledComplex) = nothing
-maketerm(::Type{SScaledComplex}, f, a, m) = f(a...)
+maketerm(::Type{<:SScaledComplex}, f, a, m) = f(a...)
 Base.show(io::IO, x::SScaledComplex) = print(io, "($(x.coeff))$(x.obj)")
 Base.hash(x::SScaledComplex, h::UInt) = hash((head(x), x.coeff, x.obj), h)
 Base.isequal(x::SScaledComplex, y::SScaledComplex) = isequal(x.coeff, y.coeff) && isequal(x.obj, y.obj)
 
 """Symbolic sum of scalar expressions."""
 struct SAddComplex <: Symbolic{Complex}
-    terms
+    terms::Vector{SymCoeff}
 end
 isexpr(::SAddComplex) = true
 iscall(::SAddComplex) = true
@@ -215,7 +221,7 @@ Base.isequal(x::SAddComplex, y::SAddComplex) = Set(x.terms) == Set(y.terms)
 
 """Symbolic product of scalar expressions."""
 struct SMulComplex <: Symbolic{Complex}
-    terms
+    terms::Vector{SymCoeff}
 end
 isexpr(::SMulComplex) = true
 iscall(::SMulComplex) = true
@@ -243,7 +249,8 @@ Base.:(-)(x::SymScalar, y::SymScalar) = x + (-y)
 Base.iszero(::SymScalar) = false
 Base.isone(::SymScalar) = false
 
-# Allow Symbolic{Complex} as coefficient in quantum SScaled (handled by the Union dispatch in basic_ops_homogeneous.jl)
+# `Symbolic{Complex}` is allowed as a coefficient in the quantum `SScaled` as well,
+# through the `SymCoeff` union used in basic_ops_homogeneous.jl
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case
