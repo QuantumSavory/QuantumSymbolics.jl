@@ -458,8 +458,8 @@ head(x::SInvOperator) = :inv
 children(x::SInvOperator) = [:inv, x.op]
 basis(x::SInvOperator) = basis(x.op)
 Base.show(io::IO, x::SInvOperator) = print(io, "$(x.op)⁻¹")
-Base.:(*)(invop::SInvOperator, op::SOperator) = isequal(invop.op, op) ? IdentityOp(basis(op)) : SMulOperator(invop, op)
-Base.:(*)(op::SOperator, invop::SInvOperator) = isequal(op, invop.op) ? IdentityOp(basis(op)) : SMulOperator(op, invop)
+Base.:(*)(invop::SInvOperator, op::SOperator) = isequal(invop.op, op) ? IdentityOp(basis(op)) : SMulOperator(Symbolic{AbstractOperator}[invop, op])
+Base.:(*)(op::SOperator, invop::SInvOperator) = isequal(op, invop.op) ? IdentityOp(basis(op)) : SMulOperator(Symbolic{AbstractOperator}[op, invop])
 """
     inv(x::Symbolic{AbstractOperator})
 
