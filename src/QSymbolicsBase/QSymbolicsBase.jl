@@ -132,14 +132,29 @@ end
 
 const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator}
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
+
+"""The type of quantum object (`AbstractBra`, `AbstractKet`, `AbstractOperator`, or
+`AbstractSuperOperator`) that a symbolic object stands for."""
+qobjtype(::Symbolic{T}) where {T<:QObj} = T
+qobjtype(::Type{<:Symbolic{T}}) where {T<:QObj} = T
+
+"""Whether two symbolic objects are instances of the same struct standing for the same kind of
+quantum object.
+
+The type parameters that only specify the types of the fields are deliberately ignored, so
+that e.g. `CoherentState(1)` and `CoherentState(1.0)` are still considered to be of the same
+kind (and are `isequal`, as the numbers `1` and `1.0` are)."""
+samekind(::Type{X}, ::Type{Y}) where {X<:SymQObj,Y<:SymQObj} =
+    Base.typename(X) === Base.typename(Y) && qobjtype(X) === qobjtype(Y)
+
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
-hash((typeof(x),symbollabel(x),basis(x)), h)
+hash((Base.typename(typeof(x)),qobjtype(typeof(x)),symbollabel(x),basis(x)), h)
 maketerm(::Type{<:SymQObj}, f, a, m) = f(a...)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
-    if X==Y
+    if samekind(X,Y)
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
