@@ -75,7 +75,7 @@ end
 # Metadata cache helpers
 ##
 
-const CacheType = Dict{Tuple{<:AbstractRepresentation,<:AbstractUse},Any}
+const CacheType = Dict{Tuple{AbstractRepresentation,AbstractUse},Any}
 mutable struct Metadata
     express_cache::CacheType # TODO use more efficient mapping
 end
