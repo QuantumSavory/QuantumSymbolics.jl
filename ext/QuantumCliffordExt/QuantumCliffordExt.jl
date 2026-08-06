@@ -50,8 +50,16 @@ express_nolookup(::ZGate,            ::CliffordRepr, ::UseAsOperation) = Quantum
 express_nolookup(::HGate,            ::CliffordRepr, ::UseAsOperation) = QuantumClifford.sHadamard
 express_nolookup(x::STensorOperator,  r::CliffordRepr, u::UseAsOperation) = QCGateSequence([express(t,r,u) for t in x.terms])
 
+function _basis_width(b)
+    bases = b isa CompositeBasis ? b.bases : (b,)
+    all(b -> length(b) == 2, bases) || throw(ArgumentError("Clifford Pauli observables require two-dimensional subsystem bases."))
+    length(bases)
+end
+
+express(op::QuantumClifford.PauliOperator, ::CliffordRepr, ::UseAsObservable) = op
 express_nolookup(op::QuantumClifford.PauliOperator, ::CliffordRepr, ::UseAsObservable) = op
-express_nolookup(op::STensorOperator, r::CliffordRepr, u::UseAsObservable) = QuantumClifford.tensor(express.(arguments(op),(r,),(u,))...)
+express_nolookup(op::STensorOperator, r::CliffordRepr, u::UseAsObservable) = foldl(QuantumClifford.tensor, (express(t,r,u) for t in arguments(op)))
+express_nolookup(op::IdentityOp, ::CliffordRepr, ::UseAsObservable) = zero(QuantumClifford.PauliOperator, _basis_width(basis(op)))
 express_nolookup(::XGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P"X"
 express_nolookup(::YGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P"Y"
 express_nolookup(::ZGate, ::CliffordRepr, ::UseAsObservable) = QuantumClifford.P"Z"
@@ -78,9 +86,8 @@ function express_from_cache(x::QCRandomSampler)
     express_from_cache(x.operators[i])
 end
 function express_nolookup(x::MixedState, ::CliffordRepr)
-    nqubits = isa(x.basis, CompositeBasis) ? length(x.basis.bases) : 1
     # TODO assert all are qubits
-    one(MixedDestabilizer,0,nqubits)
+    one(MixedDestabilizer,0,_basis_width(basis(x)))
 end
 express_nolookup(x::SProjector, repr::CliffordRepr) = express_nolookup(x.ket, repr)
 
