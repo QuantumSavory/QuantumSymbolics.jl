@@ -1,5 +1,9 @@
 # News
 
+## v0.4.17 - 2026-08-06
+
+- **(fix)** Complete Clifford observable lowering for symbolic Pauli tensors, identities, and native `PauliOperator`s.
+
 ## v0.4.16 - 2026-04-01
 
 - Add `QuantumClifford.Register` symbolic `apply!` methods to the `QuantumClifford` extension.

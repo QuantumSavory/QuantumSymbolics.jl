@@ -27,27 +27,33 @@ using QuantumClifford
     UseObs = UseAsObservable()
 
     @testset "Clifford representations for basis states" begin
-        isequal(express(X1, CR), MixedDestabilizer(S"X"))
-        isequal(express(X2, CR), MixedDestabilizer(S"-X"))
-        isequal(express(Y1, CR), MixedDestabilizer(S"Y"))
-        isequal(express(Y2, CR), MixedDestabilizer(S"-Y"))
-        isequal(express(Z1, CR), MixedDestabilizer(S"Z"))
-        isequal(express(Z2, CR), MixedDestabilizer(S"-Z"))
+        @test isequal(express(X1, CR), MixedDestabilizer(S"X"))
+        @test isequal(express(X2, CR), MixedDestabilizer(S"-X"))
+        @test isequal(express(Y1, CR), MixedDestabilizer(S"Y"))
+        @test isequal(express(Y2, CR), MixedDestabilizer(S"-Y"))
+        @test isequal(express(Z1, CR), MixedDestabilizer(S"Z"))
+        @test isequal(express(Z2, CR), MixedDestabilizer(S"-Z"))
     end
 
     @testset "Clifford representations as observables" begin
-        isequal(express(σˣ, CR, UseObs), P"X")
-        isequal(express(σʸ, CR, UseObs), P"Y")
-        isequal(express(σᶻ, CR, UseObs), P"Z")
-        isequal(express(im*σˣ, CR, UseObs), im*P"X")
-        isequal(express(σˣ⊗σʸ⊗σᶻ), P"X"⊗P"Y"⊗P"Z")
-        isequal(express(σˣ*σʸ*σᶻ), P"X"*P"Y"*P"Z")
+        @test isequal(express(σˣ, CR, UseObs), P"X")
+        @test isequal(express(σʸ, CR, UseObs), P"Y")
+        @test isequal(express(σᶻ, CR, UseObs), P"Z")
+        @test isequal(express(im*σˣ, CR, UseObs), im*P"X")
+        @test isequal(express(σˣ⊗σʸ⊗σᶻ, CR, UseObs), P"XYZ")
+        @test isequal(express(σˣ*σʸ*σᶻ, CR, UseObs), P"X"*P"Y"*P"Z")
+        @test isequal(express(σˣ⊗QuantumSymbolics.I⊗σᶻ, CR, UseObs), P"XIZ")
+        @test isequal(express(σˣ⊗IdentityOp(σʸ⊗σᶻ)⊗σˣ, CR, UseObs), P"XIIX")
+        @test_throws ArgumentError express(IdentityOp(FockBasis(3)), CR, UseObs)
+
+        native = QuantumClifford.P"XYZ"
+        @test QuantumSymbolics.express(native, CR, UseObs) == native
     end
 
     @testset "Clifford representations as operations" begin
-        isequal(express(σˣ, CR, UseOp), sX)
-        isequal(express(σʸ, CR, UseOp), sY)
-        isequal(express(σᶻ, CR, UseOp), sZ)
+        @test isequal(express(σˣ, CR, UseOp), sX)
+        @test isequal(express(σʸ, CR, UseOp), sY)
+        @test isequal(express(σᶻ, CR, UseOp), sZ)
     end
 
     @testset "Projector on stab state" begin
