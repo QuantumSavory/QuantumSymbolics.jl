@@ -33,6 +33,7 @@ end
 
 if !isempty(VERSION.prerelease) || get(ENV, "QUANTUMSAVORY_DOWNGRADE_TEST", "") == "true"
     delete!(testsuite, "general/aqua_tests")
+    delete!(testsuite, "general/doctests_tests")
 end
 
 function test_worker(name)
