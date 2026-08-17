@@ -97,12 +97,8 @@ function Base.show(io::IO, x::SScaledBra)
     end
 end
 
-"""The mapping from the terms of a symbolic sum to their scalar coefficients.
-
-The values are left as `Any` because a coefficient can be a number, a `SymbolicUtils`
-expression, or one of the scalar symbolic objects of this library (see `SymCoeff`), and
-because they are repeatedly accumulated with `+` and `*`."""
-const SAddDict{T} = Dict{Symbolic{T},Any}
+"""The mapping from the terms of a symbolic sum to their scalar coefficients."""
+const SAddDict{T} = Dict{Symbolic{T},SymCoeff}
 
 """Addition of quantum objects (kets, operators, or bras).
 

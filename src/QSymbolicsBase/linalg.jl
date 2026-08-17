@@ -224,10 +224,10 @@ julia> dagger(U)
 U⁻¹
 ```
 """
-@withmetadata struct SDagger{T<:QObj,O<:Symbolic} <: Symbolic{T}
+@withmetadata struct SDagger{T<:QObj,O<:SymQObj} <: Symbolic{T}
     obj::O
 end
-SDagger{T}(obj::O) where {T<:QObj,O<:Symbolic} = SDagger{T,O}(obj)
+SDagger{T}(obj::O) where {T<:QObj,O<:SymQObj} = SDagger{T,O}(obj)
 isexpr(::SDagger) = true
 iscall(::SDagger) = true
 arguments(x::SDagger) = [x.obj]

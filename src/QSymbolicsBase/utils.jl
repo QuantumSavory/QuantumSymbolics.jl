@@ -40,10 +40,10 @@ function countmap(samples) # A simpler version of StatsBase.countmap, because St
     counts
 end
 
-"""Accumulate the coefficients of the repeated terms of a sum in a `Dict{K,Any}`, flattening
+"""Accumulate the coefficients of the repeated terms of a sum in a `Dict{K,SymCoeff}`, flattening
 the nested sums (of type `ADD`) and pulling out the scalings (of type `MUL`) encountered."""
 function countmap_flatten(samples, ::Type{ADD}, ::Type{MUL}, ::Type{K}) where {ADD,MUL,K}
-    counts = Dict{K,Any}()
+    counts = Dict{K,SymCoeff}()
     for s in samples
         if s isa ADD
             for (term,coef) in pairs(s.dict)
