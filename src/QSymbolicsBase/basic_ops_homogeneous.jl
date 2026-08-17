@@ -19,17 +19,19 @@ julia> 2*A
 2A
 ```
 """
-@withmetadata struct SScaled{T<:QObj} <: Symbolic{T}
-    coeff
-    obj
+@withmetadata struct SScaled{T<:QObj,C<:SymCoeff,O<:Symbolic{T}} <: Symbolic{T}
+    coeff::C
+    obj::O
 end
+SScaled{T}(coeff::C, obj::O) where {T<:QObj,C<:SymCoeff,O<:Symbolic{T}} = SScaled{T,C,O}(coeff, obj)
+SScaled(coeff::SymCoeff, obj::Symbolic{T}) where {T<:QObj} = SScaled{T}(coeff, obj)
 isexpr(::SScaled) = true
 iscall(::SScaled) = true
 arguments(x::SScaled) = [x.coeff,x.obj]
 operation(x::SScaled) = *
 head(x::SScaled) = :*
 children(x::SScaled) = [:*,x.coeff,x.obj]
-function Base.:(*)(c::U, x::Symbolic{T}) where {U<:Union{Number, SymbolicUtils.BasicSymbolic, Symbolic{Complex}},T<:QObj}
+function Base.:(*)(c::U, x::Symbolic{T}) where {U<:SymCoeff,T<:QObj}
     if (c isa Number && iszero(c)) || iszero(x)
         SZero{T}()
     elseif _isone(c)
@@ -95,6 +97,9 @@ function Base.show(io::IO, x::SScaledBra)
     end
 end
 
+"""The mapping from the terms of a symbolic sum to their scalar coefficients."""
+const SAddDict{T} = Dict{Symbolic{T},SymCoeff}
+
 """Addition of quantum objects (kets, operators, or bras).
 
 ```jldoctest
@@ -105,14 +110,14 @@ julia> k₁ + k₂
 ```
 """
 @withmetadata struct SAdd{T<:QObj} <: Symbolic{T}
-    dict
-    _set_precomputed
-    _arguments_precomputed
+    dict::SAddDict{T}
+    _set_precomputed::Set{Symbolic{T}}
+    _arguments_precomputed::Vector{Symbolic{T}}
 end
-function SAdd{S}(d) where S
-    isempty(d) && return SZero{S}()
-    terms = [c*obj for (obj,c) in d]
-    length(d)==1 ? first(terms) : SAdd{S}(d,Set(terms),terms)
+function SAdd{T}(d) where {T<:QObj}
+    isempty(d) && return SZero{T}()
+    terms = Symbolic{T}[c*obj for (obj,c) in d]
+    length(d)==1 ? first(terms) : SAdd{T}(d,Set(terms),terms)
 end
 isexpr(::SAdd) = true
 iscall(::SAdd) = true
@@ -121,11 +126,10 @@ operation(x::SAdd) = +
 head(x::SAdd) = :+
 children(x::SAdd) = [:+; x._arguments_precomputed]
 function Base.:(+)(x::Symbolic{T}, xs::Vararg{Symbolic{T}, N}) where {T<:QObj, N}
-    xs = (x, xs...)
-    xs = collect(xs)
-    f = first(xs)
-    nonzero_terms = filter!(x->!iszero(x),xs)
-    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SAdd{T}, SScaled{T}))
+    terms = Symbolic{T}[x, xs...]
+    f = first(terms)
+    nonzero_terms = filter!(x->!iszero(x),terms)
+    isempty(nonzero_terms) ? f : SAdd{T}(countmap_flatten(nonzero_terms, SAdd{T}, SScaled{T}, Symbolic{T}))
 end
 basis(x::SAdd) = basis(first(x.dict).first)
 
@@ -156,7 +160,7 @@ AB
 ```
 """
 @withmetadata struct SMulOperator <: Symbolic{AbstractOperator}
-    terms
+    terms::Vector{Symbolic{AbstractOperator}}
 end
 isexpr(::SMulOperator) = true
 iscall(::SMulOperator) = true
@@ -165,13 +169,13 @@ operation(x::SMulOperator) = *
 head(x::SMulOperator) = :*
 children(x::SMulOperator) = [:*;x.terms]
 function Base.:(*)(x::Symbolic{AbstractOperator}, xs::Vararg{Symbolic{AbstractOperator}, N}) where {N}
-    xs = (x, xs...)
-    zero_ind = findfirst(x->iszero(x), xs)
+    ops = Symbolic{AbstractOperator}[x, xs...]
+    zero_ind = findfirst(x->iszero(x), ops)
     if isnothing(zero_ind)
-        if any(x->!(samebases(basis(x),basis(first(xs)))),xs)
+        if any(x->!(samebases(basis(x),basis(first(ops)))),ops)
             throw(IncompatibleBases())
         else
-            terms = flattenop(*, collect(xs))
+            terms = flattenop(SMulOperator, ops)
             coeff, cleanterms = prefactorscalings(terms)
             coeff * SMulOperator(cleanterms)
         end
@@ -200,7 +204,7 @@ A⊗B
 ```
 """
 @withmetadata struct STensor{T<:QObj} <: Symbolic{T}
-    terms
+    terms::Vector{Symbolic{T}}
 end
 isexpr(::STensor) = true
 iscall(::STensor) = true
@@ -211,7 +215,7 @@ children(x::STensor) = [:⊗; x.terms]
 function ⊗(xs::Symbolic{T}...) where {T<:QObj}
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
-        terms = flattenop(⊗, collect(xs))
+        terms = flattenop(STensor{T}, Symbolic{T}[xs...])
         coeff, cleanterms = prefactorscalings(terms)
         coeff * STensor{T}(cleanterms)
     else

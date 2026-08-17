@@ -75,33 +75,55 @@ end
 # Metadata cache helpers
 ##
 
-const CacheType = Dict{Tuple{<:AbstractRepresentation,<:AbstractUse},Any}
+const CacheType = Dict{Tuple{AbstractRepresentation,AbstractUse},Any}
 mutable struct Metadata
     express_cache::CacheType # TODO use more efficient mapping
 end
 Metadata() = Metadata(CacheType())
 
-"""Decorate a struct definition in order to add a metadata dict which would be storing cached `express` results."""
+"""Decorate a struct definition in order to add a metadata dict which would be storing cached `express` results.
+
+The decorated struct gains a trailing `metadata::Metadata` field and an inner constructor that
+takes only the "real" fields and initializes the metadata itself. Type parameters are preserved,
+so `@withmetadata struct Foo{A,B<:Bar} ... end` gets `Foo{A,B}(fields...)`, plus the parameter
+free `Foo(fields...)` whenever every parameter is spelled out as the type of one of the fields.
+
+The constructor is deliberately an inner one: it keeps Julia from generating the default
+constructors, which would otherwise take the metadata as their last argument and clash with the
+constructors that the users of this macro define for their own structs."""
 macro withmetadata(strct)
     ex = quote $strct end
     if @capture(ex, (struct T_{params__} fields__ end) | (struct T_{params__} <: A_ fields__ end))
         struct_name = namify(T)
-        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name{S}($(args...)) where S = new{S}($((args..., :(Metadata()))...)))
-    elseif @capture(ex, struct T_ fields__ end)
+        pnames = map(namify, params) # the bare parameter names, without their `<:` bounds
+        decls = [i for i in fields if !MacroTools.isexpr(i, String, :string)]
+        args = map(namify, decls)
+        constructor = :($struct_name{$(pnames...)}($(args...)) where {$(params...)} = new{$(pnames...)}($(args...), Metadata()))
+        # a parameter given as the whole type of a field can be deduced from the arguments, so
+        # if that is the case for all of them, the parameters need not be spelled out at all
+        fieldof = Dict{Symbol,Symbol}()
+        for d in decls
+            MacroTools.isexpr(d, :(::)) && d.args[2] isa Symbol || continue
+            d.args[2] in pnames && get!(fieldof, d.args[2], d.args[1])
+        end
+        outer = all(p->haskey(fieldof,p), pnames) ?
+            :($struct_name($(args...)) = $struct_name{$((:(typeof($(fieldof[p]))) for p in pnames)...)}($(args...))) :
+            nothing
+    else
+        @capture(ex, struct T_ fields__ end)
         struct_name = namify(T)
-        args = (namify(i) for i in fields if !MacroTools.isexpr(i, String, :string))
-        constructor = :($struct_name($(args...)) = new($((args..., :(Metadata()))...)))
-    else @capture(ex, struct T_ end)
-        struct_name = namify(T)
-        constructor = :($struct_name() = new($:(Metadata())))
+        args = [namify(i) for i in fields if !MacroTools.isexpr(i, String, :string)]
+        constructor = :($struct_name($(args...)) = new($(args...), Metadata()))
+        outer = nothing
     end
     struct_args = strct.args[end].args
     push!(struct_args, constructor, :(metadata::Metadata))
-    esc(quote
+    out = quote
     Base.@__doc__ $strct
-    metadata(x::$struct_name)=x.metadata
-    end)
+    end
+    isnothing(outer) || push!(out.args, outer)
+    push!(out.args, :(metadata(x::$struct_name)=x.metadata))
+    esc(out)
 end
 
 ##
@@ -110,18 +132,33 @@ end
 
 const QObj = Union{AbstractBra,AbstractKet,AbstractOperator,AbstractSuperOperator}
 const SymQObj = Symbolic{<:QObj} # TODO Should we use Sym or Symbolic... Sym has a lot of predefined goodies, including metadata support
+
+"""The type of quantum object (`AbstractBra`, `AbstractKet`, `AbstractOperator`, or
+`AbstractSuperOperator`) that a symbolic object stands for."""
+qobjtype(::Symbolic{T}) where {T<:QObj} = T
+qobjtype(::Type{<:Symbolic{T}}) where {T<:QObj} = T
+
+"""Whether two symbolic objects are instances of the same struct standing for the same kind of
+quantum object.
+
+The type parameters that only specify the types of the fields are deliberately ignored, so
+that e.g. `CoherentState(1)` and `CoherentState(1.0)` are still considered to be of the same
+kind (and are `isequal`, as the numbers `1` and `1.0` are)."""
+samekind(::Type{X}, ::Type{Y}) where {X<:SymQObj,Y<:SymQObj} =
+    Base.typename(X) === Base.typename(Y) && qobjtype(X) === qobjtype(Y)
+
 Base.:(-)(x::SymQObj) = (-1)*x
 Base.:(-)(x::SymQObj,y::SymQObj) = x + (-y)
 Base.hash(x::SymQObj, h::UInt) = isexpr(x) ? hash((head(x), arguments(x)), h) :
-hash((typeof(x),symbollabel(x),basis(x)), h)
+hash((Base.typename(typeof(x)),qobjtype(typeof(x)),symbollabel(x),basis(x)), h)
 maketerm(::Type{<:SymQObj}, f, a, m) = f(a...)
 
 function Base.isequal(x::X,y::Y) where {X<:SymQObj, Y<:SymQObj}
-    if X==Y
+    if samekind(X,Y)
         if isexpr(x)
             if operation(x)==operation(y)
                 ax,ay = arguments(x),arguments(y)
-                (operation(x) === +) ? x._set_precomputed == y._set_precomputed : all(zip(ax,ay)) do xy isequal(xy...) end
+                (operation(x) === +) ? x._set_precomputed == y._set_precomputed : (length(ax)==length(ay) && all(zip(ax,ay)) do xy isequal(xy...) end)
             else
                 false
             end
@@ -143,10 +180,16 @@ Base.isequal(::Symbolic{Complex}, ::SymQObj) = false
 
 const SymScalar = Symbolic{Complex}
 
+"""The scalar coefficients that are allowed to appear in symbolic quantum expressions.
+
+Either a plain number, a `SymbolicUtils`/`Symbolics` scalar expression, or one of the scalar
+symbolic objects of this library (e.g. `SBraKet` or `STrace`)."""
+const SymCoeff = Union{Number,SymbolicUtils.BasicSymbolic,SymScalar}
+
 """Symbolic scaled scalar expression: `coeff * obj` where obj is a `Symbolic{Complex}`."""
-struct SScaledComplex <: Symbolic{Complex}
-    coeff
-    obj
+struct SScaledComplex{C<:SymCoeff,O<:SymScalar} <: Symbolic{Complex}
+    coeff::C
+    obj::O
 end
 isexpr(::SScaledComplex) = true
 iscall(::SScaledComplex) = true
@@ -155,14 +198,14 @@ operation(::SScaledComplex) = *
 head(::SScaledComplex) = :*
 children(x::SScaledComplex) = [:*, x.coeff, x.obj]
 metadata(::SScaledComplex) = nothing
-maketerm(::Type{SScaledComplex}, f, a, m) = f(a...)
+maketerm(::Type{<:SScaledComplex}, f, a, m) = f(a...)
 Base.show(io::IO, x::SScaledComplex) = print(io, "($(x.coeff))$(x.obj)")
 Base.hash(x::SScaledComplex, h::UInt) = hash((head(x), x.coeff, x.obj), h)
 Base.isequal(x::SScaledComplex, y::SScaledComplex) = isequal(x.coeff, y.coeff) && isequal(x.obj, y.obj)
 
 """Symbolic sum of scalar expressions."""
 struct SAddComplex <: Symbolic{Complex}
-    terms
+    terms::Vector{SymCoeff}
 end
 isexpr(::SAddComplex) = true
 iscall(::SAddComplex) = true
@@ -178,7 +221,7 @@ Base.isequal(x::SAddComplex, y::SAddComplex) = Set(x.terms) == Set(y.terms)
 
 """Symbolic product of scalar expressions."""
 struct SMulComplex <: Symbolic{Complex}
-    terms
+    terms::Vector{SymCoeff}
 end
 isexpr(::SMulComplex) = true
 iscall(::SMulComplex) = true
@@ -206,7 +249,8 @@ Base.:(-)(x::SymScalar, y::SymScalar) = x + (-y)
 Base.iszero(::SymScalar) = false
 Base.isone(::SymScalar) = false
 
-# Allow Symbolic{Complex} as coefficient in quantum SScaled (handled by the Union dispatch in basic_ops_homogeneous.jl)
+# `Symbolic{Complex}` is allowed as a coefficient in the quantum `SScaled` as well,
+# through the `SymCoeff` union used in basic_ops_homogeneous.jl
 
 # TODO check that this does not cause incredibly bad runtime performance
 # use a macro to provide specializations if that is indeed the case

@@ -1,5 +1,13 @@
 # News
 
+## v0.4.18 - 2026-08-17
+
+- All the fields of all the symbolic structs are now concretely typed, in most cases through newly added type parameters (e.g. `SKet{B<:Basis}`, `SScaled{T<:QObj,C<:SymCoeff,O<:Symbolic{T}}`, `SProjector{K<:Symbolic{AbstractKet}}`, `CoherentState{T<:Number}`), in preparation for a future move to sum types. The constructors keep their previous signatures and infer the new parameters, but code that spells out the full type of a symbolic object has to be updated.
+- `isequal` and `hash` of symbolic quantum objects ignore the type parameters that merely record the types of the fields, so e.g. `CoherentState(1)` and `CoherentState(1.0)` are still equal.
+- Fix `isequal` considering two products (or tensor products) of different lengths equal, e.g. `A*B` and `A*B*C`.
+- Fix a `MethodError` when multiplying an operator by the inverse of a different operator.
+- A product of operators no longer splices the arguments of other `*`-headed expressions (an outer product or a superoperator application) into the `SMulOperator` it builds, so its terms are always operators. The printed and expressed results are unchanged.
+
 ## v0.4.17 - 2026-08-06
 
 - **(fix)** Complete Clifford observable lowering for symbolic Pauli tensors, identities, and native `PauliOperator`s.
