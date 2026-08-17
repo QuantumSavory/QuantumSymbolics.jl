@@ -32,7 +32,7 @@ import QuantumInterface:
 
 export SymQObj,QObj,
        AbstractRepresentation,AbstractUse,
-       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,GabsRepr,QuantumToolboxRepr,
+       QuantumOpticsRepr,QuantumMCRepr,CliffordRepr,GabsRepr,QuantumToolboxRepr,QuantumCumulantsRepr,
        UseAsState,UseAsObservable,UseAsOperation,
        apply!,
        express,
@@ -67,9 +67,51 @@ export SymQObj,QObj,
 
 # TODO: move this to QuantumInterface
 """Representation using kets, bras, density matrices, and superoperators governed by `QuantumToolbox.jl`."""
-Base.@kwdef struct QuantumToolboxRepr <: AbstractRepresentation 
+Base.@kwdef struct QuantumToolboxRepr <: AbstractRepresentation
     cutoff::Int = 2
 end
+
+# TODO: move this to QuantumInterface
+"""Representation using the second-quantized operator algebra of `QuantumCumulants.jl`.
+
+Unlike the other representations, this one is not numerical: symbolic operators are
+mapped onto the *symbolic* q-numbers of `QuantumCumulants.jl` (`Destroy`, `Create`,
+`Transition`, `Pauli`, ...), which can then be fed to `meanfield`, `cumulant_expansion`,
+and the rest of the `QuantumCumulants.jl` machinery.
+
+The `hilbertspace` field stores the `QuantumCumulants` Hilbert space the operators live
+on. When it is `nothing`, a Hilbert space is derived automatically from the basis of the
+expression being converted (`FockBasis` ↦ `FockSpace`, `SpinBasis(1//2)` ↦ a two-level
+`NLevelSpace`, `NLevelBasis` ↦ `NLevelSpace`, `CompositeBasis` ↦ `ProductSpace`).
+
+The `names` field gives the name of the operator living on each subsystem (e.g.
+`[:a, :σ]`); when it is `nothing` the names of the Hilbert (sub)spaces are used.
+
+The `aon` field is the index of the subsystem the object being converted acts on. It is
+bookkeeping used while recursing into tensor products and is rarely set by hand.
+
+```julia
+julia> using QuantumCumulants, QuantumSymbolics
+
+julia> h = FockSpace(:cavity) ⊗ NLevelSpace(:atom, (:g,:e));
+
+julia> express(Destroy⊗σ₊, QuantumCumulantsRepr(h, [:a, :σ]))
+a * σ⁻ᵉᵍ
+```
+
+For full functionality you also need to import the `QuantumCumulants` library."""
+struct QuantumCumulantsRepr{H,N} <: AbstractRepresentation
+    hilbertspace::H
+    names::N
+    aon::Int
+end
+QuantumCumulantsRepr(hilbertspace=nothing; names=nothing, aon::Int=1) = QuantumCumulantsRepr(hilbertspace, names, aon)
+QuantumCumulantsRepr(hilbertspace, names) = QuantumCumulantsRepr(hilbertspace, names, 1)
+Base.:(==)(x::QuantumCumulantsRepr, y::QuantumCumulantsRepr) =
+    x.hilbertspace == y.hilbertspace && x.names == y.names && x.aon == y.aon
+Base.isequal(x::QuantumCumulantsRepr, y::QuantumCumulantsRepr) =
+    isequal(x.hilbertspace, y.hilbertspace) && isequal(x.names, y.names) && x.aon == y.aon
+Base.hash(x::QuantumCumulantsRepr, h::UInt) = hash(:QuantumCumulantsRepr, hash(x.hilbertspace, hash(x.names, hash(x.aon, h))))
 
 ##
 # Metadata cache helpers

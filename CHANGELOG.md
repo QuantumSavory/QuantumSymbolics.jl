@@ -1,5 +1,9 @@
 # News
 
+## v0.4.18 - dev
+
+- Add a `QuantumCumulants.jl` extension: `express(op, QuantumCumulantsRepr(hilbertspace, names))` converts symbolic operators into the second-quantized operators of `QuantumCumulants.jl`, so that mean-field equations can be derived from models written in `QuantumSymbolics`.
+
 ## v0.4.17 - 2026-08-06
 
 - **(fix)** Complete Clifford observable lowering for symbolic Pauli tensors, identities, and native `PauliOperator`s.

@@ -8,6 +8,8 @@ end
 
 A principle feature of `QuantumSymbolics` is to numerically represent symbolic quantum expressions in various formalisms using [`express`](@ref). In particular, one can translate symbolic logic to back-end toolboxes such as [`QuantumOptics.jl`](https://github.com/qojulia/QuantumOptics.jl) or [`QuantumClifford.jl`](https://github.com/QuantumSavory/QuantumClifford.jl) for simulating quantum systems with great flexibility.
 
+Not every target of [`express`](@ref) is numerical: with `QuantumCumulantsRepr` the result is the *symbolic* second-quantized algebra of [`QuantumCumulants.jl`](https://github.com/qojulia/QuantumCumulants.jl), from which mean-field equations can be derived. That translation is discussed on the [QuantumCumulants page](@ref "Mean-field equations with QuantumCumulants.jl").
+
 As a straightforward example, consider the spin-up state $|\uparrow\rangle = |0\rangle$, the eigenstate of the Pauli operator $Z$, which can be expressed in `QuantumSymbolics` as follows:
 
 ```@example 1
