@@ -7,6 +7,12 @@ using QuantumSymbolics: @withmetadata, Metadata # `Metadata` is what the macro p
     a::T
 end
 
+"""The same, without a type parameter: only for such a struct does Julia generate the untyped
+default constructor that the inner one has to suppress."""
+@withmetadata struct PlainFieldTypeTestStruct
+    a::Int
+end
+
 ##
 # All the fields of all the structs of this library have to be (concretely) typed, either
 # directly or through a type parameter, so that every instantiated symbolic object has a
@@ -16,6 +22,7 @@ end
 @testset "Concretely typed struct fields" begin
     import QuantumClifford # for StabilizerState (both packages export `X`, `Y` and `Z`)
     import QuantumOptics # to load the QuantumOptics and MixedCliffordOptics extensions
+    import Gabs, QuantumToolbox # so that all five extensions are loaded and can be scanned
     using QuantumInterface: AbstractBra, AbstractOperator
     using QuantumSymbolics:
         inf_fock_basis, qubit_basis,
@@ -51,11 +58,14 @@ end
     underspecified(T) = [n=>t for (n,t) in zip(fieldnames(T), fieldtypes(T)) if !isspecified(t)]
 
     @testset "no underspecified field in any declaration" begin
-        for m in (QuantumSymbolics,
-                  Base.get_extension(QuantumSymbolics, :QuantumOpticsExt),
-                  Base.get_extension(QuantumSymbolics, :QuantumCliffordExt),
-                  Base.get_extension(QuantumSymbolics, :MixedCliffordOpticsExt))
-            isnothing(m) && continue
+        # every extension of the package, so that a struct added to any of them is covered
+        extensions = [:QuantumOpticsExt, :QuantumCliffordExt, :MixedCliffordOpticsExt,
+                      :GabsExt, :QuantumToolboxExt]
+        modules = [QuantumSymbolics; [Base.get_extension(QuantumSymbolics, e) for e in extensions]]
+        @test !any(isnothing, modules) # the extensions have to be loaded for this to mean anything
+        # and fail closed: an enumeration that silently returns nothing would pass every test below
+        @test length(struct_types(QuantumSymbolics)) >= 79
+        for m in filter(!isnothing, modules)
             for T in struct_types(m)
                 bad = underspecified(Base.unwrap_unionall(T))
                 isempty(bad) || @error "underspecified fields" T bad
@@ -154,11 +164,13 @@ end
         # last argument. Those must not exist: downstream packages add constructors of their own
         # to these structs, and a method of the same arity would silently overwrite a generated
         # one -- which is an error during precompilation (QuantumSavory does exactly this).
+        # Julia only generates that untyped constructor for a struct without type parameters, so
+        # the parameter-free probe is the one that actually exercises the regression.
         @test typeof(FieldTypeTestStruct(1)) == FieldTypeTestStruct{Int}
-        @test hasmethod(FieldTypeTestStruct, Tuple{Any})
-        @test !hasmethod(FieldTypeTestStruct, Tuple{Any,Any})
-        for T in (SProjector, SApplyKet, SScaled, MixedState, CoherentState, KrausRepr, SMulOperator)
-            nargs = fieldcount(Base.unwrap_unionall(T)) # the fields, metadata included
+        @test hasmethod(PlainFieldTypeTestStruct, Tuple{Any})
+        @test !hasmethod(PlainFieldTypeTestStruct, Tuple{Any,Any})
+        for T in (KrausRepr, SMulOperator) # the package's own structs without type parameters
+            nargs = fieldcount(T) # the fields, metadata included
             @test !hasmethod(T, Tuple{fill(Any, nargs)...})
         end
     end
