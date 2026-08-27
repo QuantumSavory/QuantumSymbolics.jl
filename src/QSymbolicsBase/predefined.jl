@@ -75,18 +75,21 @@ isexpr(::OperatorEmbedding) = true
 
 @withmetadata struct XGate <: AbstractSingleQubitGate end
 eigvecs(g::XGate) = [X1,X2]
+eigvals(g::XGate) = [1,-1]
 symbollabel(::XGate) = "X"
 ishermitian(::XGate) = true
 isunitary(::XGate) = true
 
 @withmetadata struct YGate <: AbstractSingleQubitGate end
 eigvecs(g::YGate) = [Y1,Y2]
+eigvals(g::YGate) = [1,-1]
 symbollabel(::YGate) = "Y"
 ishermitian(::YGate) = true
 isunitary(::YGate) = true
 
 @withmetadata struct ZGate <: AbstractSingleQubitGate end
 eigvecs(g::ZGate) = [Z1,Z2]
+eigvals(g::ZGate) = [1,-1]
 symbollabel(::ZGate) = "Z"
 ishermitian(::ZGate) = true
 isunitary(::ZGate) = true
@@ -211,4 +214,4 @@ ishermitian(::IdentityOp) = true
 isunitary(::IdentityOp) = true
 
 """Identity operator in qubit basis"""
-const I = IdentityOp(qubit_basis)   
+const I = IdentityOp(qubit_basis)

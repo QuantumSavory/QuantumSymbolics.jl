@@ -39,11 +39,15 @@ Above `dense` is from `QuantumOptics`, used to convert their representation to a
 The eigenvectors of each one of them provides for a convenient basis. The σᶻ basis is also called the *computational basis*. As mentioned, we have both unicode and ASCII names for convenience of typing. For these basis vectors we also have two sets of names: one based on which operator they are eigenvectors of and one in terms of typical logical representation (with prefix `L`).
 
 - `Z1 = Z₁ = L0 = L₀ = ` $|0\rangle = \begin{pmatrix}1\\0\end{pmatrix} = |\uparrow\rangle$ with eigenvalue +1 for σᶻ
-- `Z2 = Z₂ = L1 = L₁ = ` $|1\rangle = \begin{pmatrix}0\\1\end{pmatrix} = |\downarrow\rangle$ with eigenvalue +1 for σᶻ
+- `Z2 = Z₂ = L1 = L₁ = ` $|1\rangle = \begin{pmatrix}0\\1\end{pmatrix} = |\downarrow\rangle$ with eigenvalue -1 for σᶻ
 - `X1 = X₁ = Lp = L₊ = ` $|+\rangle = \frac{1}{\sqrt 2}\begin{pmatrix}1\\1\end{pmatrix}$ with eigenvalue +1 for σˣ
 - `X2 = X₂ = Lm = L₋ = ` $|-\rangle = \frac{1}{\sqrt 2}\begin{pmatrix}1\\-1\end{pmatrix}$ with eigenvalue -1 for σˣ
 - `Y1 = Y₁ = Lpi = L₊ᵢ = ` $|+i\rangle = \frac{1}{\sqrt 2}\begin{pmatrix}1\\ i\end{pmatrix}$ with eigenvalue +1 for σʸ
 - `Y2 = Y₂ = Lmi = L₋ᵢ = ` $|-i\rangle = \frac{1}{\sqrt 2}\begin{pmatrix}1\\-i\end{pmatrix}$ with eigenvalue -1 for σʸ
+
+`LinearAlgebra.eigvecs` and `LinearAlgebra.eigvals` use the same order for each
+Pauli operator: `([X1, X2], [1, -1])` for `X`, `([Y1, Y2], [1, -1])` for `Y`,
+and `([Z1, Z2], [1, -1])` for `Z`.
 
 The Y vectors occasionally are denoted with R and L (stemming from the vector notation for right and left polarized light), but there is no established notation choice or ordering.
 

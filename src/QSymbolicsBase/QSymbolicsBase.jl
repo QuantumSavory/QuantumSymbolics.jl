@@ -18,7 +18,7 @@ import MacroTools
 import MacroTools: namify, @capture
 
 using LinearAlgebra
-import LinearAlgebra: eigvecs,ishermitian,conj,transpose,inv,exp,vec,tr
+import LinearAlgebra: eigvals,eigvecs,ishermitian,conj,transpose,inv,exp,vec,tr
 
 import QuantumInterface:
     apply!,
