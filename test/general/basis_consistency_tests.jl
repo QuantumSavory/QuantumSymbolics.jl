@@ -1,5 +1,6 @@
 using Test
 using QuantumSymbolics
+using LinearAlgebra: eigvals, eigvecs
 
 @testset "Basis consistency" begin
     using QuantumOptics
@@ -14,6 +15,14 @@ using QuantumSymbolics
     @test express(Pp*Z2) == express(Z1)
     @test express(Pm*L0) == express(L1)
     @test express(Pp*L1) == express(L0)
+
+    for (op, states) in ((X, [X1, X2]), (Y, [Y1, Y2]), (Z, [Z1, Z2]))
+        @test eigvecs(op) == states
+        @test eigvals(op) == [1, -1]
+        for (state, value) in zip(eigvecs(op), eigvals(op))
+            @test express(op * state) == value * express(state)
+        end
+    end
 
     @op A; @op B; @op C; @op O; @ket k;
     @superop S; K = kraus(A, B, C);
