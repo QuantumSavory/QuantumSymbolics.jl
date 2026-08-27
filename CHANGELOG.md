@@ -1,5 +1,9 @@
 # News
 
+## v0.4.18 - 2026-08-27
+
+- Add aligned eigenvalues for the symbolic Pauli eigenbases returned by `eigvecs`.
+
 ## v0.4.17 - 2026-08-06
 
 - **(fix)** Complete Clifford observable lowering for symbolic Pauli tensors, identities, and native `PauliOperator`s.
