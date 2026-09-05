@@ -1,5 +1,9 @@
 # News
 
+## Unreleased
+
+- Enhance rendered documentation code blocks with line numbers, permalinks, and API links.
+
 ## v0.4.20 - 2026-09-05
 
 - Add standard signatures to public API docstrings.

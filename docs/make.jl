@@ -3,6 +3,7 @@ push!(LOAD_PATH,"../src/")
 
 using Documenter
 using DocumenterCitations
+using DocumenterCodeBlocks
 using AnythingLLMDocs
 using QuantumSymbolics
 using QuantumInterface
@@ -27,7 +28,7 @@ function main()
     append!(assets, anythingllm_assets)
 
     makedocs(
-    plugins=[bib],
+    plugins=[bib, CodeBlocks()],
     doctest = false,
     clean = true,
     sitename = "QuantumSymbolics.jl",
