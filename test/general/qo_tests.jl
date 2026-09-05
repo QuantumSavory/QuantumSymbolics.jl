@@ -5,7 +5,8 @@ using QuantumSymbolics
     using QuantumOptics
     using QuantumSymbolics
     #using QuantumOpticsExt: LazyPrePost
-    LazyPrePost = Base.get_extension(QuantumSymbolics, :QuantumOpticsExt).LazyPrePost
+    qoext = Base.get_extension(QuantumSymbolics, :QuantumOpticsExt)
+    LazyPrePost = qoext.LazyPrePost
 
     bs = GenericBasis(2),GenericBasis(2)
     op0 = Operator(bs...,rand(2,2))
@@ -15,6 +16,8 @@ using QuantumSymbolics
     op32 = Operator(bs...,rand(2,2))
     l2 = LazyPrePost(op21,op22)
     l3 = LazyPrePost(op31,op32)
+    @test !applicable(tensor)
+    @test tensor(l2, l3) isa qoext.LazySuperTensor
     @test spre(op21)*spost(op22) ≈ spost(op22)*spre(op21)
     @test spre(op21)*spost(op22)*op0 ≈ l2*op0
     @test spre(op31)*spost(op32)*spre(op21)*spost(op22)*op0 ≈ (l3*l2)*op0 ≈ l3*(l2*op0)

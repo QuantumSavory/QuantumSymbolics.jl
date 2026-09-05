@@ -43,7 +43,8 @@ struct LazySuperTensor{B,T} <: AbstractLazySuperOperator{Tuple{B,B},Tuple{B,B}}
     sops::T
 end
 
-function QuantumInterface.tensor(sops::AbstractSuperOperator...)
+function QuantumInterface.tensor(sop::AbstractSuperOperator, sops::AbstractSuperOperator...)
+    sops = (sop, sops...)
     b = QuantumInterface.tensor(basis.(sops)...)
     @assert length(sops) == length(b.bases) "tensor products of superoperators over composite bases are not implemented yet"
     LazySuperTensor(b,[embed(b,b,i,s) for (i,s) in enumerate(sops)])
