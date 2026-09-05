@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Enhance rendered documentation code blocks with line numbers, permalinks, and API links.
+- Enhance rendered documentation code blocks with line numbers, permalinks, and API links, and fail documentation builds on reported docstring issues.
 
 ## v0.4.20 - 2026-09-05
 
