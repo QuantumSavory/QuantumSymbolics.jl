@@ -30,7 +30,10 @@ end
 basis(x::AmplifierCPTP) = inf_fock_basis
 symbollabel(x::AmplifierCPTP) = "𝒜𝓂𝓅"
 
-"""Single-qubit Pauli noise CPTP map
+"""
+$TYPEDEF
+
+Single-qubit Pauli noise CPTP map
 
 ```jldoctest
 julia> apply!(express(Z1), [1], express(PauliNoiseCPTP(1/4,1/4,1/4)))

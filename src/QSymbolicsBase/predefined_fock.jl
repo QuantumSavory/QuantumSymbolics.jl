@@ -9,13 +9,21 @@ abstract type AbstractTwoBosonState <: SpecialKet end
 basis(::AbstractSingleBosonState) = inf_fock_basis
 basis(::AbstractTwoBosonState) = inf_fock_basis^2
 
-"""Fock state in defined Fock basis."""
+"""
+$TYPEDEF
+
+Fock state in defined Fock basis.
+"""
 @withmetadata struct FockState <: AbstractSingleBosonState
     idx::Int
 end
 symbollabel(x::FockState) = "$(x.idx)"
 
-"""Coherent state in defined Fock basis."""
+"""
+$TYPEDEF
+
+Coherent state in defined Fock basis.
+"""
 @withmetadata struct CoherentState <: AbstractSingleBosonState
     alpha::Number # TODO parameterize
 end
@@ -33,7 +41,11 @@ symbollabel(x::SqueezedState) = "0,$(x.z)"
 end
 symbollabel(x::TwoSqueezedState) = "0,$(x.z)"
 
-"""Single-mode vacuum state"""
+"""
+    vac
+
+Single-mode vacuum state
+"""
 const vac = const F₀ = const F0 = FockState(0)
 """Single photon state"""
 const F₁ = const F1 = FockState(1)
@@ -51,7 +63,10 @@ basis(x::AbstractSingleBosonOp) = inf_fock_basis
 isexpr(::AbstractTwoBosonGate) = false
 basis(x::AbstractTwoBosonOp) = inf_fock_basis^2
 
-"""Number operator.
+"""
+$TYPEDEF
+
+Number operator.
 
 ```jldoctest
 julia> f = FockState(2)
@@ -67,7 +82,10 @@ julia> qsimplify(num*f, rewriter=qsimplify_fock)
 @withmetadata struct NumberOp <: AbstractSingleBosonOp end
 symbollabel(::NumberOp) = "n"
 
-"""Creation (raising) operator.
+"""
+$TYPEDEF
+
+Creation (raising) operator.
 
 ```jldoctest
 julia> f = FockState(2)
@@ -83,7 +101,10 @@ julia> qsimplify(create*f, rewriter=qsimplify_fock)
 @withmetadata struct CreateOp <: AbstractSingleBosonOp end
 symbollabel(::CreateOp) = "a†"
 
-"""Annihilation (lowering or destroy) operator in defined Fock basis.
+"""
+$TYPEDEF
+
+Annihilation (lowering or destroy) operator in defined Fock basis.
 
 ```jldoctest
 julia> f = FockState(2)
@@ -99,7 +120,10 @@ julia> qsimplify(destroy*f, rewriter=qsimplify_fock)
 @withmetadata struct DestroyOp <: AbstractSingleBosonOp end
 symbollabel(::DestroyOp) = "a"
 
-"""Phase-shift operator in defined Fock basis.
+"""
+$TYPEDEF
+
+Phase-shift operator in defined Fock basis.
 
 ```jldoctest
 julia> c = CoherentState(im)
@@ -117,7 +141,10 @@ julia> qsimplify(phase*c, rewriter=qsimplify_fock)
 end
 symbollabel(x::PhaseShiftOp) = "U($(x.phase))"
 
-"""Displacement operator in defined Fock basis.
+"""
+$TYPEDEF
+
+Displacement operator in defined Fock basis.
 
 ```jldoctest
 julia> f = FockState(0)
@@ -135,15 +162,29 @@ julia> qsimplify(displace*f, rewriter=qsimplify_fock)
 end
 symbollabel(x::DisplaceOp) = "D($(x.alpha))"
 
-"""Number operator, also available as the constant `n̂`, in an infinite dimension Fock basis."""
+"""
+    N
+
+Number operator, also available as the constant `n̂`, in an infinite dimension Fock basis.
+"""
 const N = const n̂ = NumberOp()
-"""Creation operator, also available as the constant `âꜛ`, in an infinite dimension Fock basis.
+"""
+    Create
+
+Creation operator, also available as the constant `âꜛ`, in an infinite dimension Fock basis.
 There is no unicode dagger superscript, so we use the uparrow"""
 const Create = const âꜛ = CreateOp()
-"""Annihilation operator, also available as the constant `â`, in an infinite dimension Fock basis."""
+"""
+    Destroy
+
+Annihilation operator, also available as the constant `â`, in an infinite dimension Fock basis.
+"""
 const Destroy = const â = DestroyOp()
 
-"""Squeezing operator in defined Fock basis.
+"""
+$TYPEDEF
+
+Squeezing operator in defined Fock basis.
 
 ```jldoctest
 julia> S = SqueezeOp(pi)

@@ -1,5 +1,9 @@
 # News
 
+## v0.4.20 - 2026-09-05
+
+- Add standard signatures to public API docstrings.
+
 ## v0.4.19 - 2026-09-05
 
 - Require at least one argument for symbolic and QuantumOptics superoperator tensor products.
