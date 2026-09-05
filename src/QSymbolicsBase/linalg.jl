@@ -3,9 +3,17 @@
 ##
 
 #TODO upstream to QuantumInterface
-"""The commutator of two operators."""
+"""
+    commutator(o1, o2)
+
+The commutator of two operators.
+"""
 function commutator end
-"""The anticommutator of two operators."""
+"""
+    anticommutator(o1, o2)
+
+The anticommutator of two operators.
+"""
 function anticommutator end
 
 """Symbolic commutator of two operators.
@@ -118,7 +126,10 @@ function Base.show(io::IO, x::SConjugate)
 end
 
 
-"""Projector for a given ket.
+"""
+$TYPEDEF
+
+Projector for a given ket.
 
 ```jldoctest
 julia> projector(X1⊗X2)

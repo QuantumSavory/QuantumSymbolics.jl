@@ -38,17 +38,41 @@ end
 symbollabel(x::PositionEigenState) = "δₓ($(x.x))"
 
 const qubit_basis = SpinBasis(1//2)
-"""Basis state of σˣ"""
+"""
+    X1
+
+Basis state of σˣ
+"""
 const X1 = const X₁ = const Lp = const L₊ = XBasisState(1, qubit_basis)
-"""Basis state of σˣ"""
+"""
+    X2
+
+Basis state of σˣ
+"""
 const X2 = const X₂ = const Lm = const L₋ = XBasisState(2, qubit_basis)
-"""Basis state of σʸ"""
+"""
+    Y1
+
+Basis state of σʸ
+"""
 const Y1 = const Y₁ = const Lpi = const L₊ᵢ = YBasisState(1, qubit_basis)
-"""Basis state of σʸ"""
+"""
+    Y2
+
+Basis state of σʸ
+"""
 const Y2 = const Y₂ = const Lmi = const L₋ᵢ = YBasisState(2, qubit_basis)
-"""Basis state of σᶻ"""
+"""
+    Z1
+
+Basis state of σᶻ
+"""
 const Z1 = const Z₁ = const L0 = const L₀ = ZBasisState(1, qubit_basis)
-"""Basis state of σᶻ"""
+"""
+    Z2
+
+Basis state of σᶻ
+"""
 const Z2 = const Z₂ = const L1 = const L₁ = ZBasisState(2, qubit_basis)
 
 ##
@@ -134,28 +158,63 @@ for control in (:X, :Y, :Z)
     end
 end
 
-"""Pauli X operator, also available as the constant `σˣ`"""
+"""
+    X
+
+Pauli X operator, also available as the constant `σˣ`
+"""
 const X = const σˣ = XGate()
-"""Pauli Y operator, also available as the constant `σʸ`"""
+"""
+    Y
+
+Pauli Y operator, also available as the constant `σʸ`
+"""
 const Y = const σʸ = YGate()
-"""Pauli Z operator, also available as the constant `σᶻ`"""
+"""
+    Z
+
+Pauli Z operator, also available as the constant `σᶻ`
+"""
 const Z = const σᶻ = ZGate()
-"""Pauli "minus" operator, also available as the constant `σ₋`"""
+"""
+    Pm
+
+Pauli "minus" operator, also available as the constant `σ₋`
+"""
 const Pm = const σ₋ = PauliM()
-"""Pauli "plus" operator, also available as the constant `σ₊`"""
+"""
+    Pp
+
+Pauli "plus" operator, also available as the constant `σ₊`
+"""
 const Pp = const σ₊ = PauliP()
-"""Hadamard gate"""
+"""
+    H
+
+Hadamard gate
+"""
 const H = HGate()
-"""CNOT gate"""
+"""
+    CNOT
+
+CNOT gate
+"""
 const CNOT = CNOTGate()
-"""CPHASE gate"""
+"""
+    CPHASE
+
+CPHASE gate
+"""
 const CPHASE = CPHASEGate()
 
 ##
 # Other special or useful objects
 ##
 
-"""Completely depolarized state
+"""
+$TYPEDEF
+
+Completely depolarized state
 
 ```jldoctest
 julia> MixedState(X1⊗X2)

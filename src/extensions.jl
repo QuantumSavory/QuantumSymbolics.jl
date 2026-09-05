@@ -2,7 +2,10 @@
 
 export StabilizerState
 
-"""State defined by a stabilizer tableau
+"""
+$TYPEDEF
+
+State defined by a stabilizer tableau
 
 For full functionality you also need to import the `QuantumClifford` library.
 

@@ -1,6 +1,7 @@
 using Symbolics
 import Symbolics: simplify
 using SymbolicUtils
+using DocStringExtensions: TYPEDEF
 import SymbolicUtils: _isone
 using SymbolicUtils.Rewriters
 using TermInterface

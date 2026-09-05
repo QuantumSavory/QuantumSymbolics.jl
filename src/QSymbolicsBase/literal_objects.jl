@@ -85,7 +85,11 @@ end
 ishermitian(x::SOperator) = false
 isunitary(x::SOperator) = false
 
-"""Symbolic Hermitian operator"""
+"""
+$TYPEDEF
+
+Symbolic Hermitian operator
+"""
 struct SHermitianOperator <: Symbolic{AbstractOperator}
     name::Symbol
     basis::Basis
@@ -95,7 +99,11 @@ SHermitianOperator(name) = SHermitianOperator(name, qubit_basis)
 ishermitian(::SHermitianOperator) = true
 isunitary(::SHermitianOperator) = false
 
-"""Symbolic unitary operator"""
+"""
+$TYPEDEF
+
+Symbolic unitary operator
+"""
 struct SUnitaryOperator <: Symbolic{AbstractOperator}
     name::Symbol
     basis::Basis
