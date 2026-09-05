@@ -1,6 +1,6 @@
 # News
 
-## Unreleased
+## v0.4.20 - 2026-09-05
 
 - Add standard signatures to public API docstrings.
 
