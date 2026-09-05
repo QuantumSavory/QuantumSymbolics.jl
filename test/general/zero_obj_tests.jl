@@ -38,3 +38,15 @@ using QuantumSymbolics
         @test isequal(Ob*k, 0) && isequal(b*Ok, 0) && isequal(Ob*Ok, 0)
     end
 end
+
+@testset "Symbolic tensor arity" begin
+    A = SOperator(:A, SpinBasis(1//2))
+    B = SOperator(:B, SpinBasis(1//2))
+    C = SOperator(:C, SpinBasis(1//2))
+    O = SZeroOperator()
+
+    @test !applicable(⊗)
+    @test QuantumSymbolics.arguments((⊗)(A)) == [A]
+    @test QuantumSymbolics.arguments(A ⊗ B ⊗ C) == [A, B, C]
+    @test isequal(A ⊗ O ⊗ C, O)
+end

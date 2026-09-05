@@ -208,7 +208,8 @@ arguments(x::STensor) = x.terms
 operation(x::STensor) = ⊗
 head(x::STensor) = :⊗
 children(x::STensor) = [:⊗; x.terms]
-function ⊗(xs::Symbolic{T}...) where {T<:QObj}
+function ⊗(x::Symbolic{T}, xs::Symbolic{T}...) where {T<:QObj}
+    xs = (x, xs...)
     zero_ind = findfirst(x->iszero(x), xs)
     if isnothing(zero_ind)
         terms = flattenop(⊗, collect(xs))

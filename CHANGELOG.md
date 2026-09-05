@@ -1,5 +1,9 @@
 # News
 
+## v0.4.19 - 2026-09-05
+
+- Require at least one argument for symbolic and QuantumOptics superoperator tensor products.
+
 ## v0.4.18 - 2026-08-27
 
 - Add aligned eigenvalues for the symbolic Pauli eigenbases returned by `eigvecs`.
