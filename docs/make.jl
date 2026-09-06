@@ -3,6 +3,7 @@ push!(LOAD_PATH,"../src/")
 
 using Documenter
 using DocumenterCitations
+using DocumenterCodeBlocks
 using AnythingLLMDocs
 using QuantumSymbolics
 using QuantumInterface
@@ -23,11 +24,12 @@ function main()
     )
 
     bib = CitationBibliography(joinpath(@__DIR__,"src/references.bib"), style=:authoryear)
+    codeblocks = CodeBlocks()
     assets = Any["assets/init.js"]
     append!(assets, anythingllm_assets)
 
     makedocs(
-    plugins=[bib],
+    plugins=[bib, codeblocks],
     doctest = false,
     clean = true,
     sitename = "QuantumSymbolics.jl",
@@ -47,6 +49,8 @@ function main()
         "API" => "API.md",
     ]
     )
+    # DocumenterCodeBlocks warnings are plain logs, not Documenter errors.
+    isempty(codeblocks.warned) || error("DocumenterCodeBlocks reported docstring issues.")
 
     deploydocs(
         repo = "github.com/QuantumSavory/QuantumSymbolics.jl.git",
