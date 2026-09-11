@@ -9,7 +9,7 @@ secrets:
 steps:
   - label: "General Tests"
     plugins:
-      - JuliaCI/julia#v1:
+      - QuantumSavory/julia#dbd20b9d63930875b96dc7a048e57ffb437a0e4c: # v1.14
           version: "1"
           compiled_size_limit: 10737418240 # 10GiB
       - JuliaCI/julia-test#v1:
@@ -18,7 +18,7 @@ steps:
 
   - label: "General Tests (alpha)"
     plugins:
-      - Krastanov-agent/julia#bb0dd898e0190fa025fa9eddbf5b39665edc8e6c:
+      - QuantumSavory/julia#dbd20b9d63930875b96dc7a048e57ffb437a0e4c: # v1.14
           version: "alpha"
           compiled_size_limit: 10737418240 # 10GiB
       - JuliaCI/julia-test#v1:
@@ -27,7 +27,7 @@ steps:
 
   - label: "JET Tests"
     plugins:
-      - JuliaCI/julia#v1:
+      - QuantumSavory/julia#dbd20b9d63930875b96dc7a048e57ffb437a0e4c: # v1.14
           version: "1"
           compiled_size_limit: 10737418240 # 10GiB
       - JuliaCI/julia-test#v1:
@@ -37,7 +37,7 @@ steps:
   - label: "Docs"
     branches: "!dependabot/*"
     plugins:
-      - JuliaCI/julia#v1:
+      - QuantumSavory/julia#dbd20b9d63930875b96dc7a048e57ffb437a0e4c: # v1.14
           version: "1"
       - QuantumSavory/julia-xvfb#v1:
     secrets:
@@ -49,7 +49,7 @@ steps:
   
   - label: "Downstream Tests - {{matrix.PACKAGE}}"
     plugins:
-      - JuliaCI/julia#v1:
+      - QuantumSavory/julia#dbd20b9d63930875b96dc7a048e57ffb437a0e4c: # v1.14
           version: "1"
           compiled_size_limit: 10737418240 # 10GiB
     command:
@@ -67,7 +67,7 @@ steps:
 
   - label: "Downstream Dev Tests - {{matrix.PACKAGE}}"
     plugins:
-      - JuliaCI/julia#v1:
+      - QuantumSavory/julia#dbd20b9d63930875b96dc7a048e57ffb437a0e4c: # v1.14
           version: "1"
           compiled_size_limit: 10737418240 # 10GiB
     command:
