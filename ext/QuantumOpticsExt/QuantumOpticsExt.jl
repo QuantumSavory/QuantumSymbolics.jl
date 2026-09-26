@@ -50,6 +50,41 @@ express_nolookup(::ZGate, ::QuantumOpticsRepr) = _z
 express_nolookup(::CPHASEGate, ::QuantumOpticsRepr) = _cphase
 express_nolookup(::CNOTGate, ::QuantumOpticsRepr) = _cnot
 
+# Composite expressions (sums, products, tensor products). By default they are
+# expressed eagerly by applying the symbolic operation to the expressed
+# arguments. With QuantumOpticsRepr(lazy=true), produce the structure-preserving
+# lazy operators (LazySum / LazyProduct / LazyTensor) instead (issue #521).
+function express_nolookup(s, repr::QuantumOpticsRepr)
+    isexpr(s) || error("Encountered an object $(s) of type $(typeof(s)) that can not be converted to a $(repr) representation")
+    args = express.(arguments(s), (repr,))
+    if repr.lazy
+        op = operation(s)
+        allops = all(a -> a isa AbstractOperator, args)
+        if op === (+) && allops
+            return LazySum(args...)
+        elseif op === (*) && all(a -> a isa AbstractOperator || a isa Number, args)
+            # operator product, possibly with scalar prefactors; ignore the
+            # ket/bra cases (which also carry operation === *) by the guard above
+            ops = Tuple(a for a in args if a isa AbstractOperator)
+            factor = prod((a for a in args if a isa Number); init=1)
+            if length(ops) >= 2
+                return LazyProduct(ops, factor)
+            elseif length(ops) == 1
+                return factor * ops[1]
+            end
+        elseif op === (⊗) && allops
+            # LazyTensor embeds one operator per subsystem; its densification
+            # requires plain (densifiable) factors, so collapse any lazy factor
+            # (the cheap inner operator) while keeping the tensor product itself lazy
+            facs = map(a -> a isa QuantumOpticsBase.LazyOperator ? dense(a) : a, args)
+            bl = tensor((a.basis_l for a in facs)...)
+            br = tensor((a.basis_r for a in facs)...)
+            return LazyTensor(bl, br, Tuple(eachindex(facs)), Tuple(facs))
+        end
+    end
+    return operation(s)(args...)
+end
+
 const xyzopdict = Dict(:X=>_x, :Y=>_y, :Z=>_z)
 const xyzstatedict = Dict(:X=>(_s₊,_s₋),:Y=>(_i₊,_i₋),:Z=>(_l0,_l1))
 for control in (:X, :Y, :Z)

@@ -78,3 +78,21 @@ Operator(dim=5x5)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```
+
+`QuantumOpticsRepr` also accepts a `lazy` keyword. With `lazy=true`, composite
+symbolic expressions are translated into the structure-preserving lazy operators
+of `QuantumOptics.jl` instead of being eagerly materialised: a symbolic sum
+becomes a `LazySum`, a product a `LazyProduct`, and a tensor product a
+`LazyTensor`. This avoids building large dense or sparse matrices until they are
+explicitly requested (e.g. via `dense` or `sparse`), while remaining numerically
+equivalent to the eager translation.
+
+```julia
+julia> ls = express(X + Y, QuantumOpticsRepr(lazy=true))
+LazySum(dim=2x2)
+  basis: Spin(1/2)
+  ...
+
+julia> dense(ls) ≈ express(X + Y)   # numerically identical to the eager result
+true
+```
