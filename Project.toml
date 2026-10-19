@@ -31,7 +31,7 @@ QuantumOpticsExt = "QuantumOpticsBase"
 QuantumToolboxExt = "QuantumToolbox"
 
 [compat]
-DocStringExtensions = "0.9.5"
+DocStringExtensions = "0.9.5, 0.10"
 Gabs = "1.3.5"
 Latexify = "0.16"
 LinearAlgebra = "1.9"
