@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added QuantumCumulants.jl express backend support
+
+
+
 - Require QuantumInterface 0.4.4 to remove its zero-argument tensor method.
 
 ## v0.4.20 - 2026-09-05

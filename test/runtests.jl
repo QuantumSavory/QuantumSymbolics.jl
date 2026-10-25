@@ -1,5 +1,7 @@
 using ParallelTestRunner
 
+include("general/quantumcumulants_tests.jl")
+
 const TEST_PROJECTS = Dict(
     "jet" => normpath(joinpath(@__DIR__, "projects", "jet")),
 )

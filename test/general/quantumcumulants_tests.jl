@@ -16,4 +16,11 @@ using QuantumCumulants
     # States
     ψ = express(Z1, QuantumCumulantsRepr())
     @test ψ isa QuantumCumulants.State
+
+    # Tensor products of superoperators
+    L⊗L = express(lindblad(σˣ)⊗lindblad(σʸ), QuantumCumulantsRepr())
+    @test L⊗L isa QuantumCumulants.SuperOperator
+
+    # Check state conversion doesn't throw
+    @test_throws Nothing express(Z1⊗Z2, QuantumCumulantsRepr())
 end
