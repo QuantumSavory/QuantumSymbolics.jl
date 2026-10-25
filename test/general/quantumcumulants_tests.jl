@@ -8,6 +8,7 @@ using QuantumCumulants
     # Tensor products
     X⊗Y = express(σˣ⊗σʸ, QuantumCumulantsRepr())
     @test X⊗Y isa QuantumCumulants.Operator
+    @test_throws DimensionMismatch express(σˣ⊗σʸ⊗σᶻ, QuantumCumulantsRepr())
 
     # Superoperators
     L = express(lindblad(σˣ), QuantumCumulantsRepr())
@@ -16,11 +17,14 @@ using QuantumCumulants
     # States
     ψ = express(Z1, QuantumCumulantsRepr())
     @test ψ isa QuantumCumulants.State
+    @test_throws DimensionMismatch express(Z1⊗Z2, QuantumCumulantsRepr())
 
     # Tensor products of superoperators
     L⊗L = express(lindblad(σˣ)⊗lindblad(σʸ), QuantumCumulantsRepr())
     @test L⊗L isa QuantumCumulants.SuperOperator
+    @test_throws DimensionMismatch express(lindblad(σˣ)⊗lindblad(σʸ)⊗lindblad(σᶻ), QuantumCumulantsRepr())
 
-    # Check state conversion doesn't throw
-    @test_throws Nothing express(Z1⊗Z2, QuantumCumulantsRepr())
+    # Error handling
+    @test_throws ArgumentError express(σˣ, QuantumCumulantsRepr())
+    @test_throws ArgumentError express(lindblad(σˣ), QuantumCumulantsRepr())
 end
