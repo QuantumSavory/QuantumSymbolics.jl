@@ -4,7 +4,7 @@
 # The main function is `express`, which takes a quantum object and a representation and returns an expression of the object in that representation.
 ##
  
-export express, express_nolookup, consistent_representation
+export express, express_nolookup, consistent_representation, QuantumCumulantsRepr
 
 """
     express(s, repr::AbstractRepresentation=QuantumOpticsRepr()[, use::AbstractUse])
@@ -37,6 +37,8 @@ julia> express(QuantumSymbolics.X, CliffordRepr(), UseAsObservable())
 + X
 ```
 """
+struct QuantumCumulantsRepr <: AbstractRepresentation end
+
 function express(state::Symbolic, repr::AbstractRepresentation, use::AbstractUse)
     md = metadata(state)
     isnothing(md) && return express_from_cache(express_nolookup(state, repr, use))
@@ -67,6 +69,22 @@ function consistent_representation(reprs,state)
     first(reprs)
 end
 express_nolookup(state, ::QuantumMCRepr) = express_nolookup(state, QuantumOpticsRepr())
+
+function express_nolookup(s::SOperator, repr::QuantumCumulantsRepr)
+    QuantumCumulants.Operator(s)
+end
+
+function express_nolookup(s::SSuperOperator, repr::QuantumCumulantsRepr)
+    QuantumCumulants.SuperOperator(s)
+end
+
+function express_nolookup(s::SKet, repr::QuantumCumulantsRepr)
+    QuantumCumulants.State(s)
+end
+
+function express_nolookup(s::SBra, repr::QuantumCumulantsRepr)
+    QuantumCumulants.Bra(s)
+end
 
 function express_nolookup(s, repr::AbstractRepresentation)
     if isexpr(s)
