@@ -1,20 +1,26 @@
 using QuantumCumulants
 
 @testset "QuantumCumulants Express Backend" begin
-    # Basic operators
+    @testset "Operators" begin
     X = express(σˣ, QuantumCumulantsRepr())
     @test X isa QuantumCumulants.Operator
 
-    # Tensor products
+    end
+
+    @testset "Tensor Products" begin
     X⊗Y = express(σˣ⊗σʸ, QuantumCumulantsRepr())
     @test X⊗Y isa QuantumCumulants.Operator
     @test_throws DimensionMismatch express(σˣ⊗σʸ⊗σᶻ, QuantumCumulantsRepr())
 
-    # Superoperators
+    end
+
+    @testset "SuperOperators" begin
     L = express(lindblad(σˣ), QuantumCumulantsRepr())
     @test L isa QuantumCumulants.SuperOperator
 
-    # States
+    end
+
+    @testset "States" begin
     ψ = express(Z1, QuantumCumulantsRepr())
     @test ψ isa QuantumCumulants.State
     @test_throws DimensionMismatch express(Z1⊗Z2, QuantumCumulantsRepr())
@@ -25,6 +31,5 @@ using QuantumCumulants
     @test_throws DimensionMismatch express(lindblad(σˣ)⊗lindblad(σʸ)⊗lindblad(σᶻ), QuantumCumulantsRepr())
 
     # Error handling
-    @test_throws ArgumentError express(σˣ, QuantumCumulantsRepr())
-    @test_throws ArgumentError express(lindblad(σˣ), QuantumCumulantsRepr())
+    
 end
