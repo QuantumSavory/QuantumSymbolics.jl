@@ -16,6 +16,6 @@ using QuantumSymbolics
         plain = express(N, StateVectorRepr(cutoff=cutoff))
 
         @test plain == wrapped.data
-        @test size(plain) == (cutoff, cutoff)
+        @test size(plain) == (cutoff + 1, cutoff + 1)
     end
 end
