@@ -100,6 +100,8 @@ express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasi
 
 express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ket, r), express(s.bra, r))
 
+express_nolookup(x, r::StateVectorRepr) = express_nolookup(x, QuantumOpticsRepr(r.cutoff)).data
+
 include("should_upstream.jl")
 
 end

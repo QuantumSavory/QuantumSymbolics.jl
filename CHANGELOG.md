@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Require QuantumInterface 0.4.4 to remove its zero-argument tensor method.
+- Add `StateVectorRepr` for expressing symbolic states and operators as plain vectors and matrices.
 
 ## v0.4.20 - 2026-09-05
 
