@@ -10,6 +10,7 @@ using QuantumSymbolics:
     NumberOp, CreateOp, DestroyOp,
     FockState,
     MixedState, IdentityOp,
+    SAdd, SMulOperator, STensor,
     qubit_basis
 import QuantumSymbolics: express, express_nolookup
 using TermInterface
@@ -99,6 +100,24 @@ express_nolookup(p::PauliNoiseCPTP, ::QuantumOpticsRepr) = LazySuperSum(SpinBasi
                                                                [LazyPrePost(_id,_id),LazyPrePost(_x,_x),LazyPrePost(_y,_y),LazyPrePost(_z,_z)])
 
 express_nolookup(s::SOuterKetBra, r::QuantumOpticsRepr) = projector(express(s.ket, r), express(s.bra, r))
+
+function express_nolookup(s::SAdd{AbstractOperator}, r::QuantumOpticsRepr)
+    r.lazy || return operation(s)(express.(arguments(s), (r,))...)
+    ops = Tuple(express(obj, r) for obj in keys(s.dict))
+    LazySum(collect(values(s.dict)), ops)
+end
+
+function express_nolookup(s::SMulOperator, r::QuantumOpticsRepr)
+    r.lazy || return operation(s)(express.(arguments(s), (r,))...)
+    LazyProduct(Tuple(express(t, r) for t in s.terms))
+end
+
+function express_nolookup(s::STensor{AbstractOperator}, r::QuantumOpticsRepr)
+    r.lazy || return operation(s)(express.(arguments(s), (r,))...)
+    ops = Tuple(express(a, r) for a in s.terms)
+    b = basis(s)
+    LazyTensor(b, b, collect(1:length(ops)), ops)
+end
 
 include("should_upstream.jl")
 

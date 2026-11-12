@@ -78,3 +78,38 @@ Operator(dim=5x5)
  0.0+0.0im  0.0+0.0im  0.0+0.0im  3.0+0.0im  0.0+0.0im
  0.0+0.0im  0.0+0.0im  0.0+0.0im  0.0+0.0im  4.0+0.0im
 ```
+## Lazy operator output
+
+Passing `lazy=true` to `QuantumOpticsRepr` produces lazy `QuantumOpticsBase` operator types
+instead of materializing matrices immediately. Symbolic sums, products, and tensor products of
+operators map to `LazySum`, `LazyProduct`, and `LazyTensor` respectively.
+
+```@example 3
+using QuantumSymbolics, QuantumOptics # hide
+r_lazy = QuantumOpticsRepr(lazy=true)
+
+op = tensor(σˣ, IdentityOp(Z1)) + tensor(IdentityOp(Z1), σᶻ)
+lazy_op = express(op, r_lazy)
+```
+
+```@example 3
+lazy_op isa LazySum
+```
+
+The dense form agrees with the eager conversion:
+
+```@example 3
+isapprox(dense(lazy_op), express(op, QuantumOpticsRepr()))
+```
+
+`LazyTensor` is produced for tensor products, and `LazyProduct` for operator multiplication:
+
+```@example 3
+express(tensor(σˣ, σᶻ), r_lazy) isa LazyTensor
+```
+
+```@example 3
+express(tensor(σˣ, IdentityOp(Z1)) * tensor(IdentityOp(Z1), σᶻ), r_lazy) isa LazyProduct
+```
+
+The `cutoff` parameter still applies when `lazy=true`, for example `QuantumOpticsRepr(cutoff=4, lazy=true)`.
